@@ -1,0 +1,19 @@
+# Environment variables (contains API credentials)
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Cache directories (created at runtime by skills)
+.github-audit/
+.tmp/
+
+# Test artifacts (local development only)
+test-*/
+eval-workspace/

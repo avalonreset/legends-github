@@ -1,0 +1,55 @@
+{
+  "_comment": "GitHub-optimized field filtering for DataForSEO responses. Reduces token usage by returning only fields relevant to GitHub SEO optimization.",
+  "serp": {
+    "items": {
+      "type": true,
+      "rank_group": true,
+      "rank_absolute": true,
+      "title": true,
+      "url": true,
+      "description": true,
+      "domain": true
+    }
+  },
+  "keywords_data": {
+    "keyword": true,
+    "search_volume": true,
+    "competition": true,
+    "competition_level": true,
+    "cpc": false,
+    "monthly_searches": true
+  },
+  "keyword_suggestions": {
+    "keyword": true,
+    "search_volume": true,
+    "keyword_difficulty": true,
+    "competition_level": true
+  },
+  "ranked_keywords": {
+    "keyword": true,
+    "rank_group": true,
+    "rank_absolute": true,
+    "search_volume": true,
+    "url": true
+  },
+  "ai_scraper": {
+    "items": {
+      "content": true,
+      "references": true,
+      "brands_mentioned": true
+    }
+  },
+  "llm_mentions": {
+    "keyword": true,
+    "platform": true,
+    "mentioned": true,
+    "context": true,
+    "sentiment": true
+  },
+  "trends": {
+    "keyword": true,
+    "date": true,
+    "search_volume": true,
+    "trend_percentage": true
+  }
+}
