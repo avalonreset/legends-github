@@ -11,7 +11,7 @@
 
 Most GitHub repos are invisible. No keywords in the description, no structured README, missing license files, zero community health signals. Search engines skip them. Developers scroll past them. Stars stay at zero.
 
-Claude GitHub is a suite of Claude Code skills that audits, scores, and optimizes any GitHub repository across 8 dimensions. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
+Claude GitHub is the most comprehensive collection of Claude Code skills for GitHub repository optimization. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
 
 > Built with the [Agent Skills](https://github.com/anthropics/claude-code) open standard for Claude Code.
 > SEO methodology adapted from [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
@@ -19,10 +19,12 @@ Claude GitHub is a suite of Claude Code skills that audits, scores, and optimize
 ## Table of Contents
 
 - [What You Get](#what-you-get)
+- [Skill Examples](#skill-examples)
 - [How the Audit Works](#how-the-audit-works)
-- [Installation](#installation)
+- [How to Add Skills to Claude Code](#how-to-add-skills-to-claude-code)
 - [How Claude Code Skills Communicate](#how-claude-code-skills-communicate)
 - [Architecture](#architecture)
+- [Best Practices](#best-practices)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Contributing and Security](#contributing-and-security)
 - [Disclaimer](#disclaimer)
@@ -43,7 +45,9 @@ Claude GitHub is a suite of Claude Code skills that audits, scores, and optimize
 
 Every recommendation cites its source: DataForSEO keyword volume, GitHub API metadata, codebase analysis, or reference guides. Nothing is guesswork.
 
-### Example: Audit Output
+## Skill Examples
+
+### Audit Output
 
 ```
 Overall Score: 60/100
@@ -62,6 +66,22 @@ Top 3 Actions (by impact):
 2. [High] Create CONTRIBUTING.md with contribution guidelines
 3. [High] Set up GitHub Releases with semantic versioning
 ```
+
+### SEO Keyword Discovery
+
+```
+Primary Keyword: "claude code skills" (3,600/mo, difficulty 34, Sweet Spot)
+GitHub ranks #2 for this query. Recommended for H1, description, first paragraph.
+
+Secondary Keywords:
+- "claude code skills marketplace" (320/mo, +171% quarterly)
+- "best claude code skills" (110/mo, +321% quarterly)
+- "claude code agent skills" (70/mo, difficulty 42)
+
+Topics recommended: claude-code, claude-code-skills, github-optimization...
+```
+
+### Workflow
 
 Run `/github audit`, then follow the action items with the matching sub-command. The audit caches its findings so downstream skills like `/github readme` and `/github meta` pick up where it left off.
 
@@ -90,7 +110,7 @@ Audit an entire GitHub profile at once:
 
 This quick-scans all public repos, selects the top candidates for deep analysis, spawns up to 6 agents per repo, and produces a cross-portfolio report with shared patterns and priorities.
 
-## Installation
+## How to Add Skills to Claude Code
 
 **Prerequisites:** [Claude Code](https://claude.com/claude-code) and [GitHub CLI](https://cli.github.com/) (`gh`), both installed and authenticated.
 
@@ -158,6 +178,20 @@ claude-github/
 
 1 orchestrator, 8 sub-skills, 6 scoring agents, 9 reference files. The orchestrator detects your repo type (library, CLI tool, API, application, framework, documentation, or skill/plugin) and adjusts recommendations for each.
 
+## Best Practices
+
+Getting the most out of the skill suite comes down to running things in the right order and letting the cache do its job.
+
+**Run audit first.** Always start with `/github audit`. It produces the baseline score and caches findings that every other skill reads. Without it, downstream skills gather data from scratch, which works but takes longer and misses cross-category insights.
+
+**Follow the recommended order.** After the audit: `/github legal` (license and security), `/github readme` (content), `/github meta` (description and topics), `/github community` (health files), `/github release` (versioning), `/github seo` (keyword verification). Each skill builds on the cache from previous steps.
+
+**Set up DataForSEO early.** The SEO skill and keyword-aware features in readme and meta depend on live search data. Without DataForSEO, recommendations are based on codebase analysis only and marked "unverified." A single repo analysis costs about 15-30 cents.
+
+**Review before executing.** Every skill pauses at a confirmation gate before making live changes (pushing releases, editing repo settings, creating files). Read the proposal, adjust if needed, then approve.
+
+**Re-audit after changes.** Run `/github audit` again when you finish. The score delta shows exactly what improved and what still needs attention.
+
 ## Frequently Asked Questions
 
 ### What are Claude Code skills?
@@ -167,6 +201,10 @@ Claude Code skills are markdown instruction files that extend Claude Code with s
 ### How do I add skills to Claude Code?
 
 Run the installer (`bash install.sh` or `.\install.ps1`). It copies all skill files to `~/.claude/skills/github/` and configures the DataForSEO MCP server. After installation, restart Claude Code and the skills are available immediately. Type `/github` to see available commands.
+
+### What is the difference between agents and skills in Claude Code?
+
+Skills are instruction files (SKILL.md) that Claude loads based on triggers in your message. They define what to do and how. Agents are sub-processes that skills can spawn to run tasks in parallel. In this suite, the `/github audit` skill spawns 6 scoring agents simultaneously, one per category, so a full audit completes in a single pass instead of running checks sequentially.
 
 ### Do I need DataForSEO to use this?
 
