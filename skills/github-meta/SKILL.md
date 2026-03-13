@@ -318,13 +318,29 @@ repo page. Don't waste it or leave it pointing somewhere wrong.
 
 ## Social Preview Image
 
-**No API available** — must be set via web UI at Settings > Social preview.
+**No API available** -- must be set via web UI. Make this as easy as possible for the user.
 
 Provide the user with:
 - Recommended dimensions: 1280x640px
-- Format: PNG or JPG, under 1MB
+- Format: WebP or PNG, under 1MB (WebP preferred for smaller size)
 - Content: Project name, tagline, logo/icon, key visual
-- Instructions: Go to `https://github.com/{owner}/{repo}/settings` > Social preview > Edit > Upload
+
+**Give the user everything they need in one block -- clickable links, no guessing:**
+```
+Social Preview Setup:
+
+1. Open your repo settings: https://github.com/{owner}/{repo}/settings
+2. Scroll to "Social preview" section
+3. Click "Edit" > "Upload an image"
+4. Select your image (1280x640px recommended)
+5. Save changes
+
+Test it: paste your repo URL into https://www.opengraph.xyz to preview
+how it will look when shared on Twitter/X, LinkedIn, and Slack.
+```
+
+Replace `{owner}/{repo}` with the actual owner and repo name so the link is
+clickable as-is. Never leave placeholder URLs when you know the actual values.
 
 **Why it matters:** Controls how the repo appears when shared on Twitter/X, LinkedIn,
 Slack, Discord, iMessage. Default auto-generated image uses name + description + avatar.

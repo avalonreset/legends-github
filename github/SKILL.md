@@ -352,6 +352,28 @@ Every recommendation must cite its source:
 - "Based on audit findings..." (prior audit run)
 - "Based on your stated intent..." (user intent)
 
+## UX Principles (applies to ALL skills)
+
+**Hold the user's hand through manual steps.** Many GitHub actions have no API
+(profile photo upload, social preview, repo settings). When a skill requires manual
+action, provide:
+
+1. **Clickable file links** for generated files: `file:///[absolute-path]/assets/banner.webp`
+2. **Direct URLs** to the exact settings page: `https://github.com/{owner}/{repo}/settings`
+   -- always substitute the actual owner/repo, never leave placeholders when you know the values
+3. **Step-by-step instructions** numbered and specific: "Go to X, click Y, upload Z"
+4. **Verification links** when possible: "Test your social preview at https://www.opengraph.xyz"
+
+The goal is zero guesswork for the user. If they need to upload a file, show them
+exactly where the file is AND exactly where to upload it. If they need to change a
+setting, link them to the exact page. Make the manual parts as close to automated
+as possible.
+
+**Image format pipeline:** All AI-generated images (banners, avatars) follow the
+same flow: request PNG from KIE.ai (lossless source) then convert to WebP (quality
+80) for delivery. WebP is ~30% smaller than JPEG at equivalent quality and GitHub
+renders it natively. See `banner-generation.md` Image Format Pipeline for details.
+
 ## Reference Files
 
 Load on-demand as needed — do NOT load all at startup.

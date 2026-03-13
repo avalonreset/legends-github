@@ -72,7 +72,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
 - **Legal data:** Check LICENSE type for License section
 - **Audit data:** If a prior `/github audit` ran, use its README quality findings
 - **Intent + repo type:** From orchestrator context
-- **Banner status:** Does the repo already have a banner image? Check for `assets/banner.jpg`, `assets/banner.png`, or any image referenced at the top of README
+- **Banner status:** Does the repo already have a banner image? Check for `assets/banner.webp`, `assets/banner.jpg`, `assets/banner.png`, or any image referenced at the top of README
 
 ### 2. Analyze
 
@@ -217,21 +217,31 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact s
 Reference: Read `~/.claude/skills/github/references/banner-generation.md` — see the
 **Image Format Optimization** section for the full decision table.
 
-**The rule: AI art = JPEG. Screenshots = PNG.** Apply this when generating banners,
-choosing existing images, or advising on image format.
+**The pipeline: always generate as PNG (lossless source), then convert to the
+optimal delivery format.** See `banner-generation.md` for the full Image Format
+Pipeline section.
 
 When generating or placing images in the README:
-- **Banners** (AI-generated): always JPEG. 2-3x smaller than PNG, no visible difference.
-- **Screenshots** (terminal, UI): always PNG. Sharper text, often smaller than JPEG.
+- **Banners** (AI-generated): request PNG from KIE.ai, convert to **WebP** (quality 80).
+  WebP is ~30% smaller than JPEG and GitHub renders it natively.
+- **Screenshots** (terminal, UI): keep as **PNG**. Lossless, sharp text, often smaller
+  than lossy formats for flat-color content. Do NOT convert screenshots.
 - **Logos/icons**: PNG or SVG. Clean edges need lossless compression.
-- Flag any existing images in the repo that use the wrong format (e.g., a 2MB PNG
-  banner that should be a 400KB JPEG, or a blurry JPEG screenshot).
+- **Flag existing repo images** using the wrong format or that are oversized:
+  - PNG banners/photos > 200KB: convert to WebP (saves 60-70%)
+  - JPEG screenshots with blurry text: should be PNG
+  - Any image > 1MB: flag for optimization
 
-If the repo has oversized images (>1MB banners, >500KB screenshots), recommend
-optimization as an action item. Pillow can convert formats in one line:
+**Offer to convert, not just flag.** Use Pillow to convert and show savings:
 ```python
 from PIL import Image
-Image.open("banner.png").convert("RGB").save("banner.jpg", quality=85)
+img = Image.open("assets/banner.png")
+img.save("assets/banner.webp", "WEBP", quality=80)  # typically 60-70% smaller
+```
+
+If the user prefers JPEG over WebP for compatibility reasons, use quality 85:
+```python
+img.convert("RGB").save("assets/banner.jpg", "JPEG", quality=85)
 ```
 
 ### Banner Image (Standard Practice — Two-Step)
@@ -244,15 +254,15 @@ including prompt strategy, text compositing script, and positioning principles.
 
 **Two-step flow:**
 1. Craft a background prompt (visual metaphor, NO text in image, subject offset to one side)
-2. Call KIE.ai API to generate background (21:9, 1K, jpg defaults)
-3. Poll for completion, download as `assets/banner-bg.jpg`
+2. Call KIE.ai API to generate background (21:9, 1K, **png** -- always request lossless source)
+3. Poll for completion, download as `assets/banner-source.png`
 4. Composite text overlay via Pillow (project name, tagline, optional features)
-5. Save final banner to `assets/banner.jpg`, delete `banner-bg.jpg`
+5. Convert to WebP (quality 80): `assets/banner.webp`, delete source PNG
 6. Place at the very top of README, before H1:
 
 ```markdown
 <p align="center">
-  <img src="assets/banner.jpg" alt="[Project Name] banner" width="100%">
+  <img src="assets/banner.webp" alt="[Project Name] banner" width="100%">
 </p>
 ```
 
@@ -498,7 +508,7 @@ Re-score the generated README against the same 7 criteria.
 ```
 
 ### Deliverables
-- Professional banner image saved to `assets/banner.jpg` (if KIE_API_KEY available)
+- Professional banner image saved to `assets/banner.webp` (if KIE_API_KEY available)
 - Full README.md content with banner at top
 - Before/after score comparison
 - List of changes made with reasoning
