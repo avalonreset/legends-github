@@ -24,5 +24,11 @@
   "MD033": false,
 
   // Allow duplicate headings (common across skill sections)
-  "MD024": false
+  "MD024": false,
+
+  // Allow files that don't start with H1 (agents, PR template)
+  "MD041": false,
+
+  // Relax blank lines around headings (agents use compact rubric format)
+  "MD022": false
 }
