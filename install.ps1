@@ -282,8 +282,29 @@ Write-Host "]"
 Write-Host ""
 
 Write-Host "   " -NoNewline
-Write-Host "Restart Claude Code" -NoNewline -ForegroundColor White
-Write-Host ", then try:"
+Write-Host "Next step: restart Claude Code so the new skills load." -ForegroundColor White
+Write-Host ""
+Write-Host "   How to restart:" -ForegroundColor Magenta
+Write-Host "   1. " -NoNewline -ForegroundColor Cyan
+Write-Host "Type " -NoNewline
+Write-Host "/exit" -NoNewline -ForegroundColor White
+Write-Host " to quit Claude Code"
+Write-Host "   2. " -NoNewline -ForegroundColor Cyan
+Write-Host "Run " -NoNewline
+Write-Host "claude" -NoNewline -ForegroundColor White
+Write-Host " again from your project folder"
+Write-Host "   3. " -NoNewline -ForegroundColor Cyan
+Write-Host "(optional) " -NoNewline -ForegroundColor DarkGray
+Write-Host "Type " -NoNewline
+Write-Host "/resume" -NoNewline -ForegroundColor White
+Write-Host " to pick up where you left off"
+Write-Host ""
+Write-Host "   Important:" -NoNewline -ForegroundColor Magenta
+Write-Host " Run skills from inside the project you want to optimize."
+Write-Host "   The skills read your source code, configs, and git remote to make" -ForegroundColor DarkGray
+Write-Host "   informed recommendations. Running from an empty folder won't work well." -ForegroundColor DarkGray
+Write-Host ""
+Write-Host "   Available commands:" -ForegroundColor Magenta
 Write-Host ""
 Write-Host "   /github audit           " -NoNewline -ForegroundColor Cyan
 Write-Host "Score your repo 0-100 across 6 categories" -ForegroundColor DarkGray
