@@ -232,16 +232,17 @@ When generating or placing images in the README:
   - JPEG screenshots with blurry text: should be PNG
   - Any image > 1MB: flag for optimization
 
-**Offer to convert, not just flag.** Use Pillow to convert and show savings:
+**Offer to convert, not just flag.** Use Pillow to convert, strip metadata, and show savings:
 ```python
 from PIL import Image
-img = Image.open("assets/banner.png")
-img.save("assets/banner.webp", "WEBP", quality=80)  # typically 60-70% smaller
-```
-
-If the user prefers JPEG over WebP for compatibility reasons, use quality 85:
-```python
-img.convert("RGB").save("assets/banner.jpg", "JPEG", quality=85)
+import os
+src = Image.open("assets/banner.png")
+clean = Image.new(src.mode, src.size)  # strip all metadata
+clean.putdata(list(src.getdata()))
+clean.save("assets/banner.webp", "WEBP", quality=80, method=6)
+old = os.path.getsize("assets/banner.png")
+new = os.path.getsize("assets/banner.webp")
+print(f"{old//1024}KB -> {new//1024}KB ({100-new*100//old}% smaller, metadata stripped)")
 ```
 
 ### Banner Image (Standard Practice — Two-Step)

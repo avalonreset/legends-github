@@ -245,8 +245,10 @@ draw = ImageDraw.Draw(overlay)
 # ...
 
 result = Image.alpha_composite(img, overlay).convert("RGB")
-# Save as WebP (preferred) or JPEG (fallback)
-result.save("assets/banner.webp", "WEBP", quality=80)
+# Strip metadata: create fresh image from pixel data only
+clean = Image.new(result.mode, result.size)
+clean.putdata(list(result.getdata()))
+clean.save("assets/banner.webp", "WEBP", quality=80, method=6)
 os.remove("assets/banner-bg.png")
 ```
 
@@ -282,9 +284,11 @@ optimal delivery format.** We control the conversion, not the API.
 Always request `output_format: "png"` from KIE.ai. This gives us a lossless source
 image with maximum quality. We never lose data at the generation step.
 
-### Step 2: Convert to optimal delivery format
+### Step 2: Convert, strip metadata, and optimize
 
-Use Pillow to convert from the PNG source to the best delivery format:
+Use Pillow to convert from the PNG source to the optimal delivery format.
+**Always strip metadata** -- no EXIF, no ICC profiles, no generation prompts,
+no tool signatures. Clean, minimal, professional.
 
 ```python
 from PIL import Image
@@ -292,15 +296,32 @@ import os
 
 src = Image.open("assets/banner-source.png")
 
-# WebP -- preferred. ~30% smaller than JPEG, sharp, GitHub renders it natively.
-src.save("assets/banner.webp", "WEBP", quality=80)
+# Strip all metadata by creating a fresh image from pixel data only.
+# Pillow's .save() without exif= already drops EXIF, but this also
+# strips ICC color profiles and any other embedded chunks.
+clean = Image.new(src.mode, src.size)
+clean.putdata(list(src.getdata()))
 
-# JPEG -- fallback if user needs max compatibility (email embeds, older tools)
-# src.convert("RGB").save("assets/banner.jpg", "JPEG", quality=85)
+# WebP -- preferred. ~30% smaller than JPEG, sharp, GitHub renders it natively.
+# method=6 is slowest encode but smallest file (worth it, runs once).
+clean.save("assets/banner.webp", "WEBP", quality=80, method=6)
+
+# JPEG -- fallback if user explicitly requests it
+# clean.convert("RGB").save("assets/banner.jpg", "JPEG", quality=85, optimize=True)
 
 # Clean up the source PNG
 os.remove("assets/banner-source.png")
 ```
+
+**Why strip metadata?**
+- **File size:** EXIF, ICC profiles, and AI generation metadata add 5-50KB of bloat.
+  On a 100KB WebP banner, that is a significant percentage.
+- **Privacy:** AI generation tools embed model names, prompt text, timestamps, and
+  tool versions into image metadata. None of that should leak into a public repo.
+- **Professionalism:** Clean images with zero metadata signal attention to detail.
+  It is the kind of thing nobody notices when you do it, but auditors and tools flag
+  when you don't.
+- **Consistency:** Every image in the repo follows the same pipeline. No surprises.
 
 ### Step 3: Choose the right delivery format
 
@@ -334,7 +355,7 @@ years. There is no compatibility concern for GitHub-hosted content.
 
 1. Request PNG from KIE.ai (`output_format: "png"`)
 2. Download as `assets/banner-source.png`
-3. Convert to WebP: `assets/banner.webp` (quality 80)
+3. Strip metadata + convert to WebP: `assets/banner.webp` (quality 80, method 6)
 4. Delete the source PNG
 5. Reference in README as `assets/banner.webp`
 
@@ -343,7 +364,7 @@ years. There is no compatibility concern for GitHub-hosted content.
 Same pipeline as banners:
 1. Request PNG from KIE.ai (`output_format: "png"`, `aspect_ratio: "1:1"`)
 2. Download as `assets/avatar-source.png`
-3. Convert to WebP: `assets/avatar.webp` (quality 80)
+3. Strip metadata + convert to WebP: `assets/avatar.webp` (quality 80, method 6)
 4. Delete the source PNG
 5. Provide `file:///` link to the WebP for the user to upload
 
@@ -367,13 +388,16 @@ convert the image right there and show the size savings:
 from PIL import Image
 import os
 
-# Example: convert an oversized PNG banner to WebP
+# Example: convert an oversized PNG banner to WebP (with metadata stripping)
 src = Image.open("assets/banner.png")
-src.save("assets/banner.webp", "WEBP", quality=80)
+clean = Image.new(src.mode, src.size)
+clean.putdata(list(src.getdata()))
+clean.save("assets/banner.webp", "WEBP", quality=80, method=6)
 
 old_size = os.path.getsize("assets/banner.png")
 new_size = os.path.getsize("assets/banner.webp")
-print(f"Converted: {old_size//1024}KB -> {new_size//1024}KB ({100 - new_size*100//old_size}% smaller)")
+savings = 100 - new_size * 100 // old_size
+print(f"Converted: {old_size//1024}KB -> {new_size//1024}KB ({savings}% smaller, metadata stripped)")
 # Then update the README reference and delete the old file
 ```
 

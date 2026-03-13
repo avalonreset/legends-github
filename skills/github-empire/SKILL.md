@@ -449,15 +449,21 @@ curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
 - `output_format`: **"png"** (always request lossless source from API -- convert after)
 - Resolution: 1K is fine (GitHub resizes to 460x460 anyway)
 
-**Post-download conversion (required):**
+**Post-download conversion (required -- strip metadata + convert to WebP):**
 ```python
 from PIL import Image
 import os
-img = Image.open("assets/avatar-source.png")
-img.save("assets/avatar.webp", "WEBP", quality=80)
+
+src = Image.open("assets/avatar-source.png")
+# Strip all metadata: create fresh image from pixel data only
+clean = Image.new(src.mode, src.size)
+clean.putdata(list(src.getdata()))
+# WebP, quality 80, method 6 (slowest encode = smallest file)
+clean.save("assets/avatar.webp", "WEBP", quality=80, method=6)
 os.remove("assets/avatar-source.png")
 ```
 WebP is the preferred delivery format (~30% smaller than JPEG at equivalent quality).
+Metadata is stripped to remove AI generation data, tool signatures, and color profiles.
 GitHub renders WebP natively. Use JPEG only if the user specifically requests it.
 
 ### Post-Generation UX

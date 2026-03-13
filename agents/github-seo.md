@@ -94,9 +94,10 @@ Google does NOT index: source code, wiki (unless 500+ stars), issues, forks page
 ### Image SEO (bonus, not scored but flagged)
 Flag these image issues in your findings if visible in the README content:
 - Images without descriptive alt text (hurts Google Image Search indexing)
-- Banner images referenced as `.png` that are likely AI-generated (should be JPEG for faster page load, which affects ranking)
+- Banner images referenced as `.png` that are likely AI-generated (should be WebP for faster page load, which affects ranking)
 - Images >1MB (slow load = lower Core Web Vitals signal)
 - Images hotlinked from external URLs instead of committed to repo (link rot risk)
+- JPEG/PNG images that could be WebP (~30% smaller at equivalent quality)
 These are reported as recommendations, not scored, since the README agent handles visual scoring.
 
 ### Repo Name SEO (10 points)
