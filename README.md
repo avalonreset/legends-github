@@ -4,6 +4,7 @@
 
 # Claude GitHub - Claude Code Skills for Repository Optimization
 
+[![Version](https://img.shields.io/github/v/release/avalonreset-pro/claude-github)](https://github.com/avalonreset-pro/claude-github/releases)
 [![License: Proprietary](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)]()
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-blueviolet)](https://claude.com/claude-code)
