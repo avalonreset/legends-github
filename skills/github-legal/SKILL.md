@@ -77,7 +77,11 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
     or README? (e.g., "Based on WezTerm, licensed under MIT")
 - Are there dependency license conflicts?
 - Is SECURITY.md present and adequate?
-- Is CITATION.cff present (important for academic/research intent)?
+- Is CITATION.cff present? **CITATION.cff is a default deliverable** -- generate it
+  for every repo unless the user explicitly declines. It costs nothing, takes 10 seconds
+  to generate, and enables GitHub's "Cite this repository" button. Academic intent is not
+  required -- any project benefits from a machine-readable citation file. The audit scores
+  it, so skipping it leaves free points on the table.
 - **Vendored code check:** Do any third_party/vendor directories have their own
   licenses that conflict with the project license?
 - **Edge case flags** — flag these for the user's attention (do not attempt to
@@ -139,7 +143,11 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact s
 
 - Generate LICENSE file with correct year and copyright holder
 - Generate SECURITY.md with supported versions and reporting process
-- Generate CITATION.cff with project metadata
+- **Generate CITATION.cff by default** -- always include in the deliverables table.
+  Only skip if the user explicitly says they don't want it. Do not skip silently.
+  If the user hasn't mentioned it, generate it and include it in the confirmation gate.
+  Pull version from latest git tag or `gh release list`. Pull date from today's date.
+  Pull author from `git config user.name` or `gh api user --jq .name`.
 - Generate NOTICE file if Apache 2.0
 - Fix fork attribution if needed
 

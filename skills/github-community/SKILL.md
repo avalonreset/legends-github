@@ -4,11 +4,13 @@ description: >
   Set up GitHub community health files and templates. Generates CONTRIBUTING.md,
   CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms),
   PR templates, discussion templates, devcontainer configuration, dependabot.yml,
-  and release.yml. Completes GitHub's Community Standards checklist. Use when
-  user says "community", "github community", "contributing", "code of conduct",
-  "issue template", "pr template", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md",
-  "codeowners", "devcontainer", "dependabot", "community standards",
-  "community health", or "templates".
+  release.yml, .gitattributes (linguist overrides for accurate language bar),
+  and CI workflows (language-appropriate linting via GitHub Actions). Completes
+  GitHub's Community Standards checklist. Use when user says "community",
+  "github community", "contributing", "code of conduct", "issue template",
+  "pr template", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "codeowners",
+  "devcontainer", "dependabot", "community standards", "community health",
+  "templates", "gitattributes", "ci workflow", or "github actions".
 ---
 
 # GitHub Community — Health Files and Templates
@@ -34,6 +36,8 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
   - .github/ISSUE_TEMPLATE/ (any .yml or .md files)
   - .github/PULL_REQUEST_TEMPLATE.md
   - .github/DISCUSSION_TEMPLATE/
+  - .gitattributes
+  - .github/workflows/ (any .yml files -- for CI detection)
   - .devcontainer/devcontainer.json
   - .github/dependabot.yml
   - .github/release.yml
@@ -82,6 +86,7 @@ and assess quality** — don't just check existence.
 | Issue templates | ? | ? | ? |
 | PR template | ? | ? | ? |
 | Discussion templates | ? | ? | ? |
+| .gitattributes | ? | ? | ? |
 | devcontainer.json | ? | ? | ? |
 | dependabot.yml | ? | ? | ? |
 | release.yml | ? | ? | ? |
@@ -215,6 +220,140 @@ Detect package ecosystem from repo:
 | Gemfile | bundler |
 | .github/workflows/*.yml | github-actions |
 
+### .gitattributes (Language Bar Accuracy)
+
+**Always generate .gitattributes** if one does not already exist. The language bar on
+GitHub's repo page is controlled by Linguist, and incorrect detection makes projects
+look unprofessional (e.g., a markdown-heavy skill project showing as "Shell 60%"
+because of install scripts).
+
+**Detection logic:**
+1. Check the language breakdown: `gh api repos/{owner}/{repo}/languages`
+2. Compare against the repo's actual purpose (from repo-context or README)
+3. If the primary language shown does not match the project's core language, generate
+   overrides
+
+**Common patterns by repo type:**
+
+| Repo Type | Problem | .gitattributes Fix |
+|-----------|---------|-------------------|
+| Skill/Plugin (markdown-heavy) | Shell/PowerShell inflated by install scripts | `*.sh linguist-documentation`<br>`*.ps1 linguist-documentation`<br>`install.* linguist-documentation` |
+| JavaScript/TypeScript | HTML/CSS from dist/ or docs/ | `dist/** linguist-generated`<br>`docs/** linguist-documentation` |
+| Python | Jupyter notebooks inflating JSON | `*.ipynb linguist-generated` |
+| Any | Vendored dependencies | `vendor/** linguist-vendored`<br>`third_party/** linguist-vendored` |
+| Any | Generated files | `*.min.js linguist-generated`<br>`*.min.css linguist-generated` |
+
+**Template (adapt based on detection):**
+```
+# .gitattributes - GitHub Linguist overrides for accurate language detection
+
+# Generated/vendored files (excluded from language stats)
+*.min.js linguist-generated
+*.min.css linguist-generated
+dist/** linguist-generated
+vendor/** linguist-vendored
+third_party/** linguist-vendored
+
+# Documentation/config files (excluded from language stats)
+# [Add repo-specific overrides here based on detection]
+```
+
+If the language bar is already accurate and no overrides are needed, still generate
+a minimal .gitattributes with just the standard vendored/generated rules. Having the
+file is better than not -- it prevents future language bar drift as the project grows.
+
+### CI Workflow (Basic Linting)
+
+**Generate a basic CI workflow** (`.github/workflows/ci.yml`) if no workflows exist
+in `.github/workflows/`. The audit scores CI presence, and having even a basic lint
+workflow signals active maintenance.
+
+**Do NOT generate if:**
+- Workflows already exist (check `.github/workflows/` directory)
+- The repo is archived
+- The user explicitly says they don't want CI
+
+**Detection logic for workflow type:**
+
+| Primary Language / Repo Type | Workflow | Linter/Check |
+|------------------------------|----------|-------------|
+| Markdown-heavy (skills, docs) | Markdown lint | `markdownlint-cli2` via npx |
+| Shell scripts | Shell lint | `shellcheck` |
+| JavaScript/TypeScript | JS lint | `eslint` or `biome` (check package.json) |
+| Python | Python lint | `ruff` or `flake8` (check pyproject.toml) |
+| Rust | Rust checks | `cargo clippy` + `cargo fmt --check` |
+| Go | Go checks | `go vet` + `golangci-lint` |
+| Mixed/Unknown | YAML + Markdown lint | `yamllint` + `markdownlint-cli2` |
+
+**Template for markdown-heavy repos (skills, documentation):**
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: "**/*.md"
+```
+
+**Template for JavaScript/TypeScript:**
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+```
+
+**Template for Python:**
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check .
+```
+
+Keep CI workflows minimal. The goal is a green badge and a signal of active
+maintenance, not a full test suite. Users can expand it later.
+
 ## Output
 
 ### Community Standards Scorecard (Before/After)
@@ -240,6 +379,8 @@ Also list bonus files (not on GitHub's checklist but valuable):
 | SUPPORT.md | Created / Existed / Skipped |
 | CODEOWNERS | Created / Existed / Skipped |
 | FUNDING.yml | Created / Existed / Skipped |
+| .gitattributes | Created / Existed / Skipped |
+| CI workflow | Created / Existed / Skipped |
 | devcontainer.json | Created / Existed / Skipped |
 | dependabot.yml | Created / Existed / Skipped |
 | release.yml | Created / Existed / Skipped |

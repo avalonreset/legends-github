@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Claude GitHub"
+version: "1.0.0"
+date-released: "2026-03-13"
+authors:
+  - given-names: "Benjamin"
+    alias: "avalonreset"
+url: "https://github.com/avalonreset-pro/claude-github"
+repository-code: "https://github.com/avalonreset-pro/claude-github"
+license: "LicenseRef-Proprietary"
+keywords:
+  - claude-code
+  - claude-code-skills
+  - github-optimization
+  - github-seo
+  - repository-audit
+abstract: >
+  The most comprehensive collection of Claude Code skills for GitHub repository
+  optimization. Includes 8 specialized sub-skills covering README generation,
+  legal compliance, metadata optimization, SEO keyword research, community health,
+  release management, and portfolio strategy. Powered by DataForSEO for live
+  keyword data.

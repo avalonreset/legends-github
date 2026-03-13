@@ -301,7 +301,17 @@ repo page. Don't waste it or leave it pointing somewhere wrong.
    "Your homepage URL was pointing to [X], which doesn't seem related to this repo.
    I've cleared it. If you have a docs site, demo, or project page you'd like to
    link, let me know and I'll set it."
-5. No URL set and nothing obvious? → Leave it empty. Don't guess.
+5. No URL set and nothing obvious? → **Proactively ask the user** instead of silently
+   leaving it empty. The audit penalizes an empty homepage URL, so this is worth
+   resolving. Present it as:
+   "Your repo has no homepage URL set. This is a free, prominent link on your repo
+   page. Options:
+   - A docs site, wiki, or project website you maintain
+   - A relevant blog post, tutorial, or announcement about this project
+   - Your personal/org website if this is a portfolio piece
+   Do you have something to link here, or should I leave it empty for now?"
+   If the user has no URL, accept "leave empty" gracefully. But always ask first --
+   users often have a relevant link they just haven't thought to set.
 
 **Never** set the homepage URL to the GitHub repo itself (circular link).
 **Never** guess a URL without confirming it's relevant to this specific repo.

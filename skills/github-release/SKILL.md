@@ -2,14 +2,17 @@
 name: github-release
 description: >
   GitHub release consultant — analyzes release health, recommends next version,
-  drafts changelog entries from commit history, identifies release gaps, and
-  manages release infrastructure (CHANGELOG.md, release.yml, badges). Acts as
+  drafts changelog entries from commit history, identifies release gaps, manages
+  release infrastructure (CHANGELOG.md, release.yml, badges), and advises on
+  package distribution strategy (npm, PyPI, Docker, GitHub Packages). Acts as
   a strategic advisor: tells you WHEN to release, WHAT version number to use,
-  and drafts the changelog entry for you. Also generates files if missing.
+  WHETHER to publish to a package registry, and drafts the changelog entry for
+  you. Also generates files if missing.
   Use when user says "release", "releases", "github releases", "changelog",
   "CHANGELOG.md", "version", "versioning", "semver", "badges", "shields.io",
   "badge", "release strategy", "semantic versioning", "git tags", "ready to
-  release", "cut a release", "new version", or "what version should I use".
+  release", "cut a release", "new version", "what version should I use",
+  "packages", "github packages", "publish", "distribution", or "npm publish".
 ---
 
 # GitHub Releases — Release Consultant, Versioning, and Changelog
@@ -69,6 +72,22 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
 - Detect CI workflows: `ls .github/workflows/`
 - Detect package registry (npm, PyPI, crates.io, etc.)
 
+**Package distribution:**
+- Check GitHub Packages: `gh api repos/{owner}/{repo}/packages --jq '.[].name' 2>/dev/null`
+- Detect publishable package type from manifest files:
+  | File | Registry | Publish Command |
+  |------|----------|----------------|
+  | package.json (with `name`) | npm / GitHub Packages | `npm publish` |
+  | pyproject.toml / setup.py | PyPI | `twine upload` / `python -m build` |
+  | Cargo.toml | crates.io | `cargo publish` |
+  | go.mod | Go module proxy | `GOPROXY` auto-indexes on tag push |
+  | *.gemspec | RubyGems | `gem push` |
+  | Dockerfile | Docker Hub / GHCR | `docker push` |
+  | *.csproj (with `PackageId`) | NuGet | `dotnet nuget push` |
+- If no manifest files exist (pure scripts, skills, docs), note "No package registry
+  applicable" and skip distribution recommendations
+- Check for existing publish workflows: `grep -l "publish\|registry\|npm.*publish\|docker.*push\|twine\|cargo.*publish" .github/workflows/*.yml 2>/dev/null`
+
 **Cross-check:**
 - Compare CHANGELOG latest version vs GitHub Releases latest version
 - Compare CHANGELOG latest version vs latest git tag
@@ -125,6 +144,45 @@ Use the highest-impact category to determine the recommended version bump.
 | release.yml | [exists?] | Auto-generated notes configured | ? |
 | Badges in README | [list current] | CI + Version + License minimum | ? |
 | Version format | [current] | Semver (MAJOR.MINOR.PATCH) | ? |
+| Package distribution | [registry or "N/A"] | Published to appropriate registry | ? |
+
+#### Package Distribution Assessment
+
+Only include this section when a publishable package type was detected in Gather.
+Skip entirely for projects with no package registry (scripts, skills, docs, configs).
+
+When applicable, assess:
+- **Current state:** Is the package published anywhere? Is GitHub Packages populated?
+- **Appropriate registry:** Where do users of this language/ecosystem expect to find
+  packages? (npm for JS, PyPI for Python, crates.io for Rust, etc.)
+- **Publish workflow:** Is there a CI workflow that auto-publishes on release/tag?
+- **GitHub Packages vs external registry:** GitHub Packages is useful for private/org
+  distribution (private npm, Docker images for internal teams). For public projects,
+  the language's native registry (npm, PyPI, crates.io) should be primary since that's
+  where developers search.
+
+**Distribution strategy by repo type:**
+
+| Repo Type | Primary Registry | GitHub Packages? | Publish Workflow? |
+|-----------|-----------------|-----------------|-------------------|
+| Library/Package | Language-native (npm, PyPI, etc.) | Optional mirror | Recommended |
+| CLI Tool | GitHub Releases (binaries) or language registry | Optional | Recommended |
+| Docker-based | Docker Hub or GHCR | Yes (GHCR) | Recommended |
+| Framework | Language-native registry | Optional mirror | Recommended |
+| Application | GitHub Releases (binaries) or Docker | If containerized | Optional |
+| Skill/Plugin | Git clone + installer | No | No |
+| Internal/Org tool | GitHub Packages (private) | Yes (primary) | Recommended |
+
+**When to recommend GitHub Packages specifically:**
+- Private org repos that need internal package distribution
+- Docker images (GHCR is free and tightly integrated)
+- Monorepos publishing multiple packages under one org
+- When the team already uses GitHub for CI/CD (reduces external dependencies)
+
+**When NOT to recommend GitHub Packages:**
+- Public packages that users expect to find on npm/PyPI/crates.io
+- Projects with no distributable artifact (scripts, configs, skill files)
+- When the project already publishes to the appropriate registry
 
 ### 3. Recommend — The Proposal
 
@@ -142,6 +200,35 @@ Before proposing a release, fix any missing infrastructure silently:
 
 These are file-level changes that don't affect the live repo. Do them, note them
 briefly, then move to the proposal.
+
+#### Step 3a.5: Distribution Strategy (if applicable)
+
+If a publishable package type was detected in Gather, include a distribution
+recommendation as a separate section after the release proposal. This is advisory,
+not blocking. The user can create a release without setting up distribution.
+
+**When to recommend setting up distribution:**
+- Package manifest exists but no publish workflow detected
+- GitHub Packages tab is empty for a project that should publish there
+- The project is a library/package that users would `npm install` or `pip install`
+
+**When to skip distribution entirely:**
+- No package manifest (scripts, skills, configs, documentation)
+- Project is distributed via git clone + installer
+- Package is already published and workflow exists
+
+If recommending distribution, present it as:
+```
+### Distribution Opportunity
+
+Your project has a [package.json / pyproject.toml / etc.] but isn't published
+to [npm / PyPI / etc.]. Publishing would let users install with:
+
+    [npm install / pip install / cargo add] your-package
+
+Want me to generate a publish workflow? This is optional — your release is
+ready either way.
+```
 
 #### Step 3b: The Release Proposal
 

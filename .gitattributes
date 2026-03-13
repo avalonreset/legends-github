@@ -1,0 +1,16 @@
+# .gitattributes - GitHub Linguist overrides for accurate language detection
+#
+# This is a markdown-heavy skills project. Shell and PowerShell install scripts
+# inflate the language bar, hiding the actual content (Markdown skill files).
+
+# Install scripts are documentation/tooling, not the project's primary language
+*.sh linguist-documentation
+*.ps1 linguist-documentation
+install.* linguist-documentation
+
+# Generated/vendored files (excluded from language stats)
+*.min.js linguist-generated
+*.min.css linguist-generated
+dist/** linguist-generated
+vendor/** linguist-vendored
+third_party/** linguist-vendored
