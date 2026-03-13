@@ -15,10 +15,10 @@ When delegated tasks involving live search data:
 
 ## Efficient Tool Usage
 
-- **Batch keyword volume checks** — pass multiple keywords in one call
+- **Batch keyword volume checks** -- pass multiple keywords in one call
 - **Don't re-fetch** data already retrieved in this session
-- **Warn before expensive operations** — bulk competitor analysis uses multiple API calls
-- **Use field filtering** — request only SEO-relevant fields to reduce token usage
+- **Warn before expensive operations** -- bulk competitor analysis uses multiple API calls
+- **Use field filtering** -- request only SEO-relevant fields to reduce token usage
 
 ## Default Parameters
 
@@ -35,4 +35,4 @@ When delegated tasks involving live search data:
 ## Output Format
 
 Format all results as structured markdown tables for easy consumption by other skills.
-Always note the data source: "Source: DataForSEO [endpoint] — [date]"
+Always note the data source: "Source: DataForSEO [endpoint] -- [date]"

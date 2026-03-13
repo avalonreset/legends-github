@@ -1,5 +1,5 @@
 <!-- Updated: 2026-03-08 -->
-# README Framework — Structure, SEO Patterns, and Heading Hierarchy
+# README Framework -- Structure, SEO Patterns, and Heading Hierarchy
 
 ## Overview
 
@@ -12,7 +12,7 @@ engines, AI systems, and humans.
 ### Library/Package
 
 ```markdown
-# Project Name — One-line description with primary keyword
+# Project Name -- One-line description with primary keyword
 
 [![Badge row: CI, coverage, npm/pypi version, license, downloads]]
 
@@ -48,7 +48,7 @@ Brief 2-3 sentence description. What problem does this solve? Primary keyword in
 ### CLI Tool
 
 ```markdown
-# tool-name — One-line description
+# tool-name -- One-line description
 
 [![Badges]]
 
@@ -71,7 +71,7 @@ Brief 2-3 sentence description. What problem does this solve? Primary keyword in
 ### Application / Framework
 
 ```markdown
-# Project Name — One-line description
+# Project Name -- One-line description
 
 [![Badges]]
 
@@ -126,10 +126,10 @@ Brief 2-3 sentence description. What problem does this solve? Primary keyword in
 ## Badge Strategy
 
 ### Essential Badges (in this order)
-1. **CI/Build status** — Signals working code
-2. **Version** — Shows latest release
-3. **License** — Quick legal clarity
-4. **Downloads/installs** — Social proof (if significant)
+1. **CI/Build status** -- Signals working code
+2. **Version** -- Shows latest release
+3. **License** -- Quick legal clarity
+4. **Downloads/installs** -- Social proof (if significant)
 
 ### Optional Badges
 - Code coverage (if high)

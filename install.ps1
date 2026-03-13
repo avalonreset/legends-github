@@ -253,7 +253,7 @@ if (-not (Test-Path $EnvFile)) {
     @"
 # Claude GitHub - API Credentials
 #
-# KIE.ai — AI-generated banner images for READMEs
+# KIE.ai -- AI-generated banner images for READMEs
 # Get your API key: https://kie.ai/api-key
 KIE_API_KEY=
 #

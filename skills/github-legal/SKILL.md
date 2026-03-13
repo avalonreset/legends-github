@@ -11,9 +11,9 @@ description: >
   "legal compliance", or "attribution".
 ---
 
-# GitHub Legal — License, Compliance, and Security Policy
+# GitHub Legal -- License, Compliance, and Security Policy
 
-## Disclaimer — ALWAYS Include in Output
+## Disclaimer -- ALWAYS Include in Output
 
 This tool provides best-effort compliance assistance for common open source licensing
 scenarios on GitHub. **It is NOT legal advice.** The output of this skill does not
@@ -34,17 +34,17 @@ copyleft code, trademark issues), consult a qualified attorney.
 
 ### 1. Gather
 
-**Step 0 — Check shared data cache:**
+**Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
 
-- `repo-context.json` (optional) — repo type, intent, is_fork flag. If missing,
+- `repo-context.json` (optional) -- repo type, intent, is_fork flag. If missing,
   gather yourself via `gh repo view`.
 
 - Read existing LICENSE file (if any)
 - **Fork and upstream detection (two checks):**
   1. GitHub fork flag: `gh repo view --json isFork,parent`
-  2. **Upstream project scan** — even if GitHub says `isFork: false`, scan the
+  2. **Upstream project scan** -- even if GitHub says `isFork: false`, scan the
      README and repo description for upstream signals:
      - "powered by [project]", "built on [project]", "based on [project]"
      - "fork of [project]", "[project] distribution", "[project]-powered"
@@ -84,7 +84,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
   it, so skipping it leaves free points on the table.
 - **Vendored code check:** Do any third_party/vendor directories have their own
   licenses that conflict with the project license?
-- **Edge case flags** — flag these for the user's attention (do not attempt to
+- **Edge case flags** -- flag these for the user's attention (do not attempt to
   resolve them, recommend consulting an attorney):
   - Dual licensing situations
   - CLA (Contributor License Agreement) requirements from upstream
@@ -100,7 +100,7 @@ Every recommendation must cite its source:
 - "Based on your intent (open source community), MIT is recommended for maximum adoption"
 - "Based on upstream license (Apache 2.0), you must maintain the NOTICE file"
 - "Based on dependency analysis, your GPL dependency requires your project to be GPL-compatible"
-- "Upstream project detected: [project] is licensed under [license] — your project
+- "Upstream project detected: [project] is licensed under [license] -- your project
   must comply with those terms"
 
 Reference: Read `~/.claude/skills/github/references/license-guide.md` for compatibility matrix and fork obligations.
@@ -117,7 +117,7 @@ get a lawyer" than to give wrong advice.
 
 ### 4. Execute (with user approval)
 
-**Confirmation gate — STOP and present before writing any files:**
+**Confirmation gate -- STOP and present before writing any files:**
 After completing the Recommend step, present the user with:
 1. A summary table of files that will be created or modified
 2. The specific changes (e.g., "Add modification copyright to LICENSE")
@@ -125,7 +125,7 @@ After completing the Recommend step, present the user with:
 
 Wait for the user to confirm before proceeding. If running inside the
 orchestrator (`/github` or `/github-audit`), skip the confirmation gate
-and proceed — the orchestrator has already obtained user consent.
+and proceed -- the orchestrator has already obtained user consent.
 
 **Author info for CITATION.cff:** Pull the author name from `git config user.name`
 first. If not set, use the GitHub username from `gh api user --jq .name`. If neither
@@ -183,7 +183,7 @@ When the repo is a fork OR has a detected upstream project:
 - [ ] Original copyright notice preserved
 - [ ] Your copyright added below original (format: "Copyright (c) YEAR NAME (modifications)")
 - [ ] NOTICE file preserved (if Apache 2.0)
-- [ ] Changes documented (if required by license — GPL and Apache require this)
+- [ ] Changes documented (if required by license -- GPL and Apache require this)
 - [ ] License compatibility verified with any new dependencies
 - [ ] Upstream relationship acknowledged in README (for non-fork upstream projects)
 - [ ] Your chosen license is compatible with the upstream license (see matrix above)

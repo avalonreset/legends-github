@@ -4,7 +4,7 @@ description: >
   Comprehensive GitHub repository health audit with 0-100 scoring across 6
   categories: README quality, metadata and discovery, legal compliance,
   community health, release and maintenance, SEO and discoverability. Audits
-  GitHub repos only — not websites or web applications. Supports single repo
+  GitHub repos only -- not websites or web applications. Supports single repo
   audit, remote repo audit, and portfolio-level audit across all public repos.
   Spawns 6 parallel agents for scoring. Produces prioritized action items. Use
   when user says "audit", "github audit", "repo audit", "audit my repo",
@@ -12,32 +12,32 @@ description: >
   "audit my github", "portfolio audit", or "score".
 ---
 
-# GitHub Audit — Repository Health Scoring
+# GitHub Audit -- Repository Health Scoring
 
 Primary data-gathering skill. Produces the richest dataset that other skills consume.
 
 ## Modes
 
-- `/github audit` — Audit the repo in the current directory
-- `/github audit <owner/repo>` — Audit a specific remote repo
-- `/github audit <username>` — Audit entire portfolio (all public repos)
+- `/github audit` -- Audit the repo in the current directory
+- `/github audit <owner/repo>` -- Audit a specific remote repo
+- `/github audit <username>` -- Audit entire portfolio (all public repos)
 
 ## Process (GARE Pattern)
 
 ### 1. Gather (Comprehensive Data Collection)
 
-**Step 0 — Check shared data cache:**
+**Step 0 -- Check shared data cache:**
 Before running a full audit, check `.github-audit/audit-data.json`.
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
 
-- If `audit-data.json` exists and is from today: offer the user a choice —
+- If `audit-data.json` exists and is from today: offer the user a choice --
   "Cached audit scores found from earlier today. Reuse them or re-run fresh?"
   If the user says reuse, skip to Step 3 (Recommend) with cached scores.
 - If `repo-context.json` exists: use it for repo type, intent, language instead
   of re-querying `gh repo view`.
 - If cache is stale or user says "re-run" / "refresh": proceed with full gather below.
 
-This step collects ALL data before any analysis. Be thorough — agents cannot
+This step collects ALL data before any analysis. Be thorough -- agents cannot
 make their own API calls, so they depend entirely on the data you provide here.
 
 **For local/specific repo, run ALL of these:**
@@ -52,10 +52,10 @@ gh api repos/{owner}/{repo}/commits --jq '.[0].commit.committer.date' 2>/dev/nul
 # 3. Releases (with titles and dates)
 gh release list --repo {owner}/{repo} --limit 5
 
-# 4. README — read the FULL content, not just check existence
+# 4. README -- read the FULL content, not just check existence
 gh api repos/{owner}/{repo}/readme --jq '.content' | base64 -d
 
-# 5. Community files — check EACH ONE individually
+# 5. Community files -- check EACH ONE individually
 # Root-level files:
 gh api repos/{owner}/{repo}/contents/CONTRIBUTING.md --jq '.name' 2>/dev/null
 gh api repos/{owner}/{repo}/contents/CODE_OF_CONDUCT.md --jq '.name' 2>/dev/null
@@ -105,7 +105,7 @@ gh api repos/{owner}/{repo}/contents/CONTRIBUTING.md --jq '.content' 2>/dev/null
 # 18. PR template content (for community agent quality assessment)
 gh api repos/{owner}/{repo}/contents/.github/PULL_REQUEST_TEMPLATE.md --jq '.content' 2>/dev/null | base64 -d 2>/dev/null
 
-# 19. LICENSE file content — first 20 lines (for legal agent copyright verification)
+# 19. LICENSE file content -- first 20 lines (for legal agent copyright verification)
 gh api repos/{owner}/{repo}/contents/LICENSE --jq '.content' 2>/dev/null | base64 -d 2>/dev/null | head -20
 # Fallback: try LICENSE.md if LICENSE not found
 gh api repos/{owner}/{repo}/contents/LICENSE.md --jq '.content' 2>/dev/null | base64 -d 2>/dev/null | head -20
@@ -126,21 +126,21 @@ Bash tool calls in a single message. Group them logically:
 
 **For portfolio audit:**
 ```bash
-# Use repositoryTopics (not topics) — topics field does not exist
+# Use repositoryTopics (not topics) -- topics field does not exist
 gh repo list {username} --visibility public --limit 500 \
   --json name,description,repositoryTopics,stargazerCount,forkCount,primaryLanguage,updatedAt,licenseInfo,isArchived,isFork,homepageUrl,url,hasIssuesEnabled,hasDiscussionsEnabled,isSecurityPolicyEnabled,pushedAt,latestRelease
 ```
 
-**Important:** Save ALL gathered data — you will pass it to agents in Step 2.
+**Important:** Save ALL gathered data -- you will pass it to agents in Step 2.
 
 ### 2. Analyze (Spawn 6 Parallel Scoring Agents)
 
 **You MUST use the Agent tool to spawn all 6 agents in parallel.** Do NOT score
-categories yourself inline — the agents have detailed point-by-point rubrics and
+categories yourself inline -- the agents have detailed point-by-point rubrics and
 load reference files for deep domain analysis.
 
 Launch all 6 agents in a **single message** (6 parallel Agent tool calls).
-Each agent has its own rubric, scoring criteria, and reference file — you just
+Each agent has its own rubric, scoring criteria, and reference file -- you just
 need to pass the gathered data.
 
 | subagent_type | Category | Weight |
@@ -152,7 +152,7 @@ need to pass the gathered data.
 | `github-release` | Release & Maintenance | 15% |
 | `github-seo` | SEO & Discoverability | 10% |
 
-**Agent invocation — use this exact pattern for EACH of the 6 agents:**
+**Agent invocation -- use this exact pattern for EACH of the 6 agents:**
 
 ```
 Agent tool call:
@@ -165,13 +165,13 @@ Agent tool call:
 
 ```
 Score this GitHub repository. Use your rubric and load your reference file.
-All data is provided below — do NOT attempt to fetch anything yourself.
+All data is provided below -- do NOT attempt to fetch anything yourself.
 
 Repository: {owner}/{repo}
 Description: {description}
 Topics: {topics list}
 Primary Language: {language}
-License: {license key} — recognized by GitHub: {yes/no}
+License: {license key} -- recognized by GitHub: {yes/no}
 Stars: {count} | Forks: {count}
 Is Fork: {yes/no} | Parent: {parent if fork}
 Homepage URL: {url or "not set"}
@@ -182,7 +182,7 @@ Is Archived: {yes/no}
 Created: {date} | Last Push: {date} | Last Commit: {date}
 
 Releases:
-{list of recent releases with version, title, date — or "none"}
+{list of recent releases with version, title, date -- or "none"}
 
 Community Files Found: {list of all files confirmed to exist}
 Community Files Missing: {list of all files confirmed NOT to exist}
@@ -236,11 +236,11 @@ Image Files (assets/):
   Even if the README is 500+ lines, pass it in full. Summarizing causes agents to
   score stub content and produces artificially low scores.
 - Pass the FULL README content to every agent (especially readme, seo, meta)
-- Use `subagent_type` — do NOT use general-purpose agents
+- Use `subagent_type` -- do NOT use general-purpose agents
 - All 6 agents in ONE message (parallel, not sequential)
 - Each agent loads its own reference file and applies its own rubric
 - Each agent returns: score (0-100), point breakdown table, findings, prioritized issues
-- Agents do NOT have Bash access — they CANNOT fetch data themselves
+- Agents do NOT have Bash access -- they CANNOT fetch data themselves
 
 ### 2b. Write to Shared Data Cache
 
@@ -275,10 +275,10 @@ complete before proceeding to this step. NEVER use estimated scores.
 | 0-24 | Critical | Repo appears abandoned or unprofessional |
 
 **Priority ranking of action items:**
-- **Critical** — Legal risk or completely missing essentials (no license, no README)
-- **High** — Significant impact on discoverability (empty description, zero topics)
-- **Medium** — Optimization opportunity (README could be better structured)
-- **Low** — Nice to have (add more badges, tweak topic selection)
+- **Critical** -- Legal risk or completely missing essentials (no license, no README)
+- **High** -- Significant impact on discoverability (empty description, zero topics)
+- **Medium** -- Optimization opportunity (README could be better structured)
+- **Low** -- Nice to have (add more badges, tweak topic selection)
 
 ### 4. Execute (Guided Remediation)
 
@@ -359,9 +359,9 @@ For `/github audit <username>`:
 After fetching the repo list, **immediately exclude** repos that aren't worth
 auditing. These get listed in a "Skipped" section but consume zero tokens:
 
-- **Archived repos** — frozen, not actionable
-- **Bare forks with zero commits ahead** — just a mirror, nothing to optimize
-- **Repos with no description AND no README AND last push > 2 years ago** — dead repos
+- **Archived repos** -- frozen, not actionable
+- **Bare forks with zero commits ahead** -- just a mirror, nothing to optimize
+- **Repos with no description AND no README AND last push > 2 years ago** -- dead repos
 
 Report how many were filtered:
 ```
@@ -374,7 +374,7 @@ Filtered out {F} repos (archived, bare forks, abandoned).
 
 Gather metadata for ALL active repos via `gh repo list`. For each repo, do a
 lightweight inline score based on metadata alone (description, topics, license,
-releases, last push date). This produces a rough ranking. Quick-scan is cheap —
+releases, last push date). This produces a rough ranking. Quick-scan is cheap --
 it uses only the data from the single `gh repo list` call.
 
 ### Step 2: Select Deep Dives
@@ -391,9 +391,9 @@ Pick which repos get the full 6-agent treatment:
 **Hard cap: Never deep-dive more than 12 repos** (= 72 agents max).
 
 **Prioritize wisely for deep dives:**
-- "Top" = highest quick-scan score (these are your showcase repos — worth polishing)
+- "Top" = highest quick-scan score (these are your showcase repos -- worth polishing)
 - "Worst" = lowest quick-scan score AMONG repos that are still worth saving
-  (skip repos with zero stars, zero forks, and last push > 1 year ago —
+  (skip repos with zero stars, zero forks, and last push > 1 year ago --
   they're probably experiments the user forgot about)
 - "Highest-starred" = repos with the most community visibility (most to gain)
 
@@ -404,11 +404,11 @@ Before spawning any agents, show the plan:
 Portfolio: {username} ({N-F} active repos, {F} skipped)
 
 Deep-diving {M} repos (6 agents each = {M*6} total):
-  - repo-a (stars: 42, quick score: 78) — top repo
-  - repo-b (stars: 15, quick score: 71) — top repo
-  - repo-c (stars: 8, quick score: 65) — top repo
-  - repo-d (stars: 0, quick score: 22) — needs work
-  - repo-e (stars: 1, quick score: 18) — needs work
+  - repo-a (stars: 42, quick score: 78) -- top repo
+  - repo-b (stars: 15, quick score: 71) -- top repo
+  - repo-c (stars: 8, quick score: 65) -- top repo
+  - repo-d (stars: 0, quick score: 22) -- needs work
+  - repo-e (stars: 1, quick score: 18) -- needs work
   ...
 
 Remaining {N-F-M} repos get quick-scan estimated scores.
@@ -462,7 +462,7 @@ For each selected repo:
 - [item with specific fix]
 
 ### Quick Fixes (run these commands)
-- `/github readme` — [specific issue to fix]
-- `/github meta` — [specific issue to fix]
-- `/github legal` — [specific issue to fix]
+- `/github readme` -- [specific issue to fix]
+- `/github meta` -- [specific issue to fix]
+- `/github legal` -- [specific issue to fix]
 ```

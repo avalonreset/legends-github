@@ -5,14 +5,14 @@ description: >
   Analyzes what Google indexes on GitHub, identifies target keywords for repo
   descriptions and README content, optimizes topics and tags for GitHub Explore
   and Google search, provides GEO optimization for AI citability by ChatGPT,
-  Perplexity, and AI Overviews. For GitHub repo SEO only — not website or blog
+  Perplexity, and AI Overviews. For GitHub repo SEO only -- not website or blog
   SEO. Data-producing skill consumed by github-readme and github-meta. Use when
   user says "seo", "github seo", "keywords", "keyword research", "optimize for
   search", "discoverability", "ranking", "github ranking", "seo strategy",
   "ai citability", "geo", or "search optimization".
 ---
 
-# GitHub SEO — Keyword Research and Content Optimization
+# GitHub SEO -- Keyword Research and Content Optimization
 
 This is a **data-producing skill**. Its output is consumed by github-readme (for content
 optimization) and github-meta (for description and topic selection). It can also run
@@ -27,10 +27,10 @@ GitHub repos are NOT traditional websites. You cannot:
 - Control URL structure (github.com/{owner}/{repo} is fixed)
 
 **What you CAN control:**
-- README content (H1, headings, paragraphs, keywords) — this IS the SEO page
+- README content (H1, headings, paragraphs, keywords) -- this IS the SEO page
 - Repo description (350 chars, becomes OG description on social shares)
 - Topics/tags (feed GitHub Explore and internal search)
-- GitHub Pages site (if applicable — full SEO control there)
+- GitHub Pages site (if applicable -- full SEO control there)
 
 **What DataForSEO does here:** It answers the question "what should I write in my
 README, description, and topics so that people find this repo when they Google?"
@@ -49,11 +49,11 @@ Not all keywords are worth targeting. A keyword is only valuable for GitHub if:
 
 | Category | Volume | Difficulty | GitHub in SERP? | Action |
 |----------|--------|------------|----------------|--------|
-| **Sweet Spot** | 100-5,000/mo | Under 40 | Yes, repos in top 20 | TARGET THESE FIRST — H1, description, first paragraph |
+| **Sweet Spot** | 100-5,000/mo | Under 40 | Yes, repos in top 20 | TARGET THESE FIRST -- H1, description, first paragraph |
 | **Worth It** | 1,000-10,000/mo | 40-60 | Yes, repos in top 20 | Target in H2 headings and body content |
 | **Long Shot** | 10,000+/mo | 60+ | Sometimes | Use variations; may rank over time with stars |
-| **Skip** | Any | Any | No GitHub repos rank | Don't waste effort — Google doesn't serve repos for this |
-| **Low Value** | Under 50/mo | Any | Any | Usually not enough traffic — but see Niche Exception below |
+| **Skip** | Any | Any | No GitHub repos rank | Don't waste effort -- Google doesn't serve repos for this |
+| **Low Value** | Under 50/mo | Any | Any | Usually not enough traffic -- but see Niche Exception below |
 
 **Niche Exception:** For ultra-niche repos where the ENTIRE addressable search space
 is low volume (e.g., "knife design software" at 40/mo for a parametric knife CAD tool),
@@ -107,7 +107,7 @@ The rest are for traditional website SEO (backlinks, on-page, tech stack, etc.).
 | Tool | What It Tells Us | Notes |
 |------|-----------------|-------|
 | `dataforseo_labs_google_keyword_suggestions` | Keyword ideas + volume + difficulty + intent | One call per seed. Returns everything inline. |
-| `serp_organic_live_advanced` | What ranks for a query right now | **MOST IMPORTANT** — verify GitHub repos can rank. Also returns AI Overview data. |
+| `serp_organic_live_advanced` | What ranks for a query right now | **MOST IMPORTANT** -- verify GitHub repos can rank. Also returns AI Overview data. |
 
 **Secondary tools (only when inline data is missing):**
 
@@ -116,10 +116,10 @@ The rest are for traditional website SEO (backlinks, on-page, tech stack, etc.).
 | `kw_data_google_ads_search_volume` | Exact monthly search volume | Only if suggestions data is missing volume |
 | `dataforseo_labs_bulk_keyword_difficulty` | Competition score 0-100 | Only if suggestions data is missing difficulty |
 | `dataforseo_labs_search_intent` | Informational/commercial/etc. | Only if suggestions data is missing intent |
-| `content_analysis_phrase_trends` | Is this topic trending? | Optional — validate growing vs dying niche |
-| `kw_data_google_trends_explore` | Google Trends data | Optional — trend confirmation |
+| `content_analysis_phrase_trends` | Is this topic trending? | Optional -- validate growing vs dying niche |
+| `kw_data_google_trends_explore` | Google Trends data | Optional -- trend confirmation |
 
-**Optional advanced tools (NOT used by default — only when user requests deep analysis):**
+**Optional advanced tools (NOT used by default -- only when user requests deep analysis):**
 
 | Tool | What It Tells Us | When to Use |
 |------|-----------------|-------------|
@@ -128,12 +128,12 @@ The rest are for traditional website SEO (backlinks, on-page, tech stack, etc.).
 | `ai_opt_llm_ment_search` | LLM mentions across platforms | Cross-platform AI visibility (ChatGPT, Perplexity, etc.) |
 
 **DO NOT USE these tools (not relevant for GitHub):**
-- Backlink tools (`backlinks_*`) — you can't build links to a README
-- On-page tools (`on_page_*`) — GitHub controls page rendering
-- Technology detection (`domain_analytics_technologies_*`) — irrelevant
-- WHOIS (`domain_analytics_whois_*`) — irrelevant
-- Business listings (`business_data_*`) — irrelevant
-- YouTube tools — rarely relevant for repo optimization
+- Backlink tools (`backlinks_*`) -- you can't build links to a README
+- On-page tools (`on_page_*`) -- GitHub controls page rendering
+- Technology detection (`domain_analytics_technologies_*`) -- irrelevant
+- WHOIS (`domain_analytics_whois_*`) -- irrelevant
+- Business listings (`business_data_*`) -- irrelevant
+- YouTube tools -- rarely relevant for repo optimization
 
 ### Cost Per Analysis
 
@@ -144,40 +144,40 @@ The rest are for traditional website SEO (backlinks, on-page, tech stack, etc.).
 | **Total per repo** | **~0.10-0.15** | |
 
 Warn user before portfolio-wide analysis (multiply by repo count).
-Most users are on the free tier (includes credit balance) — keep costs low.
+Most users are on the free tier (includes credit balance) -- keep costs low.
 
 ## Process (GARE Pattern)
 
 ### 1. Gather
 
-**Step 0 — Check shared data cache:**
+**Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
 
-- `repo-context.json` (optional) — if present, use repo type, intent, language, metadata
+- `repo-context.json` (optional) -- if present, use repo type, intent, language, metadata
   instead of re-querying `gh repo view`. If missing, gather yourself in Step 1a.
 
-**Step 1a — Project context (always, free):**
+**Step 1a -- Project context (always, free):**
 - Read repo metadata: `gh repo view --json name,description,repositoryTopics,primaryLanguage,stargazerCount`
 - Read existing README.md (extract current headings, keywords, structure)
 - Scan codebase for project purpose (package.json description, setup.py long_description, etc.)
 - Get user intent and repo type from orchestrator context
 
-**Step 1b — Seed keyword generation (always, free):**
+**Step 1b -- Seed keyword generation (always, free):**
 Generate 2-3 seed keyword phrases. Each seed becomes a separate DataForSEO call,
 so fewer seeds = lower cost.
 
 Seed patterns (pick the 2-3 most relevant):
-- `[language] [what it does]` — e.g., "python web framework"
-- `[specific capability]` — e.g., "lightweight WSGI server"
-- `[problem it solves]` — e.g., "build REST APIs python"
-- `[category] [type]` — e.g., "python microframework"
-- `[upstream project] [modifier]` — e.g., "wezterm config" (for forks/distros)
+- `[language] [what it does]` -- e.g., "python web framework"
+- `[specific capability]` -- e.g., "lightweight WSGI server"
+- `[problem it solves]` -- e.g., "build REST APIs python"
+- `[category] [type]` -- e.g., "python microframework"
+- `[upstream project] [modifier]` -- e.g., "wezterm config" (for forks/distros)
 
 Avoid seeds that are ambiguous across domains (e.g., "hacker terminal" could
-mean gaming, novelty apps, or actual developer tools — too noisy).
+mean gaming, novelty apps, or actual developer tools -- too noisy).
 
-**Step 1c — DataForSEO keyword discovery:**
+**Step 1c -- DataForSEO keyword discovery:**
 
 First, check if the DataForSEO MCP server is available by searching for
 `dataforseo_labs_google_keyword_suggestions` via ToolSearch.
@@ -186,7 +186,7 @@ First, check if the DataForSEO MCP server is available by searching for
 
 ```
 DataForSEO is not configured. Without it, SEO analysis is limited to
-codebase analysis and GitHub search — no real keyword volume, difficulty
+codebase analysis and GitHub search -- no real keyword volume, difficulty
 scores, or SERP position data.
 
 Setting it up takes about 5 minutes:
@@ -208,10 +208,10 @@ say skip/continue/later, proceed to Step 1d (fallback analysis).
 
 The keyword suggestions tool returns volume, difficulty, AND intent inline with
 each result. This means you do NOT need separate volume/difficulty/intent calls
-in most cases — one call per seed gives you everything.
+in most cases -- one call per seed gives you everything.
 
 ```
-1. KEYWORD EXPANSION (one call per seed — run seeds in parallel)
+1. KEYWORD EXPANSION (one call per seed -- run seeds in parallel)
    Call: dataforseo_labs_google_keyword_suggestions
    Params: { "keyword": "single seed phrase", "language_code": "en",
              "location_name": "United States", "limit": 30 }
@@ -222,7 +222,7 @@ in most cases — one call per seed gives you everything.
      - search_intent_info.main_intent (informational/commercial/etc.)
    Cost: ~0.05 per call
 
-2. RELEVANCE FILTER — Discard noise before scoring
+2. RELEVANCE FILTER -- Discard noise before scoring
    After collecting all candidates from all seeds, FILTER OUT:
    - Keywords about different products/domains (e.g., gaming results for
      a developer tool, Fallout "terminal hacker" for a terminal emulator)
@@ -230,9 +230,9 @@ in most cases — one call per seed gives you everything.
    - Keywords where the project has zero semantic connection
    Keep only keywords that someone searching would plausibly want THIS project.
 
-3. SERP VIABILITY CHECK — THE MOST IMPORTANT CALL
+3. SERP VIABILITY CHECK -- THE MOST IMPORTANT CALL
 
-   TARGETING LOGIC — DO NOT just check the highest-volume keyword. Pick the
+   TARGETING LOGIC -- DO NOT just check the highest-volume keyword. Pick the
    keyword most likely to be a real opportunity for THIS repo:
    - Prefer keywords where the project has a genuine competitive angle
    - Prefer informational intent over navigational/commercial
@@ -262,9 +262,9 @@ in most cases — one call per seed gives you everything.
    EXTRACT FROM EVERY SERP RESPONSE:
    a) GitHub viability (github.com URLs in results)
    b) AI Overview presence and content (free AI visibility intel)
-   c) People Also Ask questions — these are FAQ section goldmines for README
-   d) "People also search for" terms — free keyword ideas from Google itself
-   e) Discussion/forum presence (Reddit, HN) — signals community interest
+   c) People Also Ask questions -- these are FAQ section goldmines for README
+   d) "People also search for" terms -- free keyword ideas from Google itself
+   e) Discussion/forum presence (Reddit, HN) -- signals community interest
 ```
 
 **When inline data is missing:** If keyword_suggestions results are missing
@@ -278,7 +278,7 @@ These are fallbacks, not standard steps.
 Reference: Read `~/.claude/skills/github/references/github-seo-guide.md` for
 ranking factors and indexing rules.
 
-**With DataForSEO data — apply the Opportunity Framework:**
+**With DataForSEO data -- apply the Opportunity Framework:**
 
 1. Calculate Opportunity Score for each keyword candidate
 2. Sort by score descending
@@ -286,7 +286,7 @@ ranking factors and indexing rules.
 4. **CRITICAL: Only assign GitHub Viability scores based on actual SERP data.**
    - If you ran a SERP check for this keyword → use the real result
    - If you did NOT run a SERP check → mark as "Unverified" in the table
-   - NEVER write "likely" or "probably" for GitHub Viability — it's either
+   - NEVER write "likely" or "probably" for GitHub Viability -- it's either
      verified by SERP data or it's unknown. Unverified keywords get scored
      with GitHub Viability = 0.5 (uncertain) and flagged as needing verification.
    - **SERP cluster rule:** Keywords that are minor variations of each other share
@@ -300,8 +300,8 @@ ranking factors and indexing rules.
    - **Primary keyword**: highest-scoring Sweet Spot keyword (goes in H1, description, first paragraph)
    - **Secondary keywords**: next 3-5 Sweet Spot or Worth It keywords (go in H2 headings)
    - **Topic keywords**: all remaining viable keywords mapped to GitHub topic format
-6. Check current README/description — how many of these keywords are already present?
-7. Assess AI citability — is the project mentioned by LLMs? What competitors are mentioned instead?
+6. Check current README/description -- how many of these keywords are already present?
+7. Assess AI citability -- is the project mentioned by LLMs? What competitors are mentioned instead?
 
 **Process SERP intelligence beyond just GitHub viability:**
 
@@ -311,12 +311,12 @@ ranking factors and indexing rules.
 9. **People Also Search terms** → Include as "Google-suggested related keywords."
    These are free keyword ideas straight from Google's own data.
 10. **Discussion/forum presence** → Note which forums (Reddit, HN, etc.) appear.
-    If Reddit ranks for the keyword, it means community discussion drives traffic —
+    If Reddit ranks for the keyword, it means community discussion drives traffic --
     the repo should be mentioned/linked in those communities.
 11. **AI Overview content** → Note what the AI Overview says and which projects
     it mentions. This directly informs GEO recommendations.
 
-**Without DataForSEO data (degraded mode — strongly discourage):**
+**Without DataForSEO data (degraded mode -- strongly discourage):**
 
 DataForSEO IS the skill. Without it, you have no volume data, no difficulty scores,
 no SERP verification, no AI visibility checks. You're guessing. Tell the user:
@@ -329,7 +329,7 @@ Fallback (best-effort only):
 3. Patterns from github-seo-guide.md reference file
 4. Prioritize specificity > breadth since you can't measure volume
 
-Mark every recommendation as "UNVERIFIED — no DataForSEO data" in the report.
+Mark every recommendation as "UNVERIFIED -- no DataForSEO data" in the report.
 
 ### 3. Recommend
 
@@ -357,7 +357,7 @@ skills (readme, meta) consume.
 | [term] | 3,200 | 55 | Info | Unverified (0.5) | 880 | Needs SERP check |
 
 NOTE: "VERIFIED" = we ran a SERP check and know the answer. "Unverified" = we
-used 0.5 as a placeholder. Never write "likely" or "probably" — it's data or
+used 0.5 as a placeholder. Never write "likely" or "probably" -- it's data or
 it's unknown.
 
 ### Primary Keyword: "[term]"
@@ -367,9 +367,9 @@ it's unknown.
 - Placement: H1 tagline, first paragraph, repo description
 
 ### Secondary Keywords (for H2 headings):
-1. "[term]" — X/mo, difficulty Y → H2: "Installation"→ "[term] Installation"
-2. "[term]" — X/mo, difficulty Y → H2: "Features"
-3. "[term]" — X/mo, difficulty Y → H2: "Usage"
+1. "[term]" -- X/mo, difficulty Y → H2: "Installation"→ "[term] Installation"
+2. "[term]" -- X/mo, difficulty Y → H2: "Features"
+3. "[term]" -- X/mo, difficulty Y → H2: "Usage"
 
 ### Recommended Topics (for GitHub):
 [list of 10-20 topics derived from keyword data, formatted as lowercase-hyphenated]
@@ -384,7 +384,7 @@ it's unknown.
 - Recommendation: [what to add to README for better AI citability]
 
 ### Competitor Keywords:
-- [competitor repo]: ranks for [keywords] — we should target [overlapping terms]
+- [competitor repo]: ranks for [keywords] -- we should target [overlapping terms]
 
 ### FAQ Opportunities (from People Also Ask):
 Google confirms these questions are asked about this topic. Each is a potential
@@ -396,7 +396,7 @@ README section or FAQ entry:
 ### Google-Suggested Related Keywords (from People Also Search):
 Free keyword ideas direct from Google's own data:
 - [term 1], [term 2], [term 3], ...
-[These supplement DataForSEO suggestions — may reveal keywords we missed]
+[These supplement DataForSEO suggestions -- may reveal keywords we missed]
 
 ### Community Signals (from SERP forums/discussions):
 - Reddit threads ranking: [URLs and subreddits]
@@ -408,7 +408,7 @@ Free keyword ideas direct from Google's own data:
 **Without DataForSEO data (degraded mode):**
 
 Same structure but prefix report with a prominent warning:
-"⚠ DEGRADED MODE — No DataForSEO data. All recommendations are unverified guesses.
+"⚠ DEGRADED MODE -- No DataForSEO data. All recommendations are unverified guesses.
 Install DataForSEO for real keyword data: extensions/dataforseo/install.ps1"
 
 Use qualitative assessments ("High relevance based on codebase analysis") but mark
@@ -428,7 +428,7 @@ recommended_topics, paa_questions, ai_visibility, serp_verified flag,
 github_in_serp flag, github_serp_position.
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact schema.
 
-SEO skill primarily produces recommendations — execution happens in other skills:
+SEO skill primarily produces recommendations -- execution happens in other skills:
 - github-readme applies keyword recommendations to README content
 - github-meta applies topic and description recommendations to GitHub settings
 - If running standalone, present the strategy report for the user to act on

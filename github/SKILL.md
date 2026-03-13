@@ -4,7 +4,7 @@ description: >
   Comprehensive GitHub repository optimization suite. Orchestrates 8 sub-skills
   and 6 scoring agents to audit, optimize, and professionalize GitHub repos.
   Covers README quality, legal compliance, metadata, SEO, community health,
-  releases, and portfolio strategy. Data-first approach — every recommendation
+  releases, and portfolio strategy. Data-first approach -- every recommendation
   cites its source. Does NOT handle GitHub Actions, CI/CD pipelines, git
   commands, or deployment. Use when user says "github", "optimize repo",
   "github setup", "optimize my github", "github help", "professionalize my
@@ -17,7 +17,7 @@ allowed-tools:
   - WebFetch
 ---
 
-# GitHub — Repository Optimization Suite
+# GitHub -- Repository Optimization Suite
 
 Comprehensive GitHub optimization across SEO, legal, community, and discoverability.
 Orchestrates 8 specialized sub-skills and 6 subagents. Data-first: every recommendation
@@ -56,14 +56,14 @@ Two recommended services power SEO research and banner generation. The install
 script walks users through setting both up during installation. If they skipped
 setup, Step 0 below will catch it and guide them before any skill runs.
 
-**1. DataForSEO (MCP server — NOT .env)**
+**1. DataForSEO (MCP server -- NOT .env)**
 DataForSEO provides live keyword and SERP data. It runs as an MCP server
 (`dataforseo-mcp-server`) configured via `~/.claude/settings.json`.
 The install script handles this automatically. When configured, tools like
 `dataforseo_labs_google_keyword_suggestions` are available directly in conversation.
 If the MCP server is not configured, SEO skills fall back to codebase analysis.
 
-**2. KIE.ai (REST API — uses .env)**
+**2. KIE.ai (REST API -- uses .env)**
 KIE.ai generates banner images for READMEs. It requires an API key in a `.env` file.
 
 **Standard .env location:** Check these paths in order:
@@ -97,7 +97,7 @@ Reference: Read `~/.claude/skills/github/references/shared-data-cache.md` for
 JSON schemas, dependency map, and freshness rules.
 
 **Orchestrator responsibilities:** Cache writes are embedded directly in Step 2
-and Step 3.5 below — look for the **CACHE:** callouts in each step.
+and Step 3.5 below -- look for the **CACHE:** callouts in each step.
 
 ## Orchestration Logic
 
@@ -107,10 +107,10 @@ Before routing to any sub-skill, check if the user has the recommended services
 configured. This runs the FIRST time any `/github` command is used in a session.
 After showing the setup status once, do not repeat it.
 
-**Check 1 — DataForSEO MCP:**
+**Check 1 -- DataForSEO MCP:**
 Use ToolSearch to look for `dataforseo_labs_google_keyword_suggestions`.
 
-**Check 2 — KIE.ai API Key:**
+**Check 2 -- KIE.ai API Key:**
 ```bash
 for envfile in ./.env ~/.claude/skills/github/.env ~/.env; do
   if [ -f "$envfile" ] && grep -q 'KIE_API_KEY=.' "$envfile" 2>/dev/null; then
@@ -122,7 +122,7 @@ done
 
 **If BOTH are configured:** Show a one-liner and move on:
 ```
-Services: DataForSEO [active] | KIE.ai [active] — full power mode.
+Services: DataForSEO [active] | KIE.ai [active] -- full power mode.
 ```
 
 **If one or both are missing, STOP and show the setup guide:**
@@ -131,8 +131,8 @@ Services: DataForSEO [active] | KIE.ai [active] — full power mode.
 
 This suite works best with two recommended services. Here's your status:
 
-DataForSEO  [not configured]  — powers live keyword research, SERP rankings, and AI visibility
-KIE.ai      [not configured]  — powers AI-generated banner images for READMEs
+DataForSEO  [not configured]  -- powers live keyword research, SERP rankings, and AI visibility
+KIE.ai      [not configured]  -- powers AI-generated banner images for READMEs
 
 ### How to set up DataForSEO (5 minutes)
 
@@ -214,7 +214,7 @@ Do NOT waste an API call just to test availability.
 seo, empire). Skip for legal, community, releases (they don't need keyword data).
 
 **Important context:** GitHub repos are NOT traditional websites. We don't scan
-a domain — we discover what keywords people Google where a well-optimized GitHub
+a domain -- we discover what keywords people Google where a well-optimized GitHub
 repo could rank, then place those keywords in the README, description, and topics.
 See the github-seo skill for the full Keyword Opportunity Framework.
 
@@ -242,13 +242,13 @@ Then run the install script in extensions/dataforseo/."
 
 ---
 
-`keyword_suggestions` returns volume + difficulty + intent INLINE — no separate
+`keyword_suggestions` returns volume + difficulty + intent INLINE -- no separate
 volume or difficulty calls needed.
 
 ```
 1. Generate 2-3 seed phrases from: repo name + description + primary language
 
-   SEED QUALITY RULES (critical — bad seeds waste API calls):
+   SEED QUALITY RULES (critical -- bad seeds waste API calls):
    - Keep seeds SHORT: 2-3 words max. "seo audit tool" not "gemini cli seo audit tool"
    - Use CATEGORY-LEVEL terms, not project-specific jargon
    - Think: "what would a developer Google to find this kind of project?"
@@ -342,10 +342,10 @@ directly to that sub-skill.
 ## The GARE Pattern
 
 Every skill follows Gather, Analyze, Recommend, Execute:
-1. **Gather** — Collect data before making decisions
-2. **Analyze** — Compare current state vs. ideal for repo type + intent
-3. **Recommend** — Present data-backed recommendations with reasoning
-4. **Execute** — Apply changes with user approval
+1. **Gather** -- Collect data before making decisions
+2. **Analyze** -- Compare current state vs. ideal for repo type + intent
+3. **Recommend** -- Present data-backed recommendations with reasoning
+4. **Execute** -- Apply changes with user approval
 
 Every recommendation must cite its source:
 - "Based on DataForSEO keyword volume..." (live data)
@@ -379,21 +379,21 @@ renders it natively. See `banner-generation.md` Image Format Pipeline for detail
 
 ## Reference Files
 
-Load on-demand as needed — do NOT load all at startup.
+Load on-demand as needed -- do NOT load all at startup.
 
 **Path resolution:** Reference files are installed at `~/.claude/skills/github/references/`.
 When a sub-skill says `Read github/references/foo.md`, use the Read tool with the full path:
 `~/.claude/skills/github/references/foo.md`
 
-- `references/license-guide.md` — License types, compatibility, fork obligations
-- `references/readme-framework.md` — README structure, SEO patterns, headings
-- `references/github-seo-guide.md` — GitHub ranking factors, Google indexing rules
-- `references/community-files-guide.md` — Standard files, best practices, priority by intent
-- `references/community-templates.md` — YAML issue forms, PR template, devcontainer, dependabot
-- `references/banner-generation.md` — KIE.ai Nano Banana 2 API, prompt engineering, defaults
-- `references/releases-guide.md` — Semver, changelog format, badge URLs
-- `references/repo-type-templates.md` — Per-type defaults for all repo types
-- `references/shared-data-cache.md` — Cross-skill data persistence schemas and rules
+- `references/license-guide.md` -- License types, compatibility, fork obligations
+- `references/readme-framework.md` -- README structure, SEO patterns, headings
+- `references/github-seo-guide.md` -- GitHub ranking factors, Google indexing rules
+- `references/community-files-guide.md` -- Standard files, best practices, priority by intent
+- `references/community-templates.md` -- YAML issue forms, PR template, devcontainer, dependabot
+- `references/banner-generation.md` -- KIE.ai Nano Banana 2 API, prompt engineering, defaults
+- `references/releases-guide.md` -- Semver, changelog format, badge URLs
+- `references/repo-type-templates.md` -- Per-type defaults for all repo types
+- `references/shared-data-cache.md` -- Cross-skill data persistence schemas and rules
 
 ## Scoring Methodology
 
@@ -416,21 +416,21 @@ When a sub-skill says `Read github/references/foo.md`, use the Read tool with th
 
 ## Sub-Skills
 
-1. **github-audit** — Full repo health audit with 0-100 scoring
-2. **github-readme** — README generation and optimization
-3. **github-legal** — License, attribution, SECURITY.md, CITATION.cff
-4. **github-meta** — Description, topics, settings, social preview
-5. **github-seo** — Keyword research and content optimization
-6. **github-community** — Community health files and templates
-7. **github-release** — Release strategy, CHANGELOG, badges
-8. **github-empire** — Portfolio strategy, profile README, org profile
+1. **github-audit** -- Full repo health audit with 0-100 scoring
+2. **github-readme** -- README generation and optimization
+3. **github-legal** -- License, attribution, SECURITY.md, CITATION.cff
+4. **github-meta** -- Description, topics, settings, social preview
+5. **github-seo** -- Keyword research and content optimization
+6. **github-community** -- Community health files and templates
+7. **github-release** -- Release strategy, CHANGELOG, badges
+8. **github-empire** -- Portfolio strategy, profile README, org profile
 
 ## Subagents
 
 For parallel analysis during audits:
-- `github-readme` — README quality scoring
-- `github-meta` — Metadata and discovery scoring
-- `github-legal` — Legal compliance scoring
-- `github-community` — Community health scoring
-- `github-release` — Release and maintenance scoring
-- `github-seo` — SEO and discoverability scoring
+- `github-readme` -- README quality scoring
+- `github-meta` -- Metadata and discovery scoring
+- `github-legal` -- Legal compliance scoring
+- `github-community` -- Community health scoring
+- `github-release` -- Release and maintenance scoring
+- `github-seo` -- SEO and discoverability scoring

@@ -1,5 +1,5 @@
 <!-- Updated: 2026-03-08 -->
-# License Guide — Types, Compatibility, and Fork Obligations
+# License Guide -- Types, Compatibility, and Fork Obligations
 
 ## Overview
 
@@ -56,11 +56,11 @@ are only compatible with the same or stronger copyleft.
 
 When forking a project, you MUST:
 
-1. **Keep the original license** — You cannot relicense unless the original allows it
-2. **Preserve copyright notices** — Original author's copyright stays in LICENSE and file headers
-3. **Maintain NOTICE file** — If Apache 2.0, copy and preserve the NOTICE file
-4. **Add your own copyright** — Add your copyright line below the original
-5. **Document changes** — Some licenses (Apache, GPL) require documenting modifications
+1. **Keep the original license** -- You cannot relicense unless the original allows it
+2. **Preserve copyright notices** -- Original author's copyright stays in LICENSE and file headers
+3. **Maintain NOTICE file** -- If Apache 2.0, copy and preserve the NOTICE file
+4. **Add your own copyright** -- Add your copyright line below the original
+5. **Document changes** -- Some licenses (Apache, GPL) require documenting modifications
 
 ### Fork License File Template
 
@@ -129,14 +129,14 @@ MPL-2.0, BSD-2-Clause, BSD-3-Clause, ISC, Unlicense, CC0-1.0, CC-BY-4.0, BSL-1.1
 | Documentation / data | CC BY 4.0 or CC0 | Creative Commons for non-code |
 | Source-available commercial | BSL 1.1 | Visible but restricted; converts to open later |
 
-## Edge Cases — Flag for Human Review
+## Edge Cases -- Flag for Human Review
 
 These situations are too nuanced for automated analysis:
-- **Dual licensing** (e.g., MIT OR Apache-2.0) — valid but users must understand implications
-- **CLA requirements** — some upstream projects require contributor agreements
-- **Trademark usage** — using a project's name in your project name (e.g., "XTerm" in name)
-- **Patent implications** — especially with Apache 2.0 patent grant clauses
-- **AGPL network boundary** — what counts as "network interaction" is debated
-- **GPL linking** — what constitutes "linking" vs "mere aggregation" is legally gray
-- **Mixed-license repos** — different licenses for different directories
-- **License header requirements** — GPL/Apache may require headers in every source file
+- **Dual licensing** (e.g., MIT OR Apache-2.0) -- valid but users must understand implications
+- **CLA requirements** -- some upstream projects require contributor agreements
+- **Trademark usage** -- using a project's name in your project name (e.g., "XTerm" in name)
+- **Patent implications** -- especially with Apache 2.0 patent grant clauses
+- **AGPL network boundary** -- what counts as "network interaction" is debated
+- **GPL linking** -- what constitutes "linking" vs "mere aggregation" is legally gray
+- **Mixed-license repos** -- different licenses for different directories
+- **License header requirements** -- GPL/Apache may require headers in every source file

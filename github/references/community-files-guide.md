@@ -1,5 +1,5 @@
 <!-- Updated: 2026-03-08 -->
-# Community Files Guide — Standard Files and Best Practices
+# Community Files Guide -- Standard Files and Best Practices
 
 ## Overview
 
@@ -70,8 +70,8 @@ Use YAML form-based templates (`.github/ISSUE_TEMPLATE/*.yml`) instead of markdo
 templates. They provide structured input, required fields, and dropdowns.
 
 Recommended templates:
-- **Bug Report** — Description, steps to reproduce, expected behavior, version, OS
-- **Feature Request** — Problem statement, proposed solution, alternatives considered
+- **Bug Report** -- Description, steps to reproduce, expected behavior, version, OS
+- **Feature Request** -- Problem statement, proposed solution, alternatives considered
 
 Add a **config.yml** to disable blank issues and link to Discussions for questions.
 
@@ -129,4 +129,4 @@ See `community-templates.md` for the full dependabot.yml template.
 | Business / Brand | SECURITY.md (critical), SUPPORT.md, structured templates |
 | Internal to Public | SECURITY.md (critical), CONTRIBUTING (detailed), CODEOWNERS |
 | Academic / Research | CONTRIBUTING (methodology), CITATION.cff (separate skill) |
-| Hobby / Learning | Minimal — CONTRIBUTING, basic issue template |
+| Hobby / Learning | Minimal -- CONTRIBUTING, basic issue template |

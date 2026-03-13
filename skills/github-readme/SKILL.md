@@ -13,31 +13,31 @@ description: >
   "repo banner", or "github banner".
 ---
 
-# GitHub README — Generation and Optimization
+# GitHub README -- Generation and Optimization
 
 ## Process (GARE Pattern)
 
 ### 1. Gather
 
-**Step 0 — Check shared data cache:**
+**Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
 
-- `seo-data.json` (**REQUIRED — do NOT skip**) — primary keyword, secondary keywords, PAA
+- `seo-data.json` (**REQUIRED -- do NOT skip**) -- primary keyword, secondary keywords, PAA
   questions, AI visibility. **If this cache file is missing, you MUST gather SEO data
   before proceeding.** Check if DataForSEO MCP tools are available (search for
   `dataforseo_labs_google_keyword_suggestions`). If available, run the keyword research
   inline: generate 2 seed keywords from repo description → call keyword_suggestions for
   each → filter by volume/difficulty/relevance → call serp_organic_live_advanced on the
   best candidate to verify GitHub repos can rank for it. This costs ~20-30 cents and is
-  NON-NEGOTIABLE — a README without data-backed keywords is a failed deliverable.
+  NON-NEGOTIABLE -- a README without data-backed keywords is a failed deliverable.
   If DataForSEO MCP is genuinely not configured (tools not found), THEN and ONLY THEN
   fall back to codebase-derived keywords and mark SEO as "unverified."
-- `repo-context.json` (optional) — repo type, intent, language, metadata. If missing,
+- `repo-context.json` (optional) -- repo type, intent, language, metadata. If missing,
   gather yourself via `gh repo view`.
-- `legal-data.json` (optional) — license type for badge selection. If missing, just
+- `legal-data.json` (optional) -- license type for badge selection. If missing, just
   check LICENSE file directly.
-- `audit-data.json` (optional) — README quality findings from prior audit. If present,
+- `audit-data.json` (optional) -- README quality findings from prior audit. If present,
   use to prioritize which sections need the most improvement.
 
 - **Codebase scan:** What does this project actually do?
@@ -45,7 +45,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
   - Check for existing docs, examples, config files
   - Identify main entry point and key exports/commands
 - **Existing README:** Read current README.md (if any)
-  - Also check for README.rst (reStructuredText) — some Python/Sphinx projects use it
+  - Also check for README.rst (reStructuredText) -- some Python/Sphinx projects use it
   - If both exist, README.md takes priority (GitHub renders it on the landing page)
   - Assess structure, headings, content depth
   - Identify what's missing vs. ideal for this repo type
@@ -55,14 +55,14 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
     - Primary keyword (Sweet Spot category) → goes in H1 tagline and first paragraph
     - Secondary keywords (Worth It category) → go in H2 headings where natural
     - "Skip" keywords → do NOT target in H1/H2, but if a Skip keyword appears
-      naturally in body text and is semantically relevant, that's fine — just don't
+      naturally in body text and is semantically relevant, that's fine -- just don't
       optimize headings or structure around it. The distinction is between "targeting"
       (building structure around a keyword) and "mentioning" (natural use in prose).
     - AI citation status → if not cited, add stronger "X is a Y that does Z" definition
   - If running standalone (`/github readme` directly), gather SEO data yourself:
     - If DataForSEO MCP available: run the Keyword Opportunity Framework from
       github-seo skill (seed generation → keyword expansion → volume → difficulty →
-      SERP viability check). The SERP check is critical — only target keywords where
+      SERP viability check). The SERP check is critical -- only target keywords where
       GitHub repos actually appear in Google results.
     - If DataForSEO not available: analyze codebase, check competitor repos via
       `gh search repos`, apply patterns from github-seo-guide.md
@@ -83,15 +83,15 @@ Reference: Read `~/.claude/skills/github/references/repo-type-templates.md` for 
 (readthedocs, github.io, custom docs domain) or the README links to external
 docs, apply adjusted expectations:
 - Do NOT penalize for missing Installation/Configuration/API sections if docs
-  cover them — the README is a gateway, not the full docs
+  cover them -- the README is a gateway, not the full docs
 - DO still require: strong H1 + tagline, opening paragraph with keywords,
   badges, one code example, Contributing link, License mention
-- Note in your analysis: "External docs detected at [URL] — scoring adjusted"
+- Note in your analysis: "External docs detected at [URL] -- scoring adjusted"
 - Completeness score should evaluate whether the README effectively directs
   users to the docs, not whether it duplicates them
 
 Score the current README (if exists) using these objective rubrics. Each criterion
-has specific checkpoints worth defined points. Score by counting what's present —
+has specific checkpoints worth defined points. Score by counting what's present --
 not by subjective impression.
 
 #### Structure (20 points max)
@@ -108,7 +108,7 @@ not by subjective impression.
 |------------|--------|
 | Installation/setup instructions with code block | 5 |
 | At least one usage example with code block | 5 |
-| Configuration, API reference, or detailed options/commands section (skip if repo type doesn't need config — redistribute 4 pts to other Content checkpoints) | 4 |
+| Configuration, API reference, or detailed options/commands section (skip if repo type doesn't need config -- redistribute 4 pts to other Content checkpoints) | 4 |
 | Architecture/how-it-works explanation | 3 |
 | Troubleshooting, FAQ, or common issues | 3 |
 
@@ -165,7 +165,7 @@ Present README plan before writing:
 
 ### Proposed Structure:
 1. Banner image (generated via KIE.ai Nano Banana 2)
-2. H1: [Project Name — keyword-rich tagline]
+2. H1: [Project Name -- keyword-rich tagline]
 3. Badges: [CI, version, license, downloads]
 4. Opening paragraph: [with primary keyword]
 5. Table of Contents
@@ -191,7 +191,7 @@ Present README plan before writing:
 "Ready to generate the optimized README? (This will also generate a banner image
 if KIE_API_KEY is available.)"
 
-Do NOT generate the README until the user confirms. The plan is the checkpoint —
+Do NOT generate the README until the user confirms. The plan is the checkpoint --
 the user may want to adjust the keyword strategy, change the tone, skip the banner,
 or add/remove sections before you write anything.
 
@@ -214,7 +214,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact s
 
 ### Image Format Optimization (applies to ALL images)
 
-Reference: Read `~/.claude/skills/github/references/banner-generation.md` — see the
+Reference: Read `~/.claude/skills/github/references/banner-generation.md` -- see the
 **Image Format Optimization** section for the full decision table.
 
 **The pipeline: always generate as PNG (lossless source), then convert to the
@@ -245,7 +245,7 @@ new = os.path.getsize("assets/banner.webp")
 print(f"{old//1024}KB -> {new//1024}KB ({100-new*100//old}% smaller, metadata stripped)")
 ```
 
-### Banner Image (Standard Practice — Two-Step)
+### Banner Image (Standard Practice -- Two-Step)
 
 Every README should include a professional banner. Generate one as part of the standard
 README creation/optimization workflow using the two-step process.
@@ -380,7 +380,7 @@ diagram. A project with no competitors does not need a comparison table. Apply t
 - Use descriptive link text (never "click here")
 - Keep paragraphs short (2-4 sentences)
 - Include at least one code example in Quick Start
-- NEVER use em dashes (—) in generated READMEs. Use commas, periods, or rewrite the sentence instead.
+- NEVER use em dashes (--) in generated READMEs. Use commas, periods, or rewrite the sentence instead.
 
 ### Disclaimer Rules
 - If the project includes features that provide legal, financial, medical, or security
@@ -415,21 +415,21 @@ diagram. A project with no competitors does not need a comparison table. Apply t
 ### PAA-to-Content Integration (SERP Intelligence → README Sections)
 
 When SEO data includes People Also Ask (PAA) questions from SERP responses,
-**use them actively in the README** — don't just report them. PAA questions are
+**use them actively in the README** -- don't just report them. PAA questions are
 Google-confirmed queries that real people ask about this topic.
 
 **How to integrate PAA questions:**
 
-1. **Direct FAQ section** — If 3+ relevant PAA questions were found, add a
+1. **Direct FAQ section** -- If 3+ relevant PAA questions were found, add a
    `## Frequently Asked Questions` section near the bottom (before Contributing).
    Format each as an H3 with a concise answer-first response (2-3 sentences).
    This directly targets Google's PAA feature and AI Overview citations.
 
-2. **Fold into existing sections** — If a PAA question maps to an existing section
+2. **Fold into existing sections** -- If a PAA question maps to an existing section
    (e.g., "How do I install X?" → Installation section), ensure that section
    explicitly answers the question in its opening sentence.
 
-3. **H2 heading alignment** — If a PAA question matches a natural H2 heading,
+3. **H2 heading alignment** -- If a PAA question matches a natural H2 heading,
    use the question's phrasing as inspiration (e.g., PAA "What are the advantages
    of CadQuery?" → H2 "What Makes This Different").
 
@@ -484,7 +484,7 @@ before writing it. Say 'write it' to save, or tell me what to change."
 
 **Do NOT write README.md until the user approves the preview.** The user may want
 to iterate on the copy 2-3 times before committing. This is the most important
-checkpoint — the plan (Step 2) shows structure, but the preview shows actual words.
+checkpoint -- the plan (Step 2) shows structure, but the preview shows actual words.
 
 ### Step 4: Write README to Disk
 After user approval, write the README.md file and generate the banner (if applicable).

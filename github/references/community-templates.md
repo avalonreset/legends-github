@@ -1,9 +1,9 @@
-<!-- Extracted from community-files-guide.md — YAML templates and code templates -->
+<!-- Extracted from community-files-guide.md -- YAML templates and code templates -->
 # Community File Templates
 
 ## Issue Templates
 
-### Bug Report (YAML form — recommended)
+### Bug Report (YAML form -- recommended)
 
 ```yaml
 # .github/ISSUE_TEMPLATE/bug_report.yml

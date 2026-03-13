@@ -1,13 +1,13 @@
 <!-- Updated: 2026-03-09 -->
-# Banner Generation — One-Shot AI Banners via KIE.ai
+# Banner Generation -- One-Shot AI Banners via KIE.ai
 
 ## Overview
 
-Every GitHub repo deserves a professional banner. We generate the entire banner —
-art, text, and layout — in a single AI image generation call via KIE.ai Nano Banana 2.
+Every GitHub repo deserves a professional banner. We generate the entire banner --
+art, text, and layout -- in a single AI image generation call via KIE.ai Nano Banana 2.
 
 **Why one-shot?** Nano Banana 2 renders text at ~87% accuracy. When the AI designs
-the text as part of the composition, it looks integrated and stylized — not like a
+the text as part of the composition, it looks integrated and stylized -- not like a
 sticker slapped on top. If text comes out garbled (~13% of the time), just regenerate.
 At ~4 cents per shot, iteration is cheap.
 
@@ -30,8 +30,8 @@ Nano Banana consistently fails on a specific text string after 2-3 attempts.
 
 ## Prerequisites
 
-1. KIE.ai account — sign up at https://kie.ai
-2. API key — generate at https://kie.ai/api-key
+1. KIE.ai account -- sign up at https://kie.ai
+2. API key -- generate at https://kie.ai/api-key
 3. `KIE_API_KEY` available via environment variable or `.env` file
 
 **Loading the key:**
@@ -114,8 +114,8 @@ See the **Image Format Pipeline** section below for the full decision logic.
 
 ### Crafting the Prompt
 
-The prompt describes the COMPLETE banner — layout, text, visual subject, effects,
-and mood — all in one go. Think like a graphic designer briefing a team.
+The prompt describes the COMPLETE banner -- layout, text, visual subject, effects,
+and mood -- all in one go. Think like a graphic designer briefing a team.
 
 **Text rendering rules (critical for accuracy):**
 - Put exact text in double quotes: `"CLAUDE KNIFE"`
@@ -130,7 +130,7 @@ and mood — all in one go. Think like a graphic designer briefing a team.
 Wide cinematic 21:9 GitHub repository banner.
 [TEXT SIDE]: [describe text content, size, style, color, position]
 [VISUAL SIDE]: [describe the visual subject, metaphor, details]
-[EFFECTS]: [finishing touches — lens flare, bokeh, reflections, light bloom, particles]
+[EFFECTS]: [finishing touches -- lens flare, bokeh, reflections, light bloom, particles]
 [MOOD]: [background, lighting, color palette, overall aesthetic]
 ```
 
@@ -139,7 +139,7 @@ Wide cinematic 21:9 GitHub repository banner.
 ### What Makes a Great Banner Prompt
 
 **Strong visual metaphor.** Translate the project's purpose into a concrete image.
-Don't describe what the project IS — show what it DOES or REPRESENTS.
+Don't describe what the project IS -- show what it DOES or REPRESENTS.
 
 - Terminal emulator → floating terminal window with glowing code
 - CLI multitool → steampunk Swiss army knife with neon blades
@@ -202,18 +202,18 @@ with subtle vignette. Professional layout, cinematic lighting.
 ```
 
 ### What NOT to prompt
-- "A banner for my project" — too vague, generic output
-- "Logo of ProjectName" — AI logos look amateur
-- Prompts over 200 words — diminishing returns, confused output
-- Multiple competing visual concepts — pick ONE strong metaphor
-- "Simple gradient background" — boring, no identity
+- "A banner for my project" -- too vague, generic output
+- "Logo of ProjectName" -- AI logos look amateur
+- Prompts over 200 words -- diminishing returns, confused output
+- Multiple competing visual concepts -- pick ONE strong metaphor
+- "Simple gradient background" -- boring, no identity
 
 ### Handling Text Failures
 
 If the text comes out garbled or misspelled:
-1. **Regenerate** — just run the same prompt again (87% accuracy means most retries succeed)
-2. **Simplify text** — shorten the headline, remove the tagline, try ALL CAPS
-3. **Pillow fallback** — if 3 attempts fail on the same text, generate a background
+1. **Regenerate** -- just run the same prompt again (87% accuracy means most retries succeed)
+2. **Simplify text** -- shorten the headline, remove the tagline, try ALL CAPS
+3. **Pillow fallback** -- if 3 attempts fail on the same text, generate a background
    WITHOUT text (add "no text, no letters, no words" to prompt) and composite text
    using the Pillow fallback script below
 
@@ -407,7 +407,7 @@ print(f"Converted: {old_size//1024}KB -> {new_size//1024}KB ({savings}% smaller,
 - 2K: ~6 cents
 - 4K: ~9 cents
 
-Regeneration is cheap. Don't settle for a mediocre banner — try 2-3 times
+Regeneration is cheap. Don't settle for a mediocre banner -- try 2-3 times
 to get something great.
 
 ## Error Handling
@@ -422,5 +422,5 @@ to get something great.
 
 ## Data Retention
 
-KIE.ai stores images for 14 days. Always download and commit to `assets/` —
+KIE.ai stores images for 14 days. Always download and commit to `assets/` --
 never hotlink the KIE URL.

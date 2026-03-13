@@ -1,5 +1,5 @@
 <!-- Updated: 2026-03-08 -->
-# GitHub SEO Guide — Ranking Factors, Indexing Rules, and Keyword Strategy
+# GitHub SEO Guide -- Ranking Factors, Indexing Rules, and Keyword Strategy
 
 ## Overview
 
@@ -11,9 +11,9 @@ indexes, what it ignores, and how to maximize visibility.
 
 | Content | Indexed? | SEO Priority |
 |---------|----------|-------------|
-| README.md content | Yes — PRIMARY target | Critical |
+| README.md content | Yes -- PRIMARY target | Critical |
 | Repo landing page (name + description) | Yes | Critical |
-| GitHub Pages sites | Yes — fully indexed | High |
+| GitHub Pages sites | Yes -- fully indexed | High |
 | Discussions | Yes (2-3 week delay) | Medium |
 | Releases / release notes | Yes | Medium |
 | Wiki pages | Only if 500+ stars AND editing restricted | Low |
@@ -39,23 +39,23 @@ Disallow: /*/*/milestones  # Blocks milestones
 ## Google Ranking Factors for GitHub Repos
 
 ### On-Page Factors (you control these)
-1. **Repository name** — Keywords in repo name (hyphenated) rank strongly
-2. **Description** — 350-char limit, keyword-rich, appears in search snippets
-3. **README content** — H1, first paragraph, heading hierarchy, keyword density
-4. **Topics/tags** — Feed GitHub Explore and search filters (5-20 recommended)
-5. **Homepage URL** — Links to docs site boost authority
+1. **Repository name** -- Keywords in repo name (hyphenated) rank strongly
+2. **Description** -- 350-char limit, keyword-rich, appears in search snippets
+3. **README content** -- H1, first paragraph, heading hierarchy, keyword density
+4. **Topics/tags** -- Feed GitHub Explore and search filters (5-20 recommended)
+5. **Homepage URL** -- Links to docs site boost authority
 
 ### Social/Authority Signals (earned)
-1. **Stars** — Primary popularity signal (83% of developers consider it most useful)
-2. **Forks** — Indicates active development/contribution
-3. **Watchers** — Engaged audience signal
-4. **"Used by" count** — Strong social proof for published packages
-5. **Recent activity** — Signals active maintenance
+1. **Stars** -- Primary popularity signal (83% of developers consider it most useful)
+2. **Forks** -- Indicates active development/contribution
+3. **Watchers** -- Engaged audience signal
+4. **"Used by" count** -- Strong social proof for published packages
+5. **Recent activity** -- Signals active maintenance
 
 ### Technical Factors
-1. **Canonical URLs** — GitHub handles these automatically
-2. **OG tags** — GitHub auto-generates from name + description + language
-3. **Page speed** — GitHub's infrastructure handles this
+1. **Canonical URLs** -- GitHub handles these automatically
+2. **OG tags** -- GitHub auto-generates from name + description + language
+3. **Page speed** -- GitHub's infrastructure handles this
 
 ## GitHub-Internal Discovery
 
@@ -103,18 +103,18 @@ keyword choices with real data. The framework categorizes keywords as:
 
 | Category | Criteria | Action |
 |----------|----------|--------|
-| **Sweet Spot** | Volume 100-5K, difficulty <40, GitHub in SERP | Target first — H1, description, first paragraph |
+| **Sweet Spot** | Volume 100-5K, difficulty <40, GitHub in SERP | Target first -- H1, description, first paragraph |
 | **Worth It** | Volume 1K-10K, difficulty 40-60, GitHub in SERP | Target in H2 headings and body |
 | **Long Shot** | Volume 10K+, difficulty 60+ | Use variations; may rank with stars |
-| **Skip** | No GitHub repos in SERP | Don't target — Google won't serve repos |
+| **Skip** | No GitHub repos in SERP | Don't target -- Google won't serve repos |
 | **Low Value** | Volume <50/mo | Not enough traffic to matter |
 
 **Key MCP tool calls (in order):**
-1. `dataforseo_labs_google_keyword_suggestions` — expand seed keywords (~50 candidates)
-2. `kw_data_google_ads_search_volume` — validate monthly search volume
-3. `dataforseo_labs_bulk_keyword_difficulty` — find low-competition opportunities
-4. `serp_organic_live_advanced` — **MOST IMPORTANT**: check if github.com appears in results
-5. `ai_optimization_chat_gpt_scraper` — check AI citation visibility
+1. `dataforseo_labs_google_keyword_suggestions` -- expand seed keywords (~50 candidates)
+2. `kw_data_google_ads_search_volume` -- validate monthly search volume
+3. `dataforseo_labs_bulk_keyword_difficulty` -- find low-competition opportunities
+4. `serp_organic_live_advanced` -- **MOST IMPORTANT**: check if github.com appears in results
+5. `ai_optimization_chat_gpt_scraper` -- check AI citation visibility
 
 The SERP viability check (step 4) is critical: if no github.com URLs appear in
 the top 20 results for a keyword, a GitHub repo cannot realistically rank for it.
@@ -128,16 +128,16 @@ AI systems (ChatGPT, Perplexity, Google AI Overviews) increasingly recommend too
 and libraries. Brand mentions correlate 3x more with AI visibility than backlinks.
 
 ### How to Optimize
-- **Clear, quotable descriptions** — "X is a Y that does Z" (extractable by AI)
-- **Structured comparisons** — Tables comparing your tool to alternatives
-- **Statistics and facts** — Specific numbers AI systems can cite
-- **Answer-first formatting** — Lead with the answer, then explain
-- **Schema markup** — SoftwareSourceCode JSON-LD in GitHub Pages
+- **Clear, quotable descriptions** -- "X is a Y that does Z" (extractable by AI)
+- **Structured comparisons** -- Tables comparing your tool to alternatives
+- **Statistics and facts** -- Specific numbers AI systems can cite
+- **Answer-first formatting** -- Lead with the answer, then explain
+- **Schema markup** -- SoftwareSourceCode JSON-LD in GitHub Pages
 
 ### Monitoring AI Visibility
 If DataForSEO MCP server is available:
-- `ai_optimization_chat_gpt_scraper` — Check if ChatGPT mentions your project
-- `ai_opt_llm_ment_search` — Track LLM mentions across platforms (ChatGPT, Perplexity, Claude, Gemini)
+- `ai_optimization_chat_gpt_scraper` -- Check if ChatGPT mentions your project
+- `ai_opt_llm_ment_search` -- Track LLM mentions across platforms (ChatGPT, Perplexity, Claude, Gemini)
 
 ## GitHub Pages as SEO Multiplier
 

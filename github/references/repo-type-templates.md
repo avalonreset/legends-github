@@ -1,5 +1,5 @@
 <!-- Updated: 2026-03-08 -->
-# Repo Type Templates — Per-Type Defaults and Recommendations
+# Repo Type Templates -- Per-Type Defaults and Recommendations
 
 ## Overview
 
@@ -14,7 +14,7 @@ Gemfile, *.gemspec, pom.xml, build.gradle
 
 **Priority files:**
 - README.md (installation + usage examples critical)
-- LICENSE (permissive recommended — MIT or Apache 2.0)
+- LICENSE (permissive recommended -- MIT or Apache 2.0)
 - CONTRIBUTING.md (important for adoption)
 - CHANGELOG.md (users need to know what changed)
 
@@ -88,7 +88,7 @@ createApp, mount, bootstrap, "starter template"
 **Priority files:**
 - README.md (API overview + authentication)
 - LICENSE
-- SECURITY.md (critical — API = attack surface)
+- SECURITY.md (critical -- API = attack surface)
 - docs/ or GitHub Pages (API docs essential)
 - .env.example (environment variables)
 

@@ -1,5 +1,5 @@
 <!-- Created: 2026-03-08 -->
-# Shared Data Cache — Cross-Skill Data Persistence
+# Shared Data Cache -- Cross-Skill Data Persistence
 
 ## Overview
 
@@ -31,13 +31,13 @@ Which cache files each skill should CHECK before gathering:
 
 | Skill | Required Cache | Optional Cache |
 |-------|---------------|----------------|
-| github-readme | — | `seo-data.json` (strongly recommended), `repo-context.json`, `legal-data.json`, `audit-data.json` |
-| github-meta | — | `seo-data.json` (strongly recommended), `repo-context.json` |
-| github-audit | — | `repo-context.json`, `audit-data.json` (offers reuse if fresh) |
-| github-community | — | `repo-context.json`, `legal-data.json` |
-| github-legal | — | `repo-context.json` |
-| github-release | — | `repo-context.json` |
-| github-audit | — | `repo-context.json` |
+| github-readme | -- | `seo-data.json` (strongly recommended), `repo-context.json`, `legal-data.json`, `audit-data.json` |
+| github-meta | -- | `seo-data.json` (strongly recommended), `repo-context.json` |
+| github-audit | -- | `repo-context.json`, `audit-data.json` (offers reuse if fresh) |
+| github-community | -- | `repo-context.json`, `legal-data.json` |
+| github-legal | -- | `repo-context.json` |
+| github-release | -- | `repo-context.json` |
+| github-audit | -- | `repo-context.json` |
 | github-empire | `audit-data.json` | `seo-data.json`, `repo-context.json` |
 
 **"Required" means:** The skill cannot function without this data and will invoke
@@ -267,17 +267,17 @@ If that also fails, the skill proceeds with best-effort guesses marked "unverifi
 ## Freshness Rules
 
 - Cache files are valid for the **current calendar day (UTC)**.
-- If the `timestamp` date (UTC) differs from today's date (UTC), treat as stale — re-gather.
+- If the `timestamp` date (UTC) differs from today's date (UTC), treat as stale -- re-gather.
 - If the user explicitly asks to "re-run" or "refresh" a skill, ignore cache.
 
 ## Error Handling
 
 - If `.github-audit/` cannot be created (permissions, read-only filesystem), **skip
-  cache writing silently** and continue. The skill's output is unaffected — caching is
+  cache writing silently** and continue. The skill's output is unaffected -- caching is
   a performance optimization, not a requirement.
-- If a cache JSON file is corrupt or unparseable, treat it as missing — re-gather.
+- If a cache JSON file is corrupt or unparseable, treat it as missing -- re-gather.
 - If `.gitignore` doesn't exist, the `grep || echo` pattern creates it automatically.
-  If `.gitignore` is read-only, the append fails silently — acceptable.
+  If `.gitignore` is read-only, the append fails silently -- acceptable.
 
 ## Implementation Pattern
 

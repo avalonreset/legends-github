@@ -4,18 +4,18 @@ description: >
   Live Google and AI discoverability data for GitHub optimization via DataForSEO
   MCP server. Provides keyword research (volume, difficulty, ideas), SERP analysis,
   AI visibility tracking (ChatGPT mentions, LLM citations), competitor keyword
-  analysis, and trend data. Measures Google web search — not GitHub internal search.
+  analysis, and trend data. Measures Google web search -- not GitHub internal search.
   Requires DataForSEO extension installed. Use when user says "dataforseo",
   "github dataforseo", "keyword volume", "serp analysis", "ai mentions",
   "ai visibility", "keyword research live data", "search volume", or "trend data".
 ---
 
-# GitHub DataForSEO — Live Search & AI Visibility Data (Extension)
+# GitHub DataForSEO -- Live Search & AI Visibility Data (Extension)
 
 Live search data via the DataForSEO MCP server. Provides real keyword volume,
 SERP analysis, and AI visibility tracking for GitHub optimization decisions.
 
-**Important:** DataForSEO measures Google web search volume and AI mentions — NOT
+**Important:** DataForSEO measures Google web search volume and AI mentions -- NOT
 GitHub's internal search or Explore algorithm. Use this data to optimize how your
 repo ranks in Google results and whether AI systems cite it.
 

@@ -1,8 +1,8 @@
-# Claude GitHub — DataForSEO Extension Installer (Windows PowerShell)
+# Claude GitHub -- DataForSEO Extension Installer (Windows PowerShell)
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "=== Claude GitHub — DataForSEO Extension ===" -ForegroundColor Cyan
+Write-Host "=== Claude GitHub -- DataForSEO Extension ===" -ForegroundColor Cyan
 Write-Host ""
 
 # Check that base skill is installed

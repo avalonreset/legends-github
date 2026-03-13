@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Claude GitHub — DataForSEO Extension Installer
+# Claude GitHub -- DataForSEO Extension Installer
 
 main() {
-    echo "=== Claude GitHub — DataForSEO Extension ==="
+    echo "=== Claude GitHub -- DataForSEO Extension ==="
     echo ""
 
     # Check that base skill is installed

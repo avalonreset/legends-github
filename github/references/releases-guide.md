@@ -1,5 +1,5 @@
 <!-- Updated: 2026-03-08 -->
-# Releases Guide — Semver, Changelog, Badges, and Release Automation
+# Releases Guide -- Semver, Changelog, Badges, and Release Automation
 
 ## Overview
 
@@ -56,12 +56,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ```
 
 ### Change Categories
-- **Added** — New features
-- **Changed** — Changes to existing functionality
-- **Deprecated** — Features that will be removed
-- **Removed** — Features that were removed
-- **Fixed** — Bug fixes
-- **Security** — Vulnerability fixes
+- **Added** -- New features
+- **Changed** -- Changes to existing functionality
+- **Deprecated** -- Features that will be removed
+- **Removed** -- Features that were removed
+- **Fixed** -- Bug fixes
+- **Security** -- Vulnerability fixes
 
 ## GitHub Releases
 
@@ -117,7 +117,7 @@ changelog:
 
 | Badge | URL | When to Use |
 |-------|-----|-------------|
-| CI Status | `https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow}` | Always — signals working code |
+| CI Status | `https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow}` | Always -- signals working code |
 | Version | `https://img.shields.io/github/v/release/{owner}/{repo}` | When releases exist |
 | License | `https://img.shields.io/github/license/{owner}/{repo}` | Always |
 | npm Version | `https://img.shields.io/npm/v/{package}` | For npm packages |
