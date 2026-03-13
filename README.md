@@ -6,7 +6,7 @@
 
 [![Version](https://img.shields.io/github/v/release/avalonreset-pro/claude-github)](https://github.com/avalonreset-pro/claude-github/releases)
 [![License: Proprietary](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)]()
+[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills-to-claude-code)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-blueviolet)](https://claude.com/claude-code)
 
 Most GitHub repos are invisible. No keywords in the description, no structured README, missing license files, zero community health signals. Search engines skip them. Developers scroll past them. Stars stay at zero.

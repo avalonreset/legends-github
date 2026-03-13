@@ -30,5 +30,14 @@
   "MD041": false,
 
   // Relax blank lines around headings (agents use compact rubric format)
-  "MD022": false
+  "MD022": false,
+
+  // Disable table formatting rules (skill files use compact tables and
+  // Action: lines that look like broken table rows to the linter)
+  "MD055": false,
+  "MD056": false,
+  "MD058": false,
+
+  // Allow non-sequential ordered list numbering (skills use actual step numbers)
+  "MD029": false
 }
