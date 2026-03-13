@@ -5,6 +5,7 @@
 # Claude GitHub - Claude Code Skills for Repository Optimization
 
 [![Version](https://img.shields.io/github/v/release/avalonreset-pro/claude-github)](https://github.com/avalonreset-pro/claude-github/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/avalonreset-pro/claude-github/ci.yml?label=CI)](https://github.com/avalonreset-pro/claude-github/actions)
 [![License: Proprietary](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills-to-claude-code)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-blueviolet)](https://claude.com/claude-code)
@@ -22,6 +23,7 @@ Claude GitHub is the most comprehensive collection of Claude Code skills for Git
 - [Skill Examples](#skill-examples)
 - [How the Audit Works](#how-the-audit-works)
 - [How to Add Skills to Claude Code](#how-to-add-skills-to-claude-code)
+- [Getting Started](#getting-started)
 - [How Claude Code Skills Communicate](#how-claude-code-skills-communicate)
 - [Architecture](#architecture)
 - [Best Practices](#best-practices)
@@ -36,12 +38,12 @@ Claude GitHub is the most comprehensive collection of Claude Code skills for Git
 |---------|-------------|
 | `/github audit` | Score any repo 0-100 across 6 categories with prioritized fixes |
 | `/github readme` | Generate or rewrite your README with SEO-optimized headings and banner images |
-| `/github legal` | Select a license, generate SECURITY.md, CITATION.cff, handle fork compliance |
-| `/github meta` | Optimize description, topics, feature toggles, and social preview |
+| `/github legal` | Select a license, generate SECURITY.md, CITATION.cff by default, handle fork compliance |
+| `/github meta` | Optimize description, topics, homepage URL, feature toggles, and social preview |
 | `/github seo` | Run keyword research with real search volume and difficulty data |
-| `/github community` | Generate issue templates, CONTRIBUTING.md, CODE_OF_CONDUCT.md, devcontainer |
-| `/github release` | Plan release strategy, CHANGELOG, badges, and versioning |
-| `/github empire` | Portfolio strategy across all your repos, profile README, cross-linking |
+| `/github community` | Generate issue templates, CONTRIBUTING.md, CODE_OF_CONDUCT.md, .gitattributes, CI workflow, devcontainer |
+| `/github release` | Plan release strategy, CHANGELOG, badges, versioning, and package distribution |
+| `/github empire` | Portfolio strategy, profile README, AI avatar generation, profile completeness, cross-linking |
 
 Every recommendation cites its source: DataForSEO keyword volume, GitHub API metadata, codebase analysis, or reference guides. Nothing is guesswork.
 
@@ -128,12 +130,52 @@ cd claude-github
 .\install.ps1
 ```
 
-The installer copies all skills, agents, and reference files to `~/.claude/skills/github/`, then walks you through setting up two optional services:
+The installer copies all skills, agents, and reference files to `~/.claude/skills/github/`, then walks you through setting up two services:
 
-- **[DataForSEO](https://dataforseo.com)** powers live keyword research, SERP rankings, and AI visibility tracking. The installer configures the MCP server with your credentials automatically. Without it, skills fall back to codebase-only analysis (marked "unverified").
-- **[KIE.ai](https://kie.ai/api-key)** generates AI banner images for READMEs. The installer saves your API key to `.env`. Without it, README generation skips the banner step.
+- **[DataForSEO](https://dataforseo.com)** (strongly recommended) -- powers live keyword research, SERP rankings, and AI visibility tracking. The installer configures the MCP server with your credentials automatically. Without it, SEO-dependent skills fall back to codebase-only analysis and all keyword recommendations are marked "unverified." A free account includes enough credits for hundreds of analyses. A single repo analysis costs about 15-30 cents.
+- **[KIE.ai](https://kie.ai/api-key)** (strongly recommended) -- generates AI banner images for READMEs and AI profile avatars for your GitHub profile. The installer saves your API key to `.env`. Without it, image generation is skipped entirely. Each image costs about 4 cents.
+
+Both services are technically optional, but without them you lose the two most differentiated features of the suite: data-backed keyword optimization and professional AI-generated visuals. **Set them up during installation.** It takes 5 minutes and makes every other skill dramatically more useful.
 
 Restart Claude Code after installing. Skills register on startup.
+
+## Getting Started
+
+**Run these skills from inside the project you want to optimize.** This is the single most important thing to get right.
+
+The skills read your actual source code, configuration files, git history, and GitHub remote to understand what your project is and how to improve it. If you run them from an empty folder or from the wrong directory, Claude has no real data to work with and recommendations will be generic at best.
+
+```bash
+# Right -- run from inside your project
+cd ~/projects/my-awesome-tool
+claude
+> /github audit
+
+# Wrong -- running from a random directory
+cd ~/Desktop
+claude
+> /github audit   # Claude can't see your code, configs, or git remote
+```
+
+### Recommended Workflow
+
+1. Open Claude Code in your project's root directory (where `.git/` lives)
+2. Run `/github audit` to get your baseline score and identify gaps
+3. Follow the action items using the matching sub-commands (`/github legal`, `/github readme`, etc.)
+4. Run `/github audit` again to measure your improvement
+
+Each skill caches its findings in a `.github-audit/` directory so downstream skills build on previous results instead of starting from scratch.
+
+### What the Skills Read From Your Project
+
+| Source | Skills That Use It | Why |
+|--------|-------------------|-----|
+| Source code and file structure | README, Community, Release | Detects language, frameworks, project type |
+| `package.json`, `Cargo.toml`, etc. | Legal, Community, Release | Identifies dependencies, license conflicts, build tools |
+| Git history and remotes | All skills | Determines repo owner, branch strategy, release cadence |
+| GitHub API (`gh repo view`) | All skills | Reads description, topics, settings, stars, forks |
+| Existing community files | Legal, Community | Checks what already exists before generating |
+| DataForSEO (if configured) | SEO, README, Meta | Live keyword volume, difficulty, SERP rankings |
 
 ## How Claude Code Skills Communicate
 
@@ -180,13 +222,15 @@ claude-github/
 
 ## Best Practices
 
-Getting the most out of the skill suite comes down to running things in the right order and letting the cache do its job.
+Getting the most out of the skill suite comes down to running from the right place, in the right order, with the right services configured.
+
+**Always run from your project folder.** The skills analyze your actual codebase, git history, and GitHub remote. Running from an empty or unrelated directory gives Claude nothing real to work with. Open Claude Code in the root of the repo you want to optimize.
+
+**Set up DataForSEO and KIE.ai during installation.** Both are technically optional, but without DataForSEO every keyword recommendation is guesswork, and without KIE.ai you skip banner and avatar generation entirely. Five minutes of setup unlocks the most powerful features in the suite.
 
 **Run audit first.** Always start with `/github audit`. It produces the baseline score and caches findings that every other skill reads. Without it, downstream skills gather data from scratch, which works but takes longer and misses cross-category insights.
 
-**Follow the recommended order.** After the audit: `/github legal` (license and security), `/github readme` (content), `/github meta` (description and topics), `/github community` (health files), `/github release` (versioning), `/github seo` (keyword verification). Each skill builds on the cache from previous steps.
-
-**Set up DataForSEO early.** The SEO skill and keyword-aware features in readme and meta depend on live search data. Without DataForSEO, recommendations are based on codebase analysis only and marked "unverified." A single repo analysis costs about 15-30 cents.
+**Follow the recommended order.** After the audit: `/github legal` (license, security, citation), `/github readme` (content and banner), `/github meta` (description and topics), `/github community` (health files, .gitattributes, CI workflow), `/github release` (versioning and changelog), `/github seo` (keyword verification). Each skill builds on the cache from previous steps.
 
 **Review before executing.** Every skill pauses at a confirmation gate before making live changes (pushing releases, editing repo settings, creating files). Read the proposal, adjust if needed, then approve.
 
