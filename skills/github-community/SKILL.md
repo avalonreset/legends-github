@@ -13,21 +13,21 @@ description: >
   "templates", "gitattributes", "ci workflow", or "github actions".
 ---
 
-# GitHub Community — Health Files and Templates
+# GitHub Community -- Health Files and Templates
 
 ## Process (GARE Pattern)
 
 ### 1. Gather
 
-**Step 0 — Check shared data cache:**
+**Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
 
-- `repo-context.json` (optional) — repo type, intent, language, has_discussions.
+- `repo-context.json` (optional) -- repo type, intent, language, has_discussions.
   If missing, gather yourself via `gh repo view`.
-- `legal-data.json` (optional) — SECURITY.md status. If present, use
+- `legal-data.json` (optional) -- SECURITY.md status. If present, use
   `security_md_exists` to know whether to note "SECURITY.md: already exists" or
-  "SECURITY.md: not found — run `/github legal` to generate." If missing, check
+  "SECURITY.md: not found -- run `/github legal` to generate." If missing, check
   SECURITY.md existence yourself.
 
 - Check which community files already exist:
@@ -53,10 +53,10 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
   `{org}/.github` for inherited community health files. GitHub automatically
   inherits CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, FUNDING.yml from
   the org's `.github` repo. Use: `gh api repos/{org}/.github/contents --jq '.[].name'`
-  If inherited files exist, note them as "inherited from org" — do NOT regenerate them.
+  If inherited files exist, note them as "inherited from org" -- do NOT regenerate them.
 - Check GitHub Community Standards: `https://github.com/{owner}/{repo}/community`
 - Check if Discussions is enabled: `gh repo view {owner}/{repo} --json hasDiscussionsEnabled`
-  - If Discussions is NOT enabled, do NOT link to Discussions in config.yml — use
+  - If Discussions is NOT enabled, do NOT link to Discussions in config.yml -- use
     Issues link instead, or omit the contact_links section
 - Detect repo type and primary language (for devcontainer and dependabot config)
 - Get user intent from orchestrator context
@@ -73,13 +73,13 @@ BenjaminTerm repo). Flag any file where the project name, repo URL, or owner doe
 match the current repo. These need updating even if the file is otherwise good quality.
 
 Fill in this table for every file. **For files that exist, read their content
-and assess quality** — don't just check existence.
+and assess quality** -- don't just check existence.
 
 | File | Exists? | Quality | Action Needed |
 |------|---------|---------|---------------|
 | CONTRIBUTING.md | ? | ? | ? |
 | CODE_OF_CONDUCT.md | ? | ? | ? |
-| SECURITY.md | ? | ? | ? — **Handled by /github legal** (note: do NOT generate here, just check existence) |
+| SECURITY.md | ? | ? | ? -- **Handled by /github legal** (note: do NOT generate here, just check existence) |
 | SUPPORT.md | ? | ? | ? |
 | CODEOWNERS | ? | ? | ? |
 | FUNDING.yml | ? | ? | ? |
@@ -99,7 +99,7 @@ When a file exists, fetch its content and evaluate:
 | Quality | Criteria |
 |---------|----------|
 | Good | YAML forms (`.yml`) with required fields, dropdowns, and validation |
-| Outdated | Markdown templates (`.md`) with HTML comment prompts — no structured input |
+| Outdated | Markdown templates (`.md`) with HTML comment prompts -- no structured input |
 | Poor | Template exists but is mostly empty or uses default GitHub boilerplate |
 Action: if Outdated, recommend upgrading `.md` to `.yml` YAML forms.
 
@@ -153,6 +153,25 @@ Generate all missing files. For each file:
 - Adapt to repo type (devcontainer image, dependabot ecosystem)
 - Adapt to intent (level of formality, depth of contributing guide)
 
+**FUNDING.yml -- always generate if missing.** It costs nothing and enables the
+"Sponsor" button on the repo page. Detect the GitHub username from the repo owner
+and pre-fill it. If the user doesn't have GitHub Sponsors set up, comment out that
+line and leave the file as a ready-to-activate template.
+
+```yaml
+# .github/FUNDING.yml
+# Uncomment the platforms you use:
+github: [OWNER_USERNAME]
+# patreon: # Replace with your Patreon username
+# open_collective: # Replace with your Open Collective username
+# ko_fi: # Replace with your Ko-fi username
+# custom: ["https://example.com/donate"]
+```
+
+Replace `[OWNER_USERNAME]` with the actual repo owner's GitHub username. If you can
+confirm they have GitHub Sponsors enabled (`gh api users/{owner} --jq .is_sponsor`),
+uncomment the `github:` line. If not, leave it commented with a note.
+
 **Placeholder rule:** Some files require user-specific information that cannot be
 guessed. Use clearly marked placeholders so the user knows what to fill in:
 
@@ -182,7 +201,7 @@ every placeholder that needs user action. Do not guess emails or usernames.
 Generate at minimum:
 1. Bug Report (`bug_report.yml`)
 2. Feature Request (`feature_request.yml`)
-3. Config file (`config.yml`) — disable blank issues, link to Discussions
+3. Config file (`config.yml`) -- disable blank issues, link to Discussions
 
 Adapt fields to repo type:
 - CLI tools: add "Command used" field
@@ -192,7 +211,7 @@ Adapt fields to repo type:
 ### PR Template
 - Include change type checklist (bug fix, feature, breaking, docs)
 - Include testing checklist
-- Keep concise — long templates discourage contributions
+- Keep concise -- long templates discourage contributions
 
 ### devcontainer.json
 Select base image by language:
@@ -257,6 +276,20 @@ third_party/** linguist-vendored
 # Documentation/config files (excluded from language stats)
 # [Add repo-specific overrides here based on detection]
 ```
+
+**Critical: verify the language bar won't go blank.** After writing exclusion rules
+(linguist-documentation, linguist-generated, linguist-vendored), check whether any
+recognized language remains. If excluding Shell/PowerShell/etc. leaves NO detectable
+source language, you MUST add an explicit language override for the project's actual
+content type. Common fallbacks:
+
+| Repo Type | Override |
+|-----------|---------|
+| Markdown-heavy (skills, docs) | `*.md linguist-detectable` |
+| Config-heavy (YAML/JSON) | `*.yml linguist-detectable` |
+| Mixed with no clear primary | `*.md linguist-language=Markdown` |
+
+An empty language bar looks worse than an inaccurate one. Always leave something visible.
 
 If the language bar is already accurate and no overrides are needed, still generate
 a minimal .gitattributes with just the standard vendored/generated rules. Having the
@@ -400,11 +433,11 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact s
 
 - List of files created/updated with paths
 - Community Standards scorecard (before and after)
-- **Placeholders to Fill In** — list every `[REPLACE: ...]` marker with the file path
+- **Placeholders to Fill In** -- list every `[REPLACE: ...]` marker with the file path
   and what the user needs to provide. Example:
   ```
   Placeholders to Fill In:
-  1. CODE_OF_CONDUCT.md line 65: [REPLACE: your-email@example.com] — enforcement contact email
-  2. FUNDING.yml line 2: [REPLACE: your-github-username] — GitHub Sponsors username
+  1. CODE_OF_CONDUCT.md line 65: [REPLACE: your-email@example.com] -- enforcement contact email
+  2. FUNDING.yml line 2: [REPLACE: your-github-username] -- GitHub Sponsors username
   ```
-  If no placeholders exist (e.g., solo repo where owner is obvious), state "No placeholders — all files are ready to commit."
+  If no placeholders exist (e.g., solo repo where owner is obvious), state "No placeholders -- all files are ready to commit."

@@ -14,3 +14,6 @@ install.* linguist-documentation
 dist/** linguist-generated
 vendor/** linguist-vendored
 third_party/** linguist-vendored
+
+# Ensure Markdown is detected as the primary language (this is a markdown-heavy project)
+*.md linguist-detectable
