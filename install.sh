@@ -31,7 +31,7 @@ main() {
     echo '   ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝'
     echo '    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ '
     echo -e "${R}"
-    echo -e "   ${M}░▒▓${R}${G}${B} v1.0 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
+    echo -e "   ${M}░▒▓${R}${G}${B} v1.1 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
     echo ""
 
     # Check prerequisites
@@ -91,8 +91,8 @@ main() {
     echo -e "   ${Y}${B} SERVICE SETUP${R}"
     echo -e "   ${M}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
     echo ""
-    echo -e "   Two recommended services make this suite dramatically more powerful."
-    echo -e "   You can set them up now or skip and add them later."
+    echo -e "   Two services are ${W}${B}strongly recommended${R} to unlock the full suite."
+    echo -e "   Setting them up takes about 5 minutes and is well worth it."
     echo ""
 
     echo -e "   ${M}─── 1/2 ───${R} ${W}${B}DataForSEO${R} ${D}(live keyword data, SERP rankings, AI visibility)${R}"
@@ -182,10 +182,11 @@ with open(settings_file, 'w') as f:
     # GUIDED SETUP: KIE.ai
     # ─────────────────────────────────────────────────
     echo ""
-    echo -e "   ${M}─── 2/2 ───${R} ${W}${B}KIE.ai${R} ${D}(AI-generated banner images for READMEs)${R}"
+    echo -e "   ${M}─── 2/2 ───${R} ${W}${B}KIE.ai${R} ${D}(AI-generated banners and profile avatars)${R}"
     echo ""
-    echo -e "   This generates professional banner images for your READMEs."
-    echo -e "   Without it, everything works but banners won't be generated."
+    echo -e "   This generates professional banner images for READMEs and"
+    echo -e "   AI profile avatars for your GitHub account. About 4 cents per image."
+    echo -e "   Without it, image generation is skipped entirely."
     echo ""
 
     ENV_FILE="${SKILLS_DIR}/github/.env"

@@ -23,7 +23,7 @@ Write-Host @"
 
 Write-Host "   " -NoNewline
 Write-Host "░▒▓" -NoNewline -ForegroundColor Magenta
-Write-Host " v1.0 " -NoNewline -ForegroundColor Green
+Write-Host " v1.1 " -NoNewline -ForegroundColor Green
 Write-Host "▓▒░" -NoNewline -ForegroundColor Magenta
 Write-Host "  Repository Optimization Skills for Claude Code" -ForegroundColor DarkGray
 Write-Host ""
@@ -108,8 +108,10 @@ Write-Host "   ━━━━━━━━━━━━━━━━━━━━━�
 Write-Host "    SERVICE SETUP" -ForegroundColor Yellow
 Write-Host "   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Magenta
 Write-Host ""
-Write-Host "   Two recommended services make this suite dramatically more powerful."
-Write-Host "   You can set them up now or skip and add them later."
+Write-Host "   Two services are " -NoNewline
+Write-Host "strongly recommended" -NoNewline -ForegroundColor White
+Write-Host " to unlock the full suite."
+Write-Host "   Setting them up takes about 5 minutes and is well worth it."
 Write-Host ""
 
 Write-Host "   " -NoNewline
@@ -205,10 +207,11 @@ Write-Host "   " -NoNewline
 Write-Host "--- 2/2 ---" -NoNewline -ForegroundColor Magenta
 Write-Host " " -NoNewline
 Write-Host "KIE.ai" -NoNewline -ForegroundColor White
-Write-Host " (AI-generated banner images for READMEs)" -ForegroundColor DarkGray
+Write-Host " (AI-generated banners and profile avatars)" -ForegroundColor DarkGray
 Write-Host ""
-Write-Host "   This generates professional banner images for your READMEs."
-Write-Host "   Without it, everything works but banners won't be generated."
+Write-Host "   This generates professional banner images for READMEs and"
+Write-Host "   AI profile avatars for your GitHub account. About 4 cents per image."
+Write-Host "   Without it, image generation is skipped entirely."
 Write-Host ""
 
 $EnvFile = Join-Path $SkillsDir "github\.env"
