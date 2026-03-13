@@ -17,3 +17,7 @@ __pycache__/
 # Test artifacts (local development only)
 test-*/
 eval-workspace/
+
+# Member lists (contain email addresses -- never commit)
+members*.txt
+members*.csv

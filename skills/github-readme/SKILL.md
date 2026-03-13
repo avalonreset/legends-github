@@ -246,11 +246,22 @@ if [ -z "$KIE_API_KEY" ]; then
 fi
 [ -n "$KIE_API_KEY" ] && echo "KIE_API_KEY loaded" || echo "KIE_API_KEY NOT FOUND"
 ```
-If key is not found after checking `.env`, inform the user: "Banner generation
-requires a KIE.ai API key. Add `KIE_API_KEY=your_key` to your `.env` file,
-or get one at https://kie.ai/api-key."
-If user declines or key is missing, skip banner — generate the rest of the README
-with a placeholder comment: `<!-- TODO: Add banner image -->` at the top.
+If key is not found after checking `.env`, **STOP and show this message:**
+
+```
+Banner generation requires a KIE.ai API key. It takes about 2 minutes to set up:
+
+1. Go to https://kie.ai/api-key and create a free account
+2. Copy your API key
+3. Paste it into ~/.claude/skills/github/.env:
+   KIE_API_KEY=your_key_here
+
+Want to set this up now, or skip the banner and continue with the README?
+```
+
+Wait for the user to respond. If they want to set it up, help them. If they
+say skip/continue/later, generate the rest of the README with a placeholder
+comment: `<!-- TODO: Add banner image -->` at the top.
 
 ### H1 (Exactly One)
 - Format: `# Project Name - Keyword-rich tagline`
@@ -337,6 +348,15 @@ diagram. A project with no competitors does not need a comparison table. Apply t
 - Keep paragraphs short (2-4 sentences)
 - Include at least one code example in Quick Start
 - NEVER use em dashes (—) in generated READMEs. Use commas, periods, or rewrite the sentence instead.
+
+### Disclaimer Rules
+- If the project includes features that provide legal, financial, medical, or security
+  guidance (license selection, compliance checking, vulnerability scanning, etc.), the
+  README MUST include a brief disclaimer noting that the tool's output is automated
+  assistance, not professional advice. Place it in the relevant section or in a dedicated
+  "Disclaimer" subsection near the bottom (before License).
+- Keep it short: one sentence acknowledging the limitation plus a pointer to the skill's
+  detailed disclaimers. Do not bury it or make it hard to find.
 
 ### Example Quality
 - Examples should show what happens, not just what to type. Include expected output

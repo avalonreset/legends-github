@@ -10,30 +10,34 @@ Y='\033[33m'    # yellow
 W='\033[97m'    # bright white
 D='\033[2m'     # dim
 B='\033[1m'     # bold
+M='\033[35m'    # magenta
 R='\033[0m'     # reset
 
 main() {
     clear 2>/dev/null || true
     echo ""
     echo -e "${C}${B}"
-    echo '     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗'
-    echo '    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝'
-    echo '    ██║     ██║     ███████║██║   ██║██║  ██║█████╗  '
-    echo '    ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝  '
-    echo '    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗'
-    echo '     ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝'
-    echo -e "${G}"
-    echo '             ┌──────────────────────────┐'
-    echo '             │    G I T H U B   v1.0    │'
-    echo '             └──────────────────────────┘'
+    echo '    ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗'
+    echo '   ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝'
+    echo '   ██║     ██║     ███████║██║   ██║██║  ██║█████╗  '
+    echo '   ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝  '
+    echo '   ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗'
+    echo '    ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝'
+    echo ''
+    echo '    ██████╗ ██╗████████╗██╗  ██╗██╗   ██╗██████╗ '
+    echo '   ██╔════╝ ██║╚══██╔══╝██║  ██║██║   ██║██╔══██╗'
+    echo '   ██║  ███╗██║   ██║   ███████║██║   ██║██████╔╝'
+    echo '   ██║   ██║██║   ██║   ██╔══██║██║   ██║██╔══██╗'
+    echo '   ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝'
+    echo '    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ '
     echo -e "${R}"
-    echo -e "  ${D}Repository Optimization Skills for Claude Code${R}"
+    echo -e "   ${M}░▒▓${R}${G}${B} v1.0 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
     echo ""
 
     # Check prerequisites
     if ! command -v gh &>/dev/null; then
-        echo -e "  ${Y}[!] GitHub CLI (gh) not detected${R}"
-        echo -e "  ${D}    Required for repo operations. Install: https://cli.github.com/${R}"
+        echo -e "   ${Y}[!] GitHub CLI (gh) not detected${R}"
+        echo -e "   ${D}    Required for repo operations. Install: https://cli.github.com/${R}"
         echo ""
     fi
 
@@ -57,72 +61,215 @@ main() {
     # Get script directory
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-    # Install with progress
-    echo -e "  ${C}Installing skill suite...${R}"
+    echo -e "   ${C}${B}Installing skills...${R}"
     echo ""
 
     cp "${SCRIPT_DIR}/github/SKILL.md" "${SKILLS_DIR}/github/SKILL.md"
-    echo -e "  ${G}[+]${R} Orchestrator          ${D}routes commands to 8 sub-skills${R}"
+    echo -e "   ${G}${B}[+]${R} Orchestrator        ${D}routes commands to 8 sub-skills${R}"
 
     cp "${SCRIPT_DIR}/github/references/"*.md "${SKILLS_DIR}/github/references/"
-    echo -e "  ${G}[+]${R} 9 Reference Files     ${D}SEO, legal, readme, community guides${R}"
+    echo -e "   ${G}${B}[+]${R} 9 Reference Files   ${D}SEO, legal, readme, community guides${R}"
 
     for skill in github-audit github-readme github-legal github-meta github-seo github-community github-release github-empire; do
         cp "${SCRIPT_DIR}/skills/${skill}/SKILL.md" "${SKILLS_DIR}/${skill}/SKILL.md"
     done
-    echo -e "  ${G}[+]${R} 8 Sub-Skills          ${D}audit, readme, legal, meta, seo, community, releases, empire${R}"
+    echo -e "   ${G}${B}[+]${R} 8 Sub-Skills        ${D}audit, readme, legal, meta, seo, community, release, empire${R}"
 
     for agent in github-readme github-legal github-meta github-community github-release github-seo; do
         cp "${SCRIPT_DIR}/agents/${agent}.md" "${AGENTS_DIR}/${agent}.md"
     done
-    echo -e "  ${G}[+]${R} 6 Scoring Agents      ${D}parallel audit across 6 categories${R}"
+    echo -e "   ${G}${B}[+]${R} 6 Scoring Agents    ${D}parallel audit across 6 categories${R}"
 
     echo ""
-    echo -e "  ${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
-    echo -e "  ${G}${B}  INSTALL COMPLETE${R}"
-    echo -e "  ${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
-    echo ""
-    echo -e "  ${W}${B}Restart Claude Code${R}, then try:"
-    echo ""
-    echo -e "    ${C}/github audit${R}          ${D}Score your repo 0-100 across 6 categories${R}"
-    echo -e "    ${C}/github readme${R}         ${D}Generate a keyword-optimized README${R}"
-    echo -e "    ${C}/github legal${R}          ${D}LICENSE, SECURITY.md, CITATION.cff${R}"
-    echo -e "    ${C}/github meta${R}           ${D}Description, topics, feature toggles${R}"
-    echo -e "    ${C}/github seo${R}            ${D}Live keyword research and SERP analysis${R}"
-    echo -e "    ${C}/github community${R}      ${D}Issue templates, CONTRIBUTING, CODE_OF_CONDUCT${R}"
-    echo -e "    ${C}/github release${R}       ${D}CHANGELOG, versioning, badges${R}"
-    echo -e "    ${C}/github empire${R}          ${D}Portfolio strategy across all repos${R}"
+    echo -e "   ${G}${B}Skills installed.${R}"
 
-    # DataForSEO setup
+    # ─────────────────────────────────────────────────
+    # GUIDED SETUP: DataForSEO
+    # ─────────────────────────────────────────────────
     echo ""
-    echo -e "  ${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
-    echo -e "  ${Y}${B}  RECOMMENDED: DataForSEO + KIE.ai${R}"
-    echo -e "  ${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
+    echo -e "   ${M}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
+    echo -e "   ${Y}${B} SERVICE SETUP${R}"
+    echo -e "   ${M}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
     echo ""
-    echo -e "  ${W}${B}DataForSEO${R} ${D}(live keyword data, SERP rankings, AI visibility)${R}"
+    echo -e "   Two recommended services make this suite dramatically more powerful."
+    echo -e "   You can set them up now or skip and add them later."
     echo ""
-    echo -e "    1. Sign up at ${C}https://dataforseo.com${R}"
-    echo -e "       ${D}Free tier includes credits for hundreds of analyses.${R}"
+
+    echo -e "   ${M}─── 1/2 ───${R} ${W}${B}DataForSEO${R} ${D}(live keyword data, SERP rankings, AI visibility)${R}"
     echo ""
-    echo -e "    2. Run the DataForSEO installer:"
+    echo -e "   This powers real keyword research with actual search volume and"
+    echo -e "   difficulty data. Without it, SEO recommendations are best-guess only."
     echo ""
-    echo -e "       ${W}bash extensions/dataforseo/install.sh${R}"
+
+    DATAFORSEO_DONE=false
+    read -rp "   Set up DataForSEO now? (y/n): " setup_dfs
     echo ""
-    echo -e "    3. Add your credentials to ${C}~/.claude/skills/github/.env${R}:"
+
+    if [[ "${setup_dfs}" =~ ^[Yy] ]]; then
+        # Check Node.js
+        if ! command -v node &>/dev/null; then
+            echo -e "   ${Y}[!] Node.js is required for the DataForSEO MCP server.${R}"
+            echo -e "   ${D}    Install it from https://nodejs.org/ and re-run this installer.${R}"
+            echo -e "   ${D}    Skipping DataForSEO for now.${R}"
+            echo ""
+        else
+            NODE_VERSION=$(node -v | sed 's/v//' | cut -d. -f1)
+            if [ "$NODE_VERSION" -lt 20 ]; then
+                echo -e "   ${Y}[!] Node.js 20+ required. You have $(node -v).${R}"
+                echo -e "   ${D}    Update Node.js and re-run this installer.${R}"
+                echo -e "   ${D}    Skipping DataForSEO for now.${R}"
+                echo ""
+            else
+                echo -e "   ${D}If you don't have an account yet:${R}"
+                echo -e "   ${D}  1. Sign up free at ${C}https://dataforseo.com${R}"
+                echo -e "   ${D}  2. Find your login + password at ${C}https://app.dataforseo.com/api-access${R}"
+                echo ""
+                read -rp "   DataForSEO Login (email): " DFORSEO_LOGIN
+                read -rsp "   DataForSEO Password: " DFORSEO_PASSWORD
+                echo ""
+                echo ""
+
+                if [ -n "${DFORSEO_LOGIN}" ] && [ -n "${DFORSEO_PASSWORD}" ]; then
+                    # Install DataForSEO skill and agent
+                    mkdir -p "${SKILLS_DIR}/github-dataforseo"
+                    cp "${SCRIPT_DIR}/extensions/dataforseo/skills/github-dataforseo/SKILL.md" "${SKILLS_DIR}/github-dataforseo/SKILL.md"
+                    cp "${SCRIPT_DIR}/extensions/dataforseo/agents/github-dataforseo.md" "${AGENTS_DIR}/github-dataforseo.md"
+
+                    # Pre-download MCP server
+                    echo -e "   ${D}Downloading DataForSEO MCP server...${R}"
+                    npx -y @anthropic/data-for-seo-mcp --version 2>/dev/null || true
+
+                    # Configure MCP server
+                    SETTINGS_FILE="${CLAUDE_DIR}/settings.json"
+                    python3 -c "
+import json, os
+settings_file = '${SETTINGS_FILE}'
+if os.path.exists(settings_file):
+    with open(settings_file) as f:
+        settings = json.load(f)
+else:
+    settings = {}
+if 'mcpServers' not in settings:
+    settings['mcpServers'] = {}
+settings['mcpServers']['dataforseo'] = {
+    'command': 'npx',
+    'args': ['-y', '@anthropic/data-for-seo-mcp'],
+    'env': {
+        'DATAFORSEO_LOGIN': '${DFORSEO_LOGIN}',
+        'DATAFORSEO_PASSWORD': '${DFORSEO_PASSWORD}'
+    }
+}
+with open(settings_file, 'w') as f:
+    json.dump(settings, f, indent=2)
+" 2>/dev/null && {
+                        echo -e "   ${G}${B}[+]${R} DataForSEO          ${D}MCP server configured${R}"
+                        DATAFORSEO_DONE=true
+                    } || {
+                        echo -e "   ${Y}[!] Could not auto-configure. You can set it up manually later:${R}"
+                        echo -e "   ${D}    claude mcp add dataforseo-mcp-server${R}"
+                    }
+                else
+                    echo -e "   ${D}No credentials entered. Skipping DataForSEO.${R}"
+                fi
+            fi
+        fi
+    else
+        echo -e "   ${D}Skipped. You can set it up later:${R}"
+        echo -e "   ${D}  bash extensions/dataforseo/install.sh${R}"
+    fi
+
+    # ─────────────────────────────────────────────────
+    # GUIDED SETUP: KIE.ai
+    # ─────────────────────────────────────────────────
     echo ""
-    echo -e "       ${W}DATAFORSEO_LOGIN=your_email@example.com${R}"
-    echo -e "       ${W}DATAFORSEO_PASSWORD=your_api_password${R}"
+    echo -e "   ${M}─── 2/2 ───${R} ${W}${B}KIE.ai${R} ${D}(AI-generated banner images for READMEs)${R}"
     echo ""
-    echo -e "  ${W}${B}KIE.ai${R} ${D}(AI-generated banner images for READMEs)${R}"
+    echo -e "   This generates professional banner images for your READMEs."
+    echo -e "   Without it, everything works but banners won't be generated."
     echo ""
-    echo -e "    1. Get a key at ${C}https://kie.ai/api-key${R}"
+
+    ENV_FILE="${SKILLS_DIR}/github/.env"
+    KIE_DONE=false
+    read -rp "   Set up KIE.ai now? (y/n): " setup_kie
     echo ""
-    echo -e "    2. Add to the same ${C}.env${R} file:"
+
+    if [[ "${setup_kie}" =~ ^[Yy] ]]; then
+        echo -e "   ${D}If you don't have an account yet:${R}"
+        echo -e "   ${D}  1. Go to ${C}https://kie.ai/api-key${R}"
+        echo -e "   ${D}  2. Create an account and copy your API key${R}"
+        echo ""
+        read -rp "   KIE.ai API Key: " KIE_KEY
+        echo ""
+
+        if [ -n "${KIE_KEY}" ]; then
+            # Write or update .env
+            if [ -f "${ENV_FILE}" ] && grep -q 'KIE_API_KEY=' "${ENV_FILE}" 2>/dev/null; then
+                # Update existing key
+                sed -i.bak "s|^KIE_API_KEY=.*|KIE_API_KEY=${KIE_KEY}|" "${ENV_FILE}"
+                rm -f "${ENV_FILE}.bak"
+            else
+                # Create or append
+                echo "KIE_API_KEY=${KIE_KEY}" >> "${ENV_FILE}"
+            fi
+            echo -e "   ${G}${B}[+]${R} KIE.ai              ${D}API key saved to .env${R}"
+            KIE_DONE=true
+        else
+            echo -e "   ${D}No key entered. Skipping KIE.ai.${R}"
+        fi
+    else
+        echo -e "   ${D}Skipped. You can add your key later to:${R}"
+        echo -e "   ${D}  ~/.claude/skills/github/.env${R}"
+    fi
+
+    # Create .env template if it doesn't exist yet (user skipped both)
+    if [ ! -f "${ENV_FILE}" ]; then
+        cat > "${ENV_FILE}" << 'ENVEOF'
+# Claude GitHub - API Credentials
+#
+# KIE.ai — AI-generated banner images for READMEs
+# Get your API key: https://kie.ai/api-key
+KIE_API_KEY=
+#
+# DataForSEO credentials are NOT stored here.
+# They are configured via the MCP server installer:
+#   bash extensions/dataforseo/install.sh
+# See: https://dataforseo.com (free tier available)
+ENVEOF
+    fi
+
+    # ─────────────────────────────────────────────────
+    # SUMMARY
+    # ─────────────────────────────────────────────────
     echo ""
-    echo -e "       ${W}KIE_API_KEY=your_key_here${R}"
+    echo -e "   ${M}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
+    echo -e "   ${G}${B} SETUP COMPLETE${R}"
+    echo -e "   ${M}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
     echo ""
-    echo -e "  ${D}Both services make the suite dramatically more powerful.${R}"
-    echo -e "  ${D}Without them, skills still work but rely on codebase analysis only.${R}"
+
+    # Status line
+    if $DATAFORSEO_DONE; then
+        DFS_STATUS="${G}${B}active${R}"
+    else
+        DFS_STATUS="${Y}not configured${R}"
+    fi
+    if $KIE_DONE; then
+        KIE_STATUS="${G}${B}active${R}"
+    else
+        KIE_STATUS="${Y}not configured${R}"
+    fi
+    echo -e "   DataForSEO [${DFS_STATUS}]  |  KIE.ai [${KIE_STATUS}]"
+    echo ""
+
+    echo -e "   ${W}${B}Restart Claude Code${R}, then try:"
+    echo ""
+    echo -e "   ${C}/github audit${R}           ${D}Score your repo 0-100 across 6 categories${R}"
+    echo -e "   ${C}/github readme${R}          ${D}Generate a keyword-optimized README${R}"
+    echo -e "   ${C}/github legal${R}           ${D}LICENSE, SECURITY.md, CITATION.cff${R}"
+    echo -e "   ${C}/github meta${R}            ${D}Description, topics, feature toggles${R}"
+    echo -e "   ${C}/github seo${R}             ${D}Live keyword research and SERP analysis${R}"
+    echo -e "   ${C}/github community${R}       ${D}Issue templates, CONTRIBUTING, CODE_OF_CONDUCT${R}"
+    echo -e "   ${C}/github release${R}         ${D}CHANGELOG, versioning, badges${R}"
+    echo -e "   ${C}/github empire${R}          ${D}Portfolio strategy across all repos${R}"
     echo ""
 }
 

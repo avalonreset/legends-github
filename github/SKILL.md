@@ -52,16 +52,16 @@ If a user has no GitHub account, direct them to https://github.com/signup and wa
 
 ### API Credentials
 
-Two external services power optional features:
+Two recommended services power SEO research and banner generation. The install
+script walks users through setting both up during installation. If they skipped
+setup, Step 0 below will catch it and guide them before any skill runs.
 
 **1. DataForSEO (MCP server — NOT .env)**
 DataForSEO provides live keyword and SERP data. It runs as an MCP server
-(`dataforseo-mcp-server`) configured via `~/.claude.json` or `~/.claude/settings.json`.
+(`dataforseo-mcp-server`) configured via `~/.claude/settings.json`.
 The install script handles this automatically. When configured, tools like
 `dataforseo_labs_google_keyword_suggestions` are available directly in conversation.
 If the MCP server is not configured, SEO skills fall back to codebase analysis.
-To set up: visit https://dataforseo.com, get login + password, then run the
-install script or use `claude mcp add`.
 
 **2. KIE.ai (REST API — uses .env)**
 KIE.ai generates banner images for READMEs. It requires an API key in a `.env` file.
@@ -70,11 +70,6 @@ KIE.ai generates banner images for READMEs. It requires an API key in a `.env` f
 1. Current working directory: `./.env`
 2. Skill root: `~/.claude/skills/github/.env`
 3. User home: `~/.env`
-
-**Expected .env format:**
-```
-KIE_API_KEY=your_kie_api_key
-```
 
 **Loading credentials:** Before banner generation, load the .env:
 ```bash
@@ -91,8 +86,6 @@ done
 | `KIE_API_KEY` | `/github readme` (banner generation) | KIE.ai image generation |
 | DataForSEO credentials | SEO data pass, `/github seo`, `/github meta`, `/github readme`, `/github empire` | Configured via MCP server, not .env |
 
-If KIE_API_KEY is missing when needed, inform the user: https://kie.ai/api-key
-
 ## Shared Data Cache
 
 Skills persist their outputs to `.github-audit/` so other skills can reuse data
@@ -107,6 +100,64 @@ JSON schemas, dependency map, and freshness rules.
 and Step 3.5 below — look for the **CACHE:** callouts in each step.
 
 ## Orchestration Logic
+
+### Step 0: Setup Check (runs ONCE per session, before anything else)
+
+Before routing to any sub-skill, check if the user has the recommended services
+configured. This runs the FIRST time any `/github` command is used in a session.
+After showing the setup status once, do not repeat it.
+
+**Check 1 — DataForSEO MCP:**
+Use ToolSearch to look for `dataforseo_labs_google_keyword_suggestions`.
+
+**Check 2 — KIE.ai API Key:**
+```bash
+for envfile in ./.env ~/.claude/skills/github/.env ~/.env; do
+  if [ -f "$envfile" ] && grep -q 'KIE_API_KEY=.' "$envfile" 2>/dev/null; then
+    echo "KIE_CONFIGURED=true"; break
+  fi
+done
+```
+(Check that the key is not just present but has a non-empty value after the `=`.)
+
+**If BOTH are configured:** Show a one-liner and move on:
+```
+Services: DataForSEO [active] | KIE.ai [active] — full power mode.
+```
+
+**If one or both are missing, STOP and show the setup guide:**
+```
+## Setup Check
+
+This suite works best with two recommended services. Here's your status:
+
+DataForSEO  [not configured]  — powers live keyword research, SERP rankings, and AI visibility
+KIE.ai      [not configured]  — powers AI-generated banner images for READMEs
+
+### How to set up DataForSEO (5 minutes)
+
+1. Create a free account at https://dataforseo.com
+   (free tier includes enough credits for hundreds of keyword analyses)
+2. Go to https://app.dataforseo.com/api-access to find your login and password
+3. From the claude-github directory you cloned during install, run:
+   - macOS/Linux: bash extensions/dataforseo/install.sh
+   - Windows: powershell -File extensions\dataforseo\install.ps1
+   The installer will prompt for your credentials and configure the MCP server.
+
+### How to set up KIE.ai (2 minutes)
+
+1. Go to https://kie.ai/api-key and create a free account
+2. Copy your API key
+3. Paste it into ~/.claude/skills/github/.env:
+   KIE_API_KEY=your_key_here
+
+Want to set these up now, or continue without them?
+(Skills still work without these services, but SEO recommendations will be
+less precise and banner generation won't be available.)
+```
+
+Wait for the user to respond before proceeding. If they say continue/skip/later,
+proceed normally. If they want to set things up, guide them through it.
 
 ### Step 1: Capture User Intent
 

@@ -177,7 +177,34 @@ Seed patterns (pick the 2-3 most relevant):
 Avoid seeds that are ambiguous across domains (e.g., "hacker terminal" could
 mean gaming, novelty apps, or actual developer tools — too noisy).
 
-**Step 1c — DataForSEO keyword discovery (if MCP available):**
+**Step 1c — DataForSEO keyword discovery:**
+
+First, check if the DataForSEO MCP server is available by searching for
+`dataforseo_labs_google_keyword_suggestions` via ToolSearch.
+
+**If DataForSEO is NOT available, STOP and show this message:**
+
+```
+DataForSEO is not configured. Without it, SEO analysis is limited to
+codebase analysis and GitHub search — no real keyword volume, difficulty
+scores, or SERP position data.
+
+Setting it up takes about 5 minutes:
+
+1. Create a free account at https://dataforseo.com
+   (free tier includes enough credits for hundreds of analyses)
+2. Go to https://app.dataforseo.com/api-access for your login and password
+3. Run the installer:
+   macOS/Linux:  bash extensions/dataforseo/install.sh
+   Windows:      powershell -File extensions\dataforseo\install.ps1
+
+Want to set this up now, or continue with fallback analysis?
+```
+
+Wait for the user to respond. If they want to set it up, guide them. If they
+say skip/continue/later, proceed to Step 1d (fallback analysis).
+
+**If DataForSEO IS available, proceed:**
 
 The keyword suggestions tool returns volume, difficulty, AND intent inline with
 each result. This means you do NOT need separate volume/difficulty/intent calls

@@ -232,7 +232,14 @@ result.save("assets/banner.jpg", quality=95)
 ## Post-Generation
 
 1. **Show the banner to the user.** Use the Read tool on `assets/banner.jpg`
-   so they see it inline. Ask: "Here's your banner — use it, regenerate, or skip?"
+   so they see it inline. Then provide the clickable local file link so the user
+   can open it full-size in their browser or image viewer:
+   ```
+   Banner saved: file:///[absolute-path-to]/assets/banner.jpg
+   ```
+   Use the actual absolute path (forward slashes, `file:///` prefix). Example:
+   `file:///E:/my-project/assets/banner.jpg` or `file:///home/user/my-project/assets/banner.jpg`.
+   Ask: "Here's your banner. Use it, regenerate, or skip?"
    Do NOT place it in the README until the user approves.
 2. If approved, place at the very top of README, before H1:
 

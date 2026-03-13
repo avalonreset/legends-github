@@ -100,7 +100,26 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
   for it. This costs ~20-30 cents and is NON-NEGOTIABLE — a description and topics
   without data-backed keywords is a failed deliverable. Your topics should be chosen
   based on what people actually search for, not what sounds right.
-  If DataForSEO MCP is genuinely not configured (tools not found), THEN and ONLY THEN
+  If DataForSEO MCP is genuinely not configured (tools not found), **STOP and show:**
+
+  ```
+  DataForSEO is not configured. Without it, I can't look up real keyword
+  volume to optimize your description and topics — they'll be based on
+  guesswork instead of data.
+
+  Setting it up takes about 5 minutes:
+
+  1. Create a free account at https://dataforseo.com
+     (free tier includes enough credits for hundreds of analyses)
+  2. Go to https://app.dataforseo.com/api-access for your login and password
+  3. Run the installer:
+     macOS/Linux:  bash extensions/dataforseo/install.sh
+     Windows:      powershell -File extensions\dataforseo\install.ps1
+
+  Want to set this up now, or continue with best-guess analysis?
+  ```
+
+  Wait for the user to respond. If they want to continue without it,
   fall back to `gh search repos` competitor analysis and mark SEO as "unverified."
 - `repo-context.json` (optional) — repo type, intent, language. If missing, gather
   yourself via `gh repo view`.
