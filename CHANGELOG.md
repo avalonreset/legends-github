@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-13
+
+### Added
+- Empire skill redesign: empire builder mode with profile completeness checks and AI avatar generation
+- WebP image pipeline with metadata stripping across all conversion scripts
+- Getting Started guide, install screenshot, FAQ, and Best Practices sections in README
+- Restart guide and project-folder reminder in installers
+- Mascot and BEN branding images
+- Skill Forge attribution in README
+
+### Changed
+- All images converted from PNG/JPG to WebP for smaller file sizes
+- Installer splash screen updated to v1.1 with stronger service messaging
+- README optimized for secondary keyword opportunities
+- Banner generation reference updated for WebP delivery
+
+### Fixed
+- DataForSEO cost gate and competitor search field name
+- Avatar detection method for image format rubric
+- Markdownlint CI failures with config and rule adjustments
+- Empty badge link in README
+
 ## [1.0.0] - 2026-03-13
 
 ### Added
@@ -26,5 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset-pro/claude-github/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/avalonreset-pro/claude-github/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/avalonreset-pro/claude-github/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/avalonreset-pro/claude-github/releases/tag/v1.0.0
