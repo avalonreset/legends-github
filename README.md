@@ -18,6 +18,8 @@ Claude GitHub is the most comprehensive collection of Claude Code skills for Git
 > Scaffolded with [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
 > SEO methodology adapted from [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
 
+<img src="assets/mascot.webp" alt="Claude GitHub mascot" width="256">
+
 ## Table of Contents
 
 - [What You Get](#what-you-get)
@@ -138,9 +140,9 @@ The installer copies all skills, agents, and reference files to `~/.claude/skill
 
 Both services are technically optional, but without them you lose the two most differentiated features of the suite: data-backed keyword optimization and professional AI-generated visuals. **Set them up during installation.** It takes 5 minutes and makes every other skill dramatically more useful.
 
-Restart Claude Code after installing. Skills register on startup.
-
 <img src="docs/images/install-experience.webp" alt="Claude GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="600">
+
+Restart Claude Code after installing. Skills register on startup.
 
 ## Getting Started
 
@@ -222,8 +224,6 @@ claude-github/
 ```
 
 1 orchestrator, 8 sub-skills, 6 scoring agents, 9 reference files. The orchestrator detects your repo type (library, CLI tool, API, application, framework, documentation, or skill/plugin) and adjusts recommendations for each.
-
-<img src="assets/mascot.webp" alt="Claude GitHub mascot" width="256">
 
 ## Best Practices
 
