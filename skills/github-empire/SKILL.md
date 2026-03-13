@@ -439,23 +439,28 @@ curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
       "google_search": false,
       "aspect_ratio": "1:1",
       "resolution": "1K",
-      "output_format": "png"
+      "output_format": "jpg"
     }
   }'
 ```
 
 **Key differences from banners:**
 - `aspect_ratio`: **"1:1"** (not "21:9")
-- `output_format`: **"png"** (better for icons/logos with sharp edges)
+- `output_format`: **"jpg"** (AI-generated art compresses best as JPEG -- see banner-generation.md Image Format Optimization section)
 - Resolution: 1K is fine (GitHub resizes to 460x460 anyway)
+
+**Format rationale:** AI-generated avatars from Nano Banana 2 are photographic in
+nature (gradients, lighting, rich color). JPEG is 2-3x smaller than PNG with no
+visible quality loss. Only use PNG if the avatar is a flat geometric icon with no
+photographic elements.
 
 ### Post-Generation UX
 
-1. Save to `assets/avatar.png` in the current working directory
-2. **Show it inline** using the Read tool on `assets/avatar.png`
+1. Save to `assets/avatar.jpg` in the current working directory
+2. **Show it inline** using the Read tool on `assets/avatar.jpg`
 3. **Provide a clickable file link** so the user can open it full-size:
    ```
-   Avatar saved: file:///[absolute-path]/assets/avatar.png
+   Avatar saved: file:///[absolute-path]/assets/avatar.jpg
    ```
    Use the actual absolute path with forward slashes and `file:///` prefix.
 4. Ask: "Here's your profile avatar. Use it, regenerate, or skip?"
@@ -464,7 +469,7 @@ curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
    To set as your GitHub profile photo:
    1. Go to https://github.com/settings/profile
    2. Click your current avatar (or "Upload a photo")
-   3. Select the file: [absolute-path]/assets/avatar.png
+   3. Select the file: [absolute-path]/assets/avatar.jpg
    4. Crop/adjust and save
    ```
    Note: there is NO API for setting the profile photo. It must be uploaded manually.

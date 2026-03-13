@@ -212,6 +212,28 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact s
 
 ## README Generation Rules
 
+### Image Format Optimization (applies to ALL images)
+
+Reference: Read `~/.claude/skills/github/references/banner-generation.md` — see the
+**Image Format Optimization** section for the full decision table.
+
+**The rule: AI art = JPEG. Screenshots = PNG.** Apply this when generating banners,
+choosing existing images, or advising on image format.
+
+When generating or placing images in the README:
+- **Banners** (AI-generated): always JPEG. 2-3x smaller than PNG, no visible difference.
+- **Screenshots** (terminal, UI): always PNG. Sharper text, often smaller than JPEG.
+- **Logos/icons**: PNG or SVG. Clean edges need lossless compression.
+- Flag any existing images in the repo that use the wrong format (e.g., a 2MB PNG
+  banner that should be a 400KB JPEG, or a blurry JPEG screenshot).
+
+If the repo has oversized images (>1MB banners, >500KB screenshots), recommend
+optimization as an action item. Pillow can convert formats in one line:
+```python
+from PIL import Image
+Image.open("banner.png").convert("RGB").save("banner.jpg", quality=85)
+```
+
 ### Banner Image (Standard Practice — Two-Step)
 
 Every README should include a professional banner. Generate one as part of the standard
@@ -481,3 +503,4 @@ Re-score the generated README against the same 7 criteria.
 - Before/after score comparison
 - List of changes made with reasoning
 - Keyword integration summary
+- Image format audit: flag any existing repo images using the wrong format or >1MB

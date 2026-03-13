@@ -139,6 +139,15 @@ Both services are technically optional, but without them you lose the two most d
 
 Restart Claude Code after installing. Skills register on startup.
 
+<details>
+<summary><strong>See the full install experience</strong></summary>
+
+<p align="center">
+  <img src="docs/images/install-splash.png" alt="Claude GitHub installer - splash screen, skill installation, DataForSEO and KIE.ai setup, available commands" width="600">
+</p>
+
+</details>
+
 ## Getting Started
 
 **Run these skills from inside the project you want to optimize.** This is the single most important thing to get right.

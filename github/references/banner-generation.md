@@ -249,6 +249,70 @@ result.save("assets/banner.jpg", quality=95)
 </p>
 ```
 
+## Image Format Optimization
+
+Choose the right format based on image content. Wrong format = wasted bytes or
+blurry text. This applies to banners, avatars, screenshots, and any image in a repo.
+
+### Format Decision Table
+
+| Image Type | Best Format | Why | Typical Savings |
+|-----------|-------------|-----|-----------------|
+| AI-generated art (banners, avatars) | **JPEG** | Photographic content with gradients, lighting, rich color. JPEG excels here. | 40-60% smaller than PNG |
+| Screenshots (terminal, UI, code) | **PNG** | Sharp edges, flat colors, text. PNG compresses these losslessly and is often SMALLER than JPEG. | JPEG is actually larger + blurry |
+| Logos, icons, diagrams | **PNG** or **SVG** | Clean lines, transparency, small palettes. SVG for vector art. | SVG is infinitely scalable |
+| Photos (team, office, product) | **JPEG** | Same as AI art: rich color, continuous tone. | Standard web format |
+
+### The Rule
+
+**AI art = JPEG. Screenshots = PNG. When in doubt, check: does it have sharp text
+on flat backgrounds? PNG. Does it have gradients, lighting, organic shapes? JPEG.**
+
+WebP beats both formats on size (~25-30% smaller) but has compatibility concerns
+in some markdown renderers and older tools. For GitHub READMEs, stick with JPEG/PNG
+for maximum compatibility. If the user's README is rendered on their own docs site
+(GitHub Pages, ReadTheDocs, etc.), WebP is a safe upgrade.
+
+### Quality Settings
+
+| Format | Recommended Quality | Notes |
+|--------|-------------------|-------|
+| JPEG | 85 | Best balance of size vs quality. 90+ gains little. Below 80, artifacts appear on text. |
+| PNG | N/A (lossless) | Use pngquant or optipng for further compression if needed |
+| WebP | 80 | More efficient than JPEG, so lower quality number = same visual quality |
+
+### Applying This to Banner Generation
+
+Banners are AI-generated art. **Always use JPEG** (`output_format: "jpg"`).
+This is already the default in the API call template above. Never generate
+banners as PNG -- they are 2-3x larger with no visible quality improvement.
+
+### Applying This to Avatar Generation
+
+Avatars are also AI-generated art. **Use JPEG** (`output_format: "jpg"`), not PNG.
+The empire skill should request `"output_format": "jpg"` and save to
+`assets/avatar.jpg`. GitHub resizes to 460x460 regardless of format.
+
+Exception: if the avatar is a geometric logo/icon with flat colors and clean edges
+(no photographic elements), PNG may be appropriate. But AI-generated avatars from
+Nano Banana 2 are photographic in nature, so JPEG is correct.
+
+### Scanning Existing Repo Images
+
+When auditing or optimizing a repo, check for format mismatches:
+
+```
+Potential issues to flag:
+- PNG files > 500KB that contain photographic content → suggest JPEG conversion
+- JPEG files that contain screenshots or text-heavy images → suggest PNG conversion
+- Any image > 1MB in the repo root or assets/ → flag for optimization
+- Banner images saved as PNG → almost always should be JPEG
+```
+
+This check is lightweight: look at file extensions and sizes in the repo's
+`assets/`, `docs/images/`, `.github/`, and root directory. If Pillow is available,
+a quick format conversion can save significant bytes.
+
 ## Pricing
 
 - 1K: ~4 cents per image

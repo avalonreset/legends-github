@@ -86,10 +86,11 @@ These rules are non-negotiable. Apply them BEFORE scoring any criterion.
 
 ### Visual Appeal (10 points)
 - Professional banner image at top of README (2 pts)
-- Screenshots, demos, or videos where appropriate (3 pts)
+- Screenshots, demos, or videos where appropriate (2 pts)
+- Image format optimization: banners as JPEG not PNG, screenshots as PNG not JPEG, no images >1MB without justification (2 pts)
 - Code examples are syntax-highlighted (2 pts)
 - Tables used for structured data (1 pt)
-- Consistent formatting throughout (2 pts)
+- Consistent formatting throughout (1 pt)
 
 ### Completeness for Repo Type (10 points)
 - All expected sections present for the detected type (5 pts)

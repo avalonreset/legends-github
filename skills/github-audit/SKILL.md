@@ -112,6 +112,9 @@ gh api repos/{owner}/{repo}/contents/LICENSE.md --jq '.content' 2>/dev/null | ba
 
 # 20. config.yml content from ISSUE_TEMPLATE (for community agent blank-issue check)
 gh api repos/{owner}/{repo}/contents/.github/ISSUE_TEMPLATE/config.yml --jq '.content' 2>/dev/null | base64 -d 2>/dev/null
+
+# 21. Image files in assets/ and root (for image format optimization check)
+gh api repos/{owner}/{repo}/contents/assets --jq '.[] | select(.name | test("\\.(png|jpg|jpeg|gif|webp|svg)$"; "i")) | "\(.name) \(.size)"' 2>/dev/null
 ```
 
 **Optimization:** You can run many of these checks in parallel using multiple
@@ -215,7 +218,10 @@ Issue Template config.yml Content:
 {full content or "FILE NOT FOUND" if the API returned 404}
 
 README Content:
-{FULL README text — paste the entire decoded content, or "FILE NOT FOUND"}
+{FULL README text -- paste the entire decoded content, or "FILE NOT FOUND"}
+
+Image Files (assets/):
+{list of image files with name and size in bytes, or "no assets/ directory" or "no images found"}
 
 --- DATA QUALITY NOTES ---
 - "FILE NOT FOUND" means the API confirmed the file does not exist (404).
