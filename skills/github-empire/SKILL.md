@@ -136,7 +136,12 @@ Run through this checklist. Every unchecked item is a missed opportunity:
 | **Custom social preview** | Per-repo: check if repos use custom OG images | Controls how repos appear when shared on social media |
 
 **Profile photo detection:** There is no API flag for "custom vs default." Download the
-avatar image using the Read tool on the URL and show it to the user inline. Then ask:
+avatar image with curl, then use the Read tool on the saved file to show it inline:
+```bash
+curl -sL "AVATAR_URL" -o /tmp/github-avatar.jpg
+```
+Then `Read /tmp/github-avatar.jpg` to display it in the terminal. Do NOT use WebFetch
+on the avatar URL -- it returns binary garbage, not a viewable image. Ask the user:
 "Is this your custom profile photo, or the default GitHub identicon? If it's the default,
 I can generate a professional one for you using AI."
 
