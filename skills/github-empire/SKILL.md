@@ -3,10 +3,12 @@ name: github-empire
 description: >
   Portfolio-level GitHub consulting and strategy. Audits entire GitHub presence
   across all public repos, generates profile README (username/username repo),
-  optimizes organization profiles, recommends pinned repos, plans cross-linking
-  strategy, identifies topic authority gaps, ensures consistent branding, and
-  tracks growth metrics. The master consultant skill. Use when user says "empire",
-  "github empire", "portfolio", "all my repos", "profile readme", "github profile",
+  generates AI profile avatars via KIE.ai, checks profile completeness (photo,
+  bio, location, social links), optimizes organization profiles, recommends pinned
+  repos, plans cross-linking strategy, identifies topic authority gaps, ensures
+  consistent branding, and tracks growth metrics. The master consultant skill.
+  Use when user says "empire", "github empire", "portfolio", "all my repos",
+  "profile readme", "github profile", "profile photo", "avatar", "profile picture",
   "org profile", "pinned repos", "branding", "cross-linking", "github strategy",
   "github consulting", "optimize all repos", or "github presence".
 ---
@@ -71,8 +73,8 @@ gh repo list {username} --visibility public --limit 500 --json name,description,
 # Check for profile README repo
 gh repo view {username}/{username} --json name,description 2>/dev/null
 
-# User profile details
-gh api users/{username} --jq '{name, bio, blog, twitter_username, company, location, public_repos, followers, following, type}'
+# User profile details (include avatar_url for photo check)
+gh api users/{username} --jq '{name, bio, blog, twitter_username, company, location, public_repos, followers, following, type, avatar_url}'
 
 # Traffic for each repo (requires push access — may fail for non-owned repos)
 # Run for each repo: gh api repos/{owner}/{repo}/traffic/views --jq '{views: .count, uniques: .uniques}'
@@ -117,9 +119,29 @@ gh api users/{username} --jq '{name, bio, blog, twitter_username, company, locat
   with 16 knife-specific topics vs. gemini-seo with 10 balanced topics)
 
 #### Profile Presence
-- Does `{username}/{username}` repo exist?
-- Is GitHub profile filled out (bio, location, blog, Twitter)?
-- What's the first impression when someone visits the profile?
+
+Run through this checklist. Every unchecked item is a missed opportunity:
+
+| Item | How to check | Why it matters |
+|------|-------------|----------------|
+| **Profile photo** | Download `avatar_url` and show it to the user. Ask: "Is this a custom photo or the default GitHub identicon?" Default identicons are 5x5 symmetric pixel grids in muted colors. | First impression. A default identicon signals "I made this account 5 minutes ago." |
+| **Display name** | `name` field from API | Shows on profile, commits, and PR reviews |
+| **Bio** | `bio` field (null = missing) | Visible on profile, searchable by Google. Should contain niche keywords. |
+| **Location** | `location` field | Builds trust, helps with local networking |
+| **Company/org** | `company` field | Professional signal |
+| **Website** | `blog` field | Links to external presence, passes authority |
+| **Social (Twitter/X)** | `twitter_username` field | Cross-platform discoverability |
+| **Profile README** | `{username}/{username}` repo exists? | The centerpiece of a GitHub profile. Without it, the profile is just a repo list. |
+| **Pinned repos** | Visual check (API doesn't expose pins) | Controls what visitors see first. Flag if not discussed. |
+| **Custom social preview** | Per-repo: check if repos use custom OG images | Controls how repos appear when shared on social media |
+
+**Profile photo detection:** There is no API flag for "custom vs default." Download the
+avatar image using the Read tool on the URL and show it to the user inline. Then ask:
+"Is this your custom profile photo, or the default GitHub identicon? If it's the default,
+I can generate a professional one for you using AI."
+
+If the user confirms it's the default (or wants a new one), offer avatar generation
+(see **Avatar Generation** section below).
 
 ### 3. Recommend — The Empire Report
 
@@ -148,7 +170,7 @@ Compute a lightweight portfolio health score from data you always have:
 
 | Dimension | Weight | How to score |
 |-----------|--------|-------------|
-| Profile completeness | 20 pts | Bio (5), profile README (10), location/company (2), blog/twitter (3) |
+| Profile completeness | 20 pts | Custom profile photo (3), bio (4), profile README (8), location/company (2), blog/twitter (3) |
 | Branding consistency | 20 pts | Description pattern (5), homepage URLs correct (5), license consistency (5), badge usage (5) |
 | Topic authority | 20 pts | Owned topics with 2+ repos (10), no missing high-value topics (5), no over-tagged repos (5) |
 | Repo health signals | 20 pts | All repos have a recognized license (5), all have 5+ topics (5), all updated within 3 months (5), flagship repo has at least 1 star (5) |
@@ -329,6 +351,137 @@ If the user has an org:
 - Create/optimize `.github` repo with `profile/README.md`
 - Set up default community health files (CONTRIBUTING, CoC, SECURITY)
 - Recommend org-level settings (verified domain, member visibility)
+
+## Avatar Generation (Profile Photo via KIE.ai)
+
+When the user confirms they have a default identicon (or wants a new profile photo),
+generate one using KIE.ai Nano Banana 2. This follows the same API mechanics as
+banner generation (see `~/.claude/skills/github/references/banner-generation.md`)
+but with a completely different visual strategy.
+
+### Avatar vs Banner -- Different Goals
+
+| | Banner (README header) | Avatar (profile photo) |
+|--|----------------------|----------------------|
+| Aspect ratio | 21:9 (ultrawide cinematic) | **1:1** (square) |
+| Purpose | Showcase the project | Represent the person/brand |
+| Text | Project name + tagline | **Minimal or none** -- GitHub shows username next to it |
+| Style | Cinematic, detailed, dramatic | **Bold, simple, iconic** -- must read at 40px |
+| Complexity | Rich scenes with multiple elements | **One strong focal element** |
+
+### Avatar Design Strategy
+
+**The #1 rule: it must read at 40x40 pixels.** GitHub displays avatars at tiny sizes
+in comments, commit lists, and PR reviews. Complex scenes turn to mush. Think app
+icon, not movie poster.
+
+**What works:**
+- A single bold letter or monogram (first initial, stylized)
+- An abstract geometric mark (hexagon, shield, circuit pattern)
+- A clean icon that represents the user's niche (terminal cursor, code brackets, etc.)
+- Strong contrast between foreground and background
+- Flat or minimal gradients -- not photorealistic
+
+**What does NOT work:**
+- Faces or portraits (AI faces look uncanny and age poorly)
+- Detailed scenes with multiple objects
+- Thin lines or small details (invisible at 40px)
+- Text-heavy designs (username is already shown by GitHub)
+- Photorealistic renders (look out of place next to other GitHub avatars)
+
+### Prompt Strategy
+
+**Keep it under 80 words.** Avatar prompts should be much simpler than banner prompts.
+
+**The formula:**
+```
+Square 1:1 profile avatar. [SUBJECT]: [single bold element, described simply].
+[STYLE]: [flat/geometric/minimal, color palette]. [BACKGROUND]: [solid or simple
+gradient]. Clean, high contrast, reads well at small sizes.
+```
+
+### Example Prompts
+
+**Developer/coder identity:**
+```
+Square 1:1 profile avatar. A bold geometric letter "B" made of glowing
+cyan circuit traces on a dark navy background. Clean flat design, no
+gradients, high contrast. Minimal and iconic, reads well at small sizes.
+```
+
+**SEO/tools niche:**
+```
+Square 1:1 profile avatar. A stylized magnifying glass with a code
+bracket inside the lens, glowing teal on a deep charcoal background.
+Flat geometric style, bold shapes, high contrast. Simple and iconic.
+```
+
+**Abstract/branded:**
+```
+Square 1:1 profile avatar. An abstract hexagonal shield shape with
+intersecting geometric lines forming a subtle "A" pattern. Electric
+purple and deep blue gradient on black background. Flat, bold, minimal.
+```
+
+### API Parameters
+
+Same API as banner generation, with these overrides:
+
+```bash
+curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
+  -H "Authorization: Bearer $KIE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "nano-banana-2",
+    "input": {
+      "prompt": "YOUR_AVATAR_PROMPT_HERE",
+      "image_input": [],
+      "google_search": false,
+      "aspect_ratio": "1:1",
+      "resolution": "1K",
+      "output_format": "png"
+    }
+  }'
+```
+
+**Key differences from banners:**
+- `aspect_ratio`: **"1:1"** (not "21:9")
+- `output_format`: **"png"** (better for icons/logos with sharp edges)
+- Resolution: 1K is fine (GitHub resizes to 460x460 anyway)
+
+### Post-Generation UX
+
+1. Save to `assets/avatar.png` in the current working directory
+2. **Show it inline** using the Read tool on `assets/avatar.png`
+3. **Provide a clickable file link** so the user can open it full-size:
+   ```
+   Avatar saved: file:///[absolute-path]/assets/avatar.png
+   ```
+   Use the actual absolute path with forward slashes and `file:///` prefix.
+4. Ask: "Here's your profile avatar. Use it, regenerate, or skip?"
+5. If approved, provide **direct upload instructions**:
+   ```
+   To set as your GitHub profile photo:
+   1. Go to https://github.com/settings/profile
+   2. Click your current avatar (or "Upload a photo")
+   3. Select the file: [absolute-path]/assets/avatar.png
+   4. Crop/adjust and save
+   ```
+   Note: there is NO API for setting the profile photo. It must be uploaded manually.
+   The clickable file link makes this as frictionless as possible.
+
+### When NOT to Generate
+
+- User already has a custom photo they're happy with
+- User explicitly declines
+- KIE_API_KEY is not configured (guide them to set it up, don't block the rest of the report)
+
+### Handling Failures
+
+Same as banner generation:
+1. Regenerate with same prompt (87% text accuracy, but avatars usually have minimal text)
+2. Simplify the prompt further
+3. Avatars rarely need the Pillow fallback since they typically have little or no text
 
 ## Growth Tracking
 
