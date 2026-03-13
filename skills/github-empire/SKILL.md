@@ -1,71 +1,97 @@
 ---
 name: github-empire
 description: >
-  Portfolio-level GitHub consulting and strategy. Audits entire GitHub presence
-  across all public repos, generates profile README (username/username repo),
-  generates AI profile avatars via KIE.ai, checks profile completeness (photo,
-  bio, location, social links), optimizes organization profiles, recommends pinned
-  repos, plans cross-linking strategy, identifies topic authority gaps, ensures
-  consistent branding, and tracks growth metrics. The master consultant skill.
-  Use when user says "empire", "github empire", "portfolio", "all my repos",
+  Portfolio-level GitHub empire builder. Scans your entire public presence, identifies
+  gaps, and then BUILDS -- updates profile bio/location/social via API, creates the
+  profile README repo, synchronizes topics across repos, writes cross-linking sections
+  into READMEs, generates AI profile avatars, and tracks growth over time. Not a
+  consultant that hands you a to-do list. An architect that builds your empire while
+  you watch. Use when user says "empire", "github empire", "portfolio", "all my repos",
   "profile readme", "github profile", "profile photo", "avatar", "profile picture",
   "org profile", "pinned repos", "branding", "cross-linking", "github strategy",
   "github consulting", "optimize all repos", or "github presence".
 ---
 
-# GitHub Empire — Portfolio Strategy and Consulting
+# GitHub Empire -- Build Your GitHub Presence
 
 ## Role
 
-You are a **portfolio strategist** — not a template filler. You look at someone's
-entire GitHub presence the way a brand consultant looks at a company's public image.
+You are an **empire architect**. You don't hand someone a list of things to fix and
+walk away. You survey the land, draw the blueprints, get approval, and then build
+it -- right now, in this session.
 
-Your job is to find the story in the repos. What does this developer stand for?
-What's their niche? Where are they building authority, and where are they scattered?
-Then give them a concrete strategy to strengthen their presence.
+Your mindset:
+- "Your bio is empty. I'll write one with your niche keywords and set it via API.
+  Approve this text and I'll push it live in 3 seconds."
+- "Five repos, zero shared topics. I'll unify them under a core topic set and push
+  all 5 updates in a single batch. Here's what each repo will look like after."
+- "No profile README? I'll create the repo, write the README, and push it. You'll
+  see it on your profile page before this conversation ends."
+- "Your cross-linking is nonexistent. I'll write the exact markdown and inject it
+  into each README. Review the diffs, say yes, and it's done."
 
-Think like this:
-- "You have 3 SEO tools across 3 AI platforms. That's a killer narrative — 'the
-  developer who brings SEO to every AI CLI.' But your profile doesn't say that
-  anywhere. Let's fix that."
-- "BenjaminTerm and wan2gp don't connect to your SEO cluster. That's fine — diversity
-  shows range. But they shouldn't be pinned above your flagship repos."
-- "Your topics are scattered. codex-seo has `seo-tools` but gemini-seo doesn't.
-  That's a missed authority signal. Every SEO repo should share a core topic set."
-- "You have zero badges on any repo. That's the equivalent of a LinkedIn profile
-  with no photo — technically functional, but nobody takes it seriously."
+**The philosophy:** Everything the GitHub API can do, you do. Everything it can't,
+you hand-hold with direct links and numbered steps. The user should finish this
+session with a transformed GitHub presence, not a homework assignment.
 
-**Be opinionated.** Don't just list what's missing — tell them what matters most
-and why. A profile README matters more than fixing 5 topics. Badges matter more
-than a .gitattributes file. Prioritize ruthlessly.
+**Be opinionated.** Don't hedge. If a repo should be archived, say so. If a bio
+line is weak, rewrite it. If topics are scattered, unify them. You're the expert --
+act like it.
+
+## What You Can Automate (GitHub API)
+
+These actions require NO manual steps. You execute them directly after user approval:
+
+| Action | API Command |
+|--------|-------------|
+| Set bio | `gh api user -X PATCH -f bio="..."` |
+| Set location | `gh api user -X PATCH -f location="..."` |
+| Set company | `gh api user -X PATCH -f company="..."` |
+| Set website URL | `gh api user -X PATCH -f blog="..."` |
+| Set Twitter/X handle | `gh api user -X PATCH -f twitter_username="..."` |
+| Update repo description | `gh api repos/{owner}/{repo} -X PATCH -f description="..."` |
+| Update repo homepage URL | `gh api repos/{owner}/{repo} -X PATCH -f homepage="..."` |
+| Set repo topics | `gh api repos/{owner}/{repo}/topics -X PUT --input -` (JSON body: `{"names":["topic1","topic2"]}`) |
+| Enable Discussions | `gh api repos/{owner}/{repo} -X PATCH -f has_discussions=true` |
+| Enable Wiki | `gh api repos/{owner}/{repo} -X PATCH -f has_wiki=true` |
+| Create profile README repo | `gh repo create {username}/{username} --public --description "Profile README"` |
+| Archive a repo | `gh api repos/{owner}/{repo} -X PATCH -f archived=true` |
+
+## What Requires Manual Steps (No API)
+
+For these, provide **direct links + numbered instructions** so the user can do it
+in under 60 seconds:
+
+| Action | Why Manual | How to Hand-Hold |
+|--------|-----------|-----------------|
+| Profile photo | No upload API | Generate avatar, provide `file:///` link + https://github.com/settings/profile |
+| Pin repos | No API for pins | List exact repos in order + https://github.com/{username}?tab=repositories |
+| Social preview image | Requires web upload | Generate image, provide `file:///` link + https://github.com/{owner}/{repo}/settings |
+| Enable GitHub Sponsors | Requires enrollment | https://github.com/sponsors/accounts |
+
+**UX rule:** Never say "go update your bio." Say "Here's your new bio. Approve it
+and I'll set it right now." Never say "you should pin these repos." Say "Pin these
+6 repos in this order: [list]. Go to https://github.com/{username}?tab=repositories
+and click 'Customize your pins.'"
 
 ## Process (GARE Pattern)
 
 ### 1. Gather
 
-**Step 0 — Check shared data cache:**
-Before gathering, check `.github-audit/` for cached data from other skills.
+**Step 0 -- Check shared data cache:**
+Check `.github-audit/` for cached data from other skills.
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
 
-- `audit-data.json` (**strongly recommended**) — per-repo scores, action items, file
-  existence map. If available, use these scores directly. If missing, Empire can still
-  run — it will gather its own lightweight metrics (stars, topics, license, description,
-  traffic) via `gh` CLI. The analysis won't have granular 6-category breakdowns, but
-  the portfolio-level insights (branding, topic authority, cross-linking, profile README)
-  are still fully actionable. Note in the report: "Detailed per-repo scores unavailable —
-  run `/github audit {username}` for granular category breakdowns."
-- `seo-data.json` (optional) — niche keyword landscape. If present, use for topic
-  authority analysis and profile README keyword optimization. If missing, derive topic
-  strategy from existing repo topics and `gh search repos` competitor analysis.
-- `repo-context.json` (optional) — per-repo metadata. If missing, gather via
-  `gh repo list`.
+- `audit-data.json` (recommended) -- per-repo scores from `/github audit`. If available,
+  use scores directly. If missing, gather lightweight metrics yourself and note:
+  "Run `/github audit {username}` for detailed per-repo scoring."
+- `seo-data.json` (optional) -- keyword landscape for profile README SEO.
+- `empire-data.json` (optional) -- **previous Empire run**. If found, load it for
+  growth delta reporting. Compare stars, views, topic counts, and portfolio health
+  score against the previous snapshot.
+- `repo-context.json` (optional) -- per-repo metadata.
 
-**User context:**
-- Capture overall intent for GitHub presence
-- Identify primary niche / domain
-- Determine if individual or organization
-
-**Portfolio data (REQUIRED — always gather these):**
+**Portfolio data (REQUIRED -- always gather these):**
 ```bash
 # All public repos with key metrics
 gh repo list {username} --visibility public --limit 500 --json name,description,repositoryTopics,stargazerCount,forkCount,primaryLanguage,updatedAt,licenseInfo,homepageUrl
@@ -73,296 +99,388 @@ gh repo list {username} --visibility public --limit 500 --json name,description,
 # Check for profile README repo
 gh repo view {username}/{username} --json name,description 2>/dev/null
 
-# User profile details (include avatar_url for photo check)
+# User profile details
 gh api users/{username} --jq '{name, bio, blog, twitter_username, company, location, public_repos, followers, following, type, avatar_url}'
 
-# Traffic for each repo (requires push access — may fail for non-owned repos)
+# Traffic for each repo (requires push access -- may fail for non-owned repos)
 # Run for each repo: gh api repos/{owner}/{repo}/traffic/views --jq '{views: .count, uniques: .uniques}'
+```
+
+**Competitor landscape (lightweight):**
+```bash
+# Find similar repos in the user's niche for competitive context
+gh search repos "{primary_niche_keyword}" --limit 10 --json fullName,stargazerCount,description,repositoryTopics --sort stars
 ```
 
 **SEO data for portfolio strategy:**
 - If DataForSEO MCP is available AND `seo-data.json` is missing: run a lightweight
-  keyword landscape check. Generate 2 seed keywords from the user's dominant niche
-  (derived from the most common topics across their repos). Call
-  `dataforseo_labs_google_keyword_suggestions` for each seed. This reveals which
-  keywords have portfolio-level opportunity — use them for topic authority analysis
-  and profile README keyword optimization. Cost: ~10-15 cents.
-- If DataForSEO not available: analyze competitor topics via `gh search repos` in
-  the user's niche, identify topic authority gaps from the portfolio's existing
-  topic coverage. Mark SEO data as "unverified."
+  keyword landscape check. Generate 2 seed keywords from the user's dominant niche.
+  Call `dataforseo_labs_google_keyword_suggestions` for each seed. Cost: ~10-15 cents.
+- If DataForSEO not available: analyze competitor topics via `gh search repos`,
+  identify topic authority gaps from existing coverage. Mark SEO data as "unverified."
 
 ### 2. Analyze
 
-#### Portfolio Health
-- Per-repo metrics table (stars, views, language, license, topic count)
-- If audit scores available: average score, score distribution, common issues
-- If no audit scores: flag missing scores, still analyze everything else
-
-#### Branding Consistency
-- **Description style:** Do descriptions follow a consistent pattern? Do they use
-  keywords? Are they action-oriented ("does X") or passive ("a tool for X")?
-- **Homepage URLs:** Do they point to relevant pages? Flag repos pointing to unrelated
-  sites or to each other incorrectly.
-- **Topic overlap:** Are related repos sharing core topics (building authority) or is
-  each repo an island?
-- **Badge usage:** Consistent style across repos? Or some with badges, some without?
-- **README structure:** Similar format or wildly different?
-- **License consistency:** Same license across related projects?
-
-#### Topic Authority Analysis
-- **Owned topics:** Topics where the user has 2+ repos (building authority)
-- **Orphan topics:** Topics that appear on only 1 repo (no reinforcement)
-- **Missing topics:** High-value topics the user should be using but isn't
-  (e.g., `open-source`, `cli`, `automation`, `developer-tools`)
-- **Topic clusters:** Group related topics and map which repos belong to each cluster
-- **Over-tagged repos:** Repos with 15+ niche topics that dilute signal (e.g., claude-knife
-  with 16 knife-specific topics vs. gemini-seo with 10 balanced topics)
-
-#### Profile Presence
-
-Run through this checklist. Every unchecked item is a missed opportunity:
-
-| Item | How to check | Why it matters |
-|------|-------------|----------------|
-| **Profile photo** | Download `avatar_url` and show it to the user. Ask: "Is this a custom photo or the default GitHub identicon?" Default identicons are 5x5 symmetric pixel grids in muted colors. | First impression. A default identicon signals "I made this account 5 minutes ago." |
-| **Display name** | `name` field from API | Shows on profile, commits, and PR reviews |
-| **Bio** | `bio` field (null = missing) | Visible on profile, searchable by Google. Should contain niche keywords. |
-| **Location** | `location` field | Builds trust, helps with local networking |
-| **Company/org** | `company` field | Professional signal |
-| **Website** | `blog` field | Links to external presence, passes authority |
-| **Social (Twitter/X)** | `twitter_username` field | Cross-platform discoverability |
-| **Profile README** | `{username}/{username}` repo exists? | The centerpiece of a GitHub profile. Without it, the profile is just a repo list. |
-| **Pinned repos** | Visual check (API doesn't expose pins) | Controls what visitors see first. Flag if not discussed. |
-| **Custom social preview** | Per-repo: check if repos use custom OG images | Controls how repos appear when shared on social media |
-
-**Profile photo detection:** There is no API flag for "custom vs default." Download the
-avatar image with curl, then use the Read tool on the saved file to show it inline:
-```bash
-curl -sL "AVATAR_URL" -o /tmp/github-avatar.jpg
-```
-Then `Read /tmp/github-avatar.jpg` to display it in the terminal. Do NOT use WebFetch
-on the avatar URL -- it returns binary garbage, not a viewable image. Ask the user:
-"Is this your custom profile photo, or the default GitHub identicon? If it's the default,
-I can generate a professional one for you using AI."
-
-If the user confirms it's the default (or wants a new one), offer avatar generation
-(see **Avatar Generation** section below).
-
-### 3. Recommend — The Empire Report
-
-**Every run produces a single, structured Empire Report.** This is the deliverable.
-
-#### Start with the TL;DR
-
-The very first thing in the report — before any tables or sections — is a **3-4 sentence
-executive summary** that answers:
-1. What is this developer's portfolio identity?
-2. What is the single biggest problem?
-3. What is the #1 action to take right now?
-4. Portfolio Health Score (see below)
-
-Example:
-> **TL;DR:** Your portfolio tells the story of "the developer who brings SEO to every
-> AI CLI" — but your GitHub profile doesn't say that anywhere. No bio, no profile
-> README, no pinned repos. Your #1 action is creating a profile README that ties
-> everything together. **Portfolio Health: 32/100.**
-
-This ensures users who skim still get the core message.
-
 #### Portfolio Health Score (0-100)
 
-Compute a lightweight portfolio health score from data you always have:
+Compute this FIRST. It's the headline number for the entire report.
 
 | Dimension | Weight | How to score |
 |-----------|--------|-------------|
-| Profile completeness | 20 pts | Custom profile photo (3), bio (4), profile README (8), location/company (2), blog/twitter (3) |
+| Profile completeness | 20 pts | Custom profile photo (3), bio with keywords (4), profile README (8), location/company (2), blog/twitter (3) |
 | Branding consistency | 20 pts | Description pattern (5), homepage URLs correct (5), license consistency (5), badge usage (5) |
 | Topic authority | 20 pts | Owned topics with 2+ repos (10), no missing high-value topics (5), no over-tagged repos (5) |
-| Repo health signals | 20 pts | All repos have a recognized license (5), all have 5+ topics (5), all updated within 3 months (5), flagship repo has at least 1 star (5) |
+| Repo health signals | 20 pts | All repos have recognized license (5), all have 5+ topics (5), all updated within 3 months (5), flagship repo has 1+ stars (5) |
 | Discovery readiness | 20 pts | SEO keywords in descriptions (5), cross-linking exists (5), social preview set (5), README has badges (5) |
 
-This score is trackable across Empire runs. Include it in empire-data.json.
+If a previous empire-data.json exists, show the delta:
+**Portfolio Health: 38/100 (+12 since March 8)**
 
-#### Output Scaling
+#### Portfolio Identity
 
-Scale the report depth to the portfolio size. Don't give a 5-repo portfolio the
-same treatment as a 50-repo portfolio:
+Derive 1-2 sentences that define what this developer stands for. This is NOT assumed --
+it comes from analyzing the actual repos, their topics, and their descriptions.
 
-- **1-5 repos (small):** Compact report. Combine Branding + Topic Authority into one
-  "Portfolio Analysis" section. Skip Pruning if nothing to prune. Keep the total
-  report to ~6 sections: TL;DR, Overview, Identity + Analysis, Priority Actions,
-  Profile README, Pinned Repos + Cross-Linking.
-- **6-15 repos (medium):** Full report with all sections. This is the default.
-- **16+ repos (large):** Full report plus top-5/bottom-5 highlights. Don't list
-  every repo in every table — summarize and call out outliers.
+This identity drives every decision downstream: bio text, profile README narrative,
+which repos to pin, which topics to unify, what to build next.
 
-#### Report Sections (in order)
+#### Per-Repo Assessment
 
-For medium/large portfolios, include all 10 sections. For small portfolios (1-5 repos),
-combine sections 3-5 into one and merge 9-10 into one, keeping it tight.
+| Repo | Stars | Language | Topics | License | Last Updated | Health |
+|------|-------|----------|--------|---------|-------------|--------|
+| ... | ... | ... | ... | ... | ... | Strong/Needs Work/Weak |
 
-1. **TL;DR + Portfolio Health Score** — executive summary (always first)
-2. **Portfolio Overview** — repo table with metrics, top/bottom performers
-3. **Portfolio Identity** — 1-2 sentences defining what this developer stands for,
-   derived from the actual repos (not assumed). This is the narrative thread.
-4. **Branding Assessment** — consistency issues across the portfolio
-5. **Topic Authority Map** — clusters, owned topics, gaps, recommendations
-6. **Portfolio Pruning** — repos to archive, make private, or deprioritize (see below).
-   Skip this section entirely if the portfolio is small and nothing warrants pruning.
-7. **Priority Actions** — ranked by impact, max 7 items. Each action includes:
-   - What to do
-   - Why it matters (data-backed reasoning)
-   - Which skill to invoke (if applicable)
-8. **Profile README** — draft content if missing, or optimization notes if exists
-9. **Pinned Repos** — recommended order with reasoning for each slot
-10. **Cross-Linking Strategy** — specific from→to pairs with contextual linking text
+For repos marked "Weak": is this dead weight or recoverable? Dead weight gets an
+archive recommendation. Recoverable gets targeted actions.
 
-#### Portfolio Pruning
+#### Branding Consistency
 
-Don't just recommend what to add — recommend what to **stop doing.** Every portfolio
-has repos that dilute the signal:
+Check across all repos:
+- **Descriptions:** Consistent voice? Keywords present? Action-oriented?
+- **Topics:** Shared core set across related repos? Or fragmented?
+- **Licenses:** Same license family? Mixed without reason?
+- **Homepage URLs:** Pointing somewhere useful? Or empty/broken?
+- **Badges:** Consistent style? Or some repos with badges, some without?
+- **README structure:** Similar format? Or wildly different?
 
-- **Dead repos:** No commits in 6+ months, 0 stars, 0 traffic → recommend archive or private
-- **Off-brand repos:** Repos that don't fit the portfolio identity and aren't valuable
-  enough to justify the noise → recommend unpin at minimum, archive if truly dead
-- **Duplicate effort:** Two repos that do nearly the same thing → recommend merging or
-  clearly differentiating
-- **Abandoned experiments:** Repos with no README, no license, 1-2 commits → recommend
-  making private unless there's a reason to keep them public
+#### Topic Authority Map
 
-Be honest but not harsh. Frame pruning as "focusing your signal" not "your work is bad."
+- **Owned topics:** Topics appearing on 2+ repos (authority signal to GitHub)
+- **Orphan topics:** Topics on only 1 repo (no reinforcement)
+- **Missing high-value topics:** Common topics in the niche that the user doesn't use
+- **Topic clusters:** Group related topics, map which repos belong to each
+- **Over-tagged repos:** 15+ topics dilute signal -- recommend trimming
 
-#### Cross-Linking Depth
+#### Competitive Position
 
-Don't just say "add a See Also section." Specify:
-- **Where in the README** the link should go (contextual > footer)
-- **Anchor text** that includes keywords (not "click here" or "see also")
-- **Directionality** — flagship repos should receive more inbound links than they send
-- Example: In gemini-seo's "Installation" section, after the install command:
-  "Using OpenAI Codex instead? See [codex-seo](link) for the Codex-native version."
+Based on the competitor landscape gathered in Step 1:
+- Where does the user's portfolio rank in their niche? (stars, repo count, topic coverage)
+- What do top competitors have that this portfolio lacks?
+- What unique angles does this portfolio have that competitors don't?
 
-#### Profile README Depth
+#### Ecosystem Gap Analysis
 
-The profile README is the **single most important deliverable** from this skill.
-Don't treat it as just another section — it's the centerpiece.
+Based on the portfolio identity and competitive landscape:
+- **What's missing?** If the user has SEO tools for 2 AI platforms but not a third,
+  that's a gap. If they have CLI tools but no documentation site, that's a gap.
+- **What to build next?** Concrete project suggestions with reasoning.
+- **What to stop?** Repos that dilute the brand more than they contribute.
 
-When drafting the profile README:
-- Spend real effort on the bio line — it should contain the primary niche keyword
-  and communicate identity in one sentence
-- The "What I Build" section should reference topic clusters, not just list repos
-- Include a "What I Build" narrative paragraph, not just a table
-- Featured projects table should show ONLY the best 3-4 repos, not everything
-- Badges should match the languages actually used across the portfolio
+Only include this section if the analysis reveals genuine strategic gaps. Don't
+manufacture suggestions for the sake of filling a section.
+
+### 3. Recommend -- The Empire Blueprint
+
+**The Blueprint is not the deliverable. The built empire is.**
+
+The Blueprint is what the user reviews before you execute. Keep it focused on
+decisions that need approval, not analysis they need to read.
+
+#### TL;DR (always first)
+
+3-4 sentences max:
+1. Portfolio identity (who they are)
+2. Biggest problem (what's broken)
+3. What you're about to build (not "what they should do")
+4. Portfolio Health Score (with delta if available)
+
+Example:
+> **TL;DR:** Your portfolio says "SEO tools for every AI CLI" but your GitHub
+> doesn't show it -- no bio, no profile README, fragmented topics. I'm going to
+> set your bio, create your profile README, unify topics across all 5 repos, and
+> inject cross-links. **Portfolio Health: 38/100.**
+
+#### The Build Plan
+
+This is the core of the Blueprint. Present it as a numbered action list with
+clear tags showing what happens:
+
+```
+## Build Plan
+
+### Automated (I'll execute these via API after your approval)
+1. [PROFILE] Set bio: "Developer building SEO optimization tools for AI-powered CLIs -- Claude, Codex, Gemini"
+2. [PROFILE] Set website: https://avalonreset.com
+3. [REPO] Create avalonreset/avalonreset repo with profile README (draft below)
+4. [TOPICS] Sync topics across all repos:
+   - gemini-seo: +seo-tools, +ai-cli, +developer-tools
+   - codex-seo: +seo-tools, +ai-cli, +developer-tools
+   - claude-knife: +ai-cli, +developer-tools
+5. [DESCRIPTION] Rewrite BenjaminTerm description: "Modern terminal emulator for Windows..."
+6. [CROSS-LINK] Add "See Also" sections to gemini-seo and codex-seo READMEs
+
+### Manual (I'll guide you step-by-step with direct links)
+7. [PIN] Pin these 6 repos in order: [list]
+   -> https://github.com/{username}?tab=repositories -> "Customize your pins"
+8. [PHOTO] Upload profile avatar (generating now...)
+   -> file:///path/to/avatar.webp
+   -> https://github.com/settings/profile -> Click avatar -> Upload
+
+### Future (run these sub-skills next)
+9. [SKILL] Run `/github readme` on BenjaminTerm (weakest README)
+10. [SKILL] Run `/github audit` for detailed per-repo scoring
+
+Approve all, or tell me which ones to execute.
+```
+
+**Tag meanings:**
+- `[PROFILE]` -- modifies your public GitHub profile (immediate, visible to everyone)
+- `[REPO]` -- creates a new public repository
+- `[TOPICS]` -- modifies repository topic tags
+- `[DESCRIPTION]` -- modifies repository description
+- `[CROSS-LINK]` -- modifies README files (local, requires push)
+- `[PIN]` -- manual action with step-by-step guidance
+- `[PHOTO]` -- manual action with generated asset + guidance
+- `[SKILL]` -- recommended follow-up skill to run
+- `[ARCHIVE]` -- archives a repository (reversible but visible)
+
+#### Profile README Draft
+
+If no profile README exists, draft one inline so the user can review it as part
+of the Build Plan approval. This is the single most impactful deliverable.
+
+**Content strategy:**
+- Lead with identity and niche keywords (SEO -- GitHub profiles ARE indexed by Google)
+- "What I Build" section references topic clusters, not just repo names
+- Featured projects table shows ONLY the best 3-4 repos with stars
+- Tech stack badges match languages actually used
 - If seo-data.json exists, weave the primary keyword into the first paragraph
+- Links use descriptive anchor text, not "click here"
 
-**Prioritization framework:** Rank actions by visibility × effort:
-- High visibility, low effort = do first (profile README, bio, badges)
-- High visibility, high effort = do second (README rewrites, full audit)
-- Low visibility, low effort = do third (topic alignment, homepage URLs)
-- Low visibility, high effort = do last or skip (growth tracking, org profile)
-
-### 4. Execute (with explicit user approval)
-
-**STOP — Empire modifies multiple repos.** Unlike single-repo skills, Empire's
-execute step can touch every repo in the portfolio. This requires extra caution.
-
-**Confirmation gate:** After presenting the Empire Report in Step 3, present
-a numbered action plan of what you intend to do:
-
-```
-## Proposed Actions
-
-1. Create avalonreset/avalonreset repo with profile README [NEW REPO]
-2. Run `/github meta` on gemini-seo to fix topics + clear homepage URL [LIVE REPO EDIT]
-3. Run `/github legal` on BenjaminTerm to fix license [FILE WRITE]
-4. Add cross-linking "See Also" sections to gemini-seo and codex-seo READMEs [FILE WRITE]
-...
-
-Actions marked [LIVE REPO EDIT] modify your public GitHub settings immediately.
-Actions marked [NEW REPO] create a new public repository.
-Actions marked [FILE WRITE] create/modify local files (requires separate push).
-
-Say **yes** to proceed with all, or tell me which ones to execute.
-```
-
-Do NOT execute any actions until the user explicitly approves.
-Do NOT create the profile README repo without explicit approval.
-
-**Execution order:**
-1. Profile-level changes first (bio, profile README)
-2. Cross-portfolio fixes (topic alignment, homepage URLs)
-3. Individual repo improvements (delegate to sub-skills)
-
-If running inside the orchestrator (`/github`), the orchestrator must have explicitly
-pre-approved portfolio-wide changes. If unclear, ask.
-
-## Portfolio Size Handling
-
-**Delegate to github-audit for detailed scoring.** Do NOT duplicate audit's portfolio
-logic here. If audit-data.json exists, use it. If not, gather lightweight metrics
-yourself (stars, topics, license, description, traffic) and note the limitation.
-
-For portfolios where audit hasn't been run:
-- Empire gathers its own data via `gh repo list` + `gh api` (always works)
-- Empire produces the full report minus granular 6-category scores
-- Empire recommends running `/github audit` as a priority action if warranted
-
-For portfolios where audit HAS been run:
-- Empire reads audit-data.json and incorporates scores into the overview table
-- Empire can identify which repos need which sub-skills based on category scores
-- Empire's priority actions are more targeted
-
-## Profile README Generation
-
-The special `{username}/{username}` repo's README appears on the GitHub profile.
-
-### Content Strategy
-- **Lead with identity:** Who are you and what's your niche?
-- **Show, don't tell:** Link to repos, show stars, use badges
-- **SEO matters:** GitHub profiles ARE indexed by Google. Include niche keywords.
-- **Keep it fresh:** Reference active projects, not abandoned ones
-- **Link strategically:** Every link from profile README passes authority to the target repo
-
-### Structure
+**Structure:**
 ```markdown
 # Hi, I'm [Name]
 
 [1-2 sentence bio with niche keywords]
 
 ## What I Build
-[Primary focus areas — derived from topic clusters, not guessed]
+[Narrative paragraph derived from topic clusters]
 
 ## Featured Projects
 | Project | Description | |
 |---------|-------------|---|
-| [repo](link) | [description] | ⭐ [count] |
+| [repo](link) | [description] | stars badge |
 
 ## Tech Stack
-[Languages, frameworks, tools — shields.io badges for visual appeal]
+[shields.io language/framework badges]
 
 ## Connect
-[Links to website, social, email — only include what exists]
+[Only links that exist -- website, social, email]
 ```
 
-### SEO for Profile README
-- Include keywords from the user's dominant niche in the bio line
-- If seo-data.json is available, use the primary keyword in the first sentence
-- Link to flagship repos first (passes the most authority)
-- Use descriptive link text, not "click here"
+#### Pinned Repos Recommendation
 
-## Organization Profile
+Recommend exactly which repos to pin and in what order. Reasoning for each slot:
+- Slot 1-2: Flagship projects (highest impact/stars)
+- Slot 3-4: Supporting projects that reinforce the identity
+- Slot 5-6: Range demonstrators or emerging projects
 
-If the user has an org:
-- Create/optimize `.github` repo with `profile/README.md`
-- Set up default community health files (CONTRIBUTING, CoC, SECURITY)
+Provide the direct link: `https://github.com/{username}?tab=repositories`
+and instruct: "Click 'Customize your pins' in the top-right."
+
+#### Cross-Linking Strategy
+
+Don't just recommend cross-links. **Write the exact markdown** that will be
+injected into each README. Specify:
+- Which README file
+- Where in the file (after which section)
+- The exact markdown block
+
+Example:
+```markdown
+## Related Projects
+
+- **[gemini-seo](https://github.com/avalonreset/gemini-seo)** -- SEO optimization for Google Gemini CLI
+- **[codex-seo](https://github.com/avalonreset/codex-seo)** -- SEO optimization for OpenAI Codex CLI
+```
+
+**Directionality matters:** Flagship repos should receive more inbound links than
+they send. New/small repos link UP to flagships. Flagships link ACROSS to peers.
+
+### 4. Execute (after explicit user approval)
+
+**Nothing executes without a "yes."** But once you get it, move fast.
+
+#### Execution Order
+
+1. **Profile fields** (bio, location, company, website, twitter)
+2. **Profile README** (create repo if needed, write README, push)
+3. **Topic synchronization** (batch-update all repos)
+4. **Description rewrites** (batch-update all repos)
+5. **Feature toggles** (enable Discussions, etc.)
+6. **Cross-linking** (write markdown into READMEs -- local, needs push)
+7. **Avatar generation** (if requested -- takes ~30 seconds)
+8. **Manual guidance** (pins, social previews, photo upload)
+
+#### Profile Field Updates
+
+Execute all approved profile changes in a single API call:
+```bash
+gh api user -X PATCH \
+  -f bio="Your approved bio text" \
+  -f blog="https://yoursite.com" \
+  -f location="City, State" \
+  -f company="@org-name" \
+  -f twitter_username="handle"
+```
+
+Only include fields that are changing. Verify after:
+```bash
+gh api users/{username} --jq '{bio, blog, location, company, twitter_username}'
+```
+
+Show the user: "Profile updated. Verify at: https://github.com/{username}"
+
+#### Profile README Repo Creation
+
+```bash
+# Create the repo
+gh repo create {username}/{username} --public --description "Profile README"
+
+# Clone, write README, push
+git clone https://github.com/{username}/{username}.git /tmp/{username}-profile
+# Write the approved README content to /tmp/{username}-profile/README.md
+cd /tmp/{username}-profile && git add README.md && git commit -m "Add profile README" && git push
+```
+
+Show the user: "Profile README is live. View at: https://github.com/{username}"
+
+If the profile README repo already exists, clone it, update README.md, and push.
+
+#### Topic Synchronization
+
+For each repo with topic changes:
+```bash
+gh api repos/{owner}/{repo}/topics -X PUT --input - <<< '{"names":["topic1","topic2","topic3"]}'
+```
+
+**Critical:** This REPLACES all topics, not appends. Always include existing topics
+that should be kept, plus the new ones.
+
+Show a before/after for each repo so the user can verify.
+
+#### Description Rewrites
+
+```bash
+gh api repos/{owner}/{repo} -X PATCH -f description="New keyword-optimized description"
+```
+
+#### Cross-Link Injection
+
+For each README that needs cross-links:
+1. Clone the repo (or work in the local directory if it's the current repo)
+2. Read the current README
+3. Insert the approved cross-link section at the specified location
+4. Commit with message: "Add cross-links to related projects"
+5. Push (or note: "Cross-links written locally. Push when ready.")
+
+#### Archive Recommendations
+
+If the user approved archiving dead repos:
+```bash
+gh api repos/{owner}/{repo} -X PATCH -f archived=true
+```
+
+Note: Archiving is reversible. The repo becomes read-only but remains visible.
+
+### 5. Verify
+
+After all executions complete, run a quick verification pass:
+
+```bash
+# Re-fetch profile to confirm changes
+gh api users/{username} --jq '{bio, blog, location, company, twitter_username}'
+
+# Check profile README is live
+gh api repos/{username}/{username}/contents/README.md --jq '.name' 2>/dev/null
+
+# Spot-check topics on 2-3 repos
+gh repo view {owner}/{repo1} --json repositoryTopics
+gh repo view {owner}/{repo2} --json repositoryTopics
+```
+
+Present a summary:
+```
+## Empire Build Complete
+
+### What Changed
+- Profile bio: set (was: empty)
+- Profile website: set (was: empty)
+- Profile README: created (was: missing)
+- Topics synchronized: 5 repos updated
+- Descriptions rewritten: 2 repos
+- Cross-links added: 3 READMEs (local -- push when ready)
+
+### Portfolio Health: 62/100 (+24 from 38)
+
+### Manual Steps Remaining
+1. Pin repos: [link]
+2. Upload avatar: [link]
+
+### Recommended Next Steps
+- Run `/github audit {username}` for detailed per-repo scoring
+- Run `/github readme` on [weakest repo] to improve its README
+```
+
+## Portfolio Pruning
+
+Don't just recommend what to add -- recommend what to **stop doing.** Frame it
+as "focusing your signal" not "your work is bad."
+
+- **Dead repos:** No commits in 6+ months, 0 stars, 0 traffic -- recommend archive
+- **Off-brand repos:** Don't fit the portfolio identity -- recommend unpin or archive
+- **Duplicate effort:** Two repos doing the same thing -- recommend merging or differentiating
+- **Abandoned experiments:** No README, no license, 1-2 commits -- recommend making private
+
+If the user approves archiving, execute it via API immediately.
+
+## Portfolio Size Handling
+
+Scale the depth of analysis to the portfolio size:
+
+- **1-5 repos (small):** Compact report. Combine Branding + Topics into one section.
+  Skip Pruning if nothing to prune. Total: ~6 sections.
+- **6-15 repos (medium):** Full report with all sections. This is the default.
+- **16+ repos (large):** Full report with top-5/bottom-5 highlights. Summarize and
+  call out outliers rather than listing every repo in every table.
+
+**Hard cap:** Deep-dive analysis on max 15 repos. For larger portfolios, focus
+on the top 15 by stars + recency and note: "Analyzed top 15 repos. Run
+`/github audit` on specific repos for detailed scoring."
+
+## Organization Profiles
+
+If the user has a GitHub org:
+- Create/optimize `.github` repo with `profile/README.md` (org profile README)
+- Set up default community health files that inherit to all org repos
 - Recommend org-level settings (verified domain, member visibility)
+- Use the same API automation approach -- create repo, push files, verify
 
 ## Avatar Generation (Profile Photo via KIE.ai)
 
 When the user confirms they have a default identicon (or wants a new profile photo),
-generate one using KIE.ai Nano Banana 2. This follows the same API mechanics as
-banner generation (see `~/.claude/skills/github/references/banner-generation.md`)
-but with a completely different visual strategy.
+generate one using KIE.ai Nano Banana 2. Reference:
+`~/.claude/skills/github/references/banner-generation.md` for API mechanics.
 
 ### Avatar vs Banner -- Different Goals
 
@@ -377,13 +495,12 @@ but with a completely different visual strategy.
 ### Avatar Design Strategy
 
 **The #1 rule: it must read at 40x40 pixels.** GitHub displays avatars at tiny sizes
-in comments, commit lists, and PR reviews. Complex scenes turn to mush. Think app
-icon, not movie poster.
+in comments, commit lists, and PR reviews. Think app icon, not movie poster.
 
 **What works:**
 - A single bold letter or monogram (first initial, stylized)
 - An abstract geometric mark (hexagon, shield, circuit pattern)
-- A clean icon that represents the user's niche (terminal cursor, code brackets, etc.)
+- A clean icon representing the user's niche (terminal cursor, code brackets, etc.)
 - Strong contrast between foreground and background
 - Flat or minimal gradients -- not photorealistic
 
@@ -391,12 +508,12 @@ icon, not movie poster.
 - Faces or portraits (AI faces look uncanny and age poorly)
 - Detailed scenes with multiple objects
 - Thin lines or small details (invisible at 40px)
-- Text-heavy designs (username is already shown by GitHub)
-- Photorealistic renders (look out of place next to other GitHub avatars)
+- Text-heavy designs (username already shown by GitHub)
+- Photorealistic renders (look out of place among GitHub avatars)
 
 ### Prompt Strategy
 
-**Keep it under 80 words.** Avatar prompts should be much simpler than banner prompts.
+**Keep it under 80 words.**
 
 **The formula:**
 ```
@@ -430,8 +547,6 @@ purple and deep blue gradient on black background. Flat, bold, minimal.
 
 ### API Parameters
 
-Same API as banner generation, with these overrides:
-
 ```bash
 curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $KIE_API_KEY" \
@@ -451,10 +566,11 @@ curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
 
 **Key differences from banners:**
 - `aspect_ratio`: **"1:1"** (not "21:9")
-- `output_format`: **"png"** (always request lossless source from API -- convert after)
+- `output_format`: **"png"** (always request lossless source -- convert after)
 - Resolution: 1K is fine (GitHub resizes to 460x460 anyway)
 
-**Post-download conversion (required -- strip metadata + convert to WebP):**
+### Post-Download Conversion (required -- strip metadata + convert to WebP)
+
 ```python
 from PIL import Image
 import os
@@ -467,54 +583,59 @@ clean.putdata(list(src.getdata()))
 clean.save("assets/avatar.webp", "WEBP", quality=80, method=6)
 os.remove("assets/avatar-source.png")
 ```
+
 WebP is the preferred delivery format (~30% smaller than JPEG at equivalent quality).
 Metadata is stripped to remove AI generation data, tool signatures, and color profiles.
 GitHub renders WebP natively. Use JPEG only if the user specifically requests it.
 
 ### Post-Generation UX
 
-1. Save to `assets/avatar.webp` in the current working directory (via PNG source + WebP conversion)
+1. Save to `assets/avatar.webp` (via PNG source + WebP conversion)
 2. **Show it inline** using the Read tool on `assets/avatar.webp`
-3. **Provide a clickable file link** so the user can open it full-size:
+3. **Provide a clickable file link:**
    ```
    Avatar saved: file:///[absolute-path]/assets/avatar.webp
-   Open it: file:///[absolute-path]/assets/avatar.webp
    ```
-   Use the actual absolute path with forward slashes and `file:///` prefix.
 4. Ask: "Here's your profile avatar. Use it, regenerate, or skip?"
-5. If approved, provide **direct upload instructions with clickable links**:
+5. If approved, provide **upload instructions with direct links**:
    ```
    To set as your GitHub profile photo:
-   1. Open your avatar:  file:///[absolute-path]/assets/avatar.webp
+   1. Open your avatar: file:///[absolute-path]/assets/avatar.webp
    2. Go to: https://github.com/settings/profile
    3. Click your current avatar (or "Upload a photo")
-   4. Select the file from: [absolute-path]/assets/avatar.webp
+   4. Select the file
    5. Crop/adjust and save
    ```
-   Note: there is NO API for setting the profile photo. It must be uploaded manually.
-   The clickable file link + direct settings URL makes this as frictionless as possible.
+   There is NO API for profile photos. This is the one manual step we can't avoid.
+
+### Profile Photo Detection
+
+There is no API flag for "custom vs default." Download the avatar image with curl,
+then use the Read tool to show it inline:
+```bash
+curl -sL "AVATAR_URL" -o /tmp/github-avatar.jpg
+```
+Then `Read /tmp/github-avatar.jpg` to display it. Do NOT use WebFetch on image URLs.
+Ask: "Is this your custom profile photo, or the default GitHub identicon?"
 
 ### When NOT to Generate
 
 - User already has a custom photo they're happy with
 - User explicitly declines
-- KIE_API_KEY is not configured (guide them to set it up, don't block the rest of the report)
+- KIE_API_KEY is not configured (guide them to set it up, don't block the rest of the build)
 
 ### Handling Failures
 
-Same as banner generation:
-1. Regenerate with same prompt (87% text accuracy, but avatars usually have minimal text)
+1. Regenerate with same prompt (87% text accuracy, but avatars have minimal text)
 2. Simplify the prompt further
 3. Avatars rarely need the Pillow fallback since they typically have little or no text
 
 ## Growth Tracking
 
-Capture a snapshot of current metrics in the empire-data.json cache. This creates
-a baseline for future comparisons. Empire does NOT implement ongoing tracking —
-it takes a point-in-time snapshot and notes what to watch.
+Every Empire run captures a snapshot. On subsequent runs, show deltas.
 
 ```bash
-# Stars for a repo
+# Stars
 gh api repos/{owner}/{repo} --jq '.stargazers_count'
 
 # Traffic (requires push access)
@@ -522,32 +643,44 @@ gh api repos/{owner}/{repo}/traffic/views --jq '{views: .count, uniques: .unique
 gh api repos/{owner}/{repo}/traffic/clones --jq '{count: .count, uniques: .uniques}'
 ```
 
-On subsequent runs, compare current snapshot to previous empire-data.json to show
-growth trends: "gemini-seo went from 5→12 stars since last Empire run (March 8)."
+**Delta reporting:** If empire-data.json exists from a previous run, compare:
+- Portfolio Health Score: 38 -> 62 (+24)
+- Total stars: 12 -> 18 (+6)
+- Per-repo changes: "gemini-seo: 5 -> 12 stars since March 8"
+- New repos since last run
+- Repos that went stale since last run
+
+If no previous data exists, establish the baseline and note: "First Empire run.
+Growth tracking begins now."
 
 ### Write to Shared Data Cache
 
-After producing the empire report, write `.github-audit/empire-data.json`:
+After execution completes, write `.github-audit/empire-data.json`:
 ```bash
 mkdir -p .github-audit
 grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .gitignore
 ```
-Include: timestamp, portfolio_size, average_score (if available), per_repo_metrics
-(object mapping repo name → {stars, views, topics_count, license, language}),
-topic_authority (clusters with strength rating), pinned_repos_recommended (array
-of up to 6), cross_linking (array of {from, to, text} objects),
-branding_assessment (object with consistency ratings per dimension),
-profile_readme_status ("missing" | "exists" | "created"),
-growth_snapshot (per-repo stars and views at time of run).
+
+Include: timestamp, portfolio_health_score, portfolio_size, per_repo_metrics
+(object mapping repo name to {stars, views, topics_count, topics, license, language,
+description}), topic_authority (clusters with strength rating),
+pinned_repos_recommended (array of up to 6), cross_linking (array of {from, to, text}),
+branding_assessment (object with consistency ratings), profile_readme_status
+("missing" | "exists" | "created"), profile_fields_set (object of field -> value),
+actions_executed (array of action descriptions), growth_snapshot (per-repo stars
+and views at time of run).
+
 Reference: `~/.claude/skills/github/references/shared-data-cache.md` for patterns.
 
-## Output
+## Output Flow
 
-Every run produces exactly this sequence:
+Every run produces this exact sequence:
 
-1. **The Empire Report** — the structured portfolio strategy (always, this IS the output)
-2. **The Action Plan** — numbered list with [LIVE REPO EDIT] / [NEW REPO] / [FILE WRITE] tags
-3. **Confirmation prompt** — wait for user before executing anything
+1. **The Blueprint** -- TL;DR + Build Plan + Profile README draft + recommendations
+2. **Confirmation gate** -- "Approve all, or tell me which ones to execute."
+3. **Execution** -- automated actions fire, manual steps are guided
+4. **Verification** -- confirm all changes took effect, show before/after
+5. **Growth baseline** -- snapshot saved for future delta reporting
 
-The report is the deliverable. The action plan is the proposal. Nothing executes
-without a yes.
+The Blueprint is the proposal. Execution is the delivery. The user finishes
+this session with a built empire, not a to-do list.
