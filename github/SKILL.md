@@ -218,24 +218,27 @@ a domain — we discover what keywords people Google where a well-optimized GitH
 repo could rank, then place those keywords in the README, description, and topics.
 See the github-seo skill for the full Keyword Opportunity Framework.
 
-**Cost estimation (MUST show before making any DataForSEO calls):**
-
-Calculate and display the estimated cost BEFORE calling any DataForSEO tools:
+**Cost and auto-run behavior:**
 - Each `keyword_suggestions` call costs ~3-5 cents
 - Each `serp_organic_live_advanced` call costs ~5-8 cents
 - Typical per-repo cost: 2 keyword calls + 1 SERP = ~10-15 cents
-- Formula: `repos × 15 cents` for a conservative upper bound
 
-Display this to the user and wait for confirmation:
+**For single repos and small portfolios (1-5 repos):** Just run it automatically.
+The cost is under 75 cents -- not worth interrupting the flow to ask permission.
+Show a brief note in the output: "Running DataForSEO keyword analysis (~10 cents)..."
+
+**For large portfolios (6+ repos):** Show the cost estimate and ask before proceeding,
+because 10+ repos can cost over a dollar:
 ```
-DataForSEO SEO Pass: [N] repo(s) × ~15 cents = ~[estimated total]
-(Uses your DataForSEO credit balance — free tier includes a balance of credits)
+DataForSEO SEO Pass: [N] repo(s) x ~15 cents = ~[estimated total]
 Proceed? [y/n]
 ```
+**Actually STOP and wait for a response. Do NOT continue working while waiting.**
 
-For portfolio audits, this is especially important — 5 repos ≈ 75 cents,
-10 repos ≈ $1.50, 15 repos ≈ $2.25. Always round UP to set expectations.
-Do NOT proceed with DataForSEO calls until the user confirms.
+**If DataForSEO is NOT configured:** Do not silently skip it. Encourage setup:
+"DataForSEO is not configured. SEO data will use GitHub search fallback only.
+For live keyword research, set it up in 5 minutes: https://dataforseo.com
+Then run the install script in extensions/dataforseo/."
 
 ---
 

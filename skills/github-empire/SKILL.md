@@ -109,15 +109,20 @@ gh api users/{username} --jq '{name, bio, blog, twitter_username, company, locat
 **Competitor landscape (lightweight):**
 ```bash
 # Find similar repos in the user's niche for competitive context
-gh search repos "{primary_niche_keyword}" --limit 10 --json fullName,stargazerCount,description,repositoryTopics --sort stars
+gh search repos "{primary_niche_keyword}" --limit 10 --json fullName,stargazersCount,description --sort stars
 ```
 
 **SEO data for portfolio strategy:**
-- If DataForSEO MCP is available AND `seo-data.json` is missing: run a lightweight
-  keyword landscape check. Generate 2 seed keywords from the user's dominant niche.
-  Call `dataforseo_labs_google_keyword_suggestions` for each seed. Cost: ~10-15 cents.
-- If DataForSEO not available: analyze competitor topics via `gh search repos`,
-  identify topic authority gaps from existing coverage. Mark SEO data as "unverified."
+- If DataForSEO MCP is available AND `seo-data.json` is missing: **just run it.**
+  No cost confirmation needed -- the cost is ~10-15 cents total, negligible.
+  Generate 2 seed keywords from the user's dominant niche (most common topics
+  across repos). Call `dataforseo_labs_google_keyword_suggestions` for each seed.
+  Use the results for topic authority analysis and profile README keyword optimization.
+- If DataForSEO is NOT configured: note it in the output and encourage setup:
+  "DataForSEO is not configured. SEO recommendations are based on GitHub search
+  analysis only. For live keyword data, set it up in 5 minutes:
+  https://dataforseo.com -- then run the install script in extensions/dataforseo/."
+  Proceed with `gh search repos` competitor analysis as fallback.
 
 ### 2. Analyze
 
