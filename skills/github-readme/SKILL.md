@@ -322,6 +322,23 @@ Reference: Read `~/.claude/skills/github/references/banner-generation.md` sectio
 8. Show the user the result via Read tool, provide clickable links, and provide
    the manual upload instructions for https://github.com/{owner}/{repo}/settings.
 
+**Fallback: No banner exists (new project or banner was skipped):**
+If there is no banner to feed as image_input, generate the social preview from
+scratch as a standalone KIE.ai call at 16:9. Use this prompt formula:
+
+```
+Professional 16:9 social preview card for a GitHub project called "[Project Name]".
+Dark background with [color accent matching project theme]. Text "[Project Name]"
+centered in bold white sans-serif, subtitle "[one-line description]" below in
+smaller text. Clean, modern tech aesthetic. Centered composition with padding
+on all edges (critical for the 2:1 crop that follows).
+```
+
+Then run the same crop/resize/JPEG pipeline as the banner-based path (steps 3-8).
+The key difference: explicitly ask for centered composition with edge padding,
+because there's no existing design to recompose from and the 2:1 crop will trim
+the top and bottom.
+
 **When to skip (the ONLY valid reasons):**
 - User explicitly says they don't want a social preview
 - Repo is private (social sharing is unlikely)
@@ -329,6 +346,8 @@ Reference: Read `~/.claude/skills/github/references/banner-generation.md` sectio
 - KIE_API_KEY is not available (banner was also skipped)
 
 If the banner was generated, the social preview MUST be generated. No exceptions.
+If the banner was skipped but KIE_API_KEY is available, offer to generate a
+standalone social preview using the fallback prompt above.
 
 ### H1 (Exactly One)
 - Format: `# Project Name - Keyword-rich tagline`
