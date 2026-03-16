@@ -27,6 +27,7 @@ Claude GitHub is the most comprehensive collection of Claude Code skills for Git
 - [How the Audit Works](#how-the-audit-works)
 - [How to Add Skills to Claude Code](#how-to-add-skills-to-claude-code)
 - [Getting Started](#getting-started)
+- [Standard Operating Procedure](#standard-operating-procedure)
 - [How Claude Code Skills Communicate](#how-claude-code-skills-communicate)
 - [Architecture](#architecture)
 - [Best Practices](#best-practices)
@@ -88,7 +89,7 @@ Topics recommended: claude-code, claude-code-skills, github-optimization...
 
 ### Workflow
 
-Run `/github audit`, then follow the action items with the matching sub-command. The audit caches its findings so downstream skills like `/github readme` and `/github meta` pick up where it left off.
+Run `/github audit` and it generates a numbered Standard Operating Procedure with your scores. Run each skill in order: legal, community, release, seo, meta, readme. Each skill hands off to the next. Re-audit at the end to measure your improvement.
 
 ## How the Audit Works
 
@@ -162,14 +163,32 @@ claude
 > /github audit   # Claude can't see your code, configs, or git remote
 ```
 
-### Recommended Workflow
+### Standard Operating Procedure
 
-1. Open Claude Code in your project's root directory (where `.git/` lives)
-2. Run `/github audit` to get your baseline score and identify gaps
-3. Follow the action items using the matching sub-commands (`/github legal`, `/github readme`, etc.)
-4. Run `/github audit` again to measure your improvement
+The audit generates a numbered remediation plan tailored to your repo's scores. Run each skill in order. Each one hands off to the next when it's done.
 
-Each skill caches its findings in a `.github-audit/` directory so downstream skills build on previous results instead of starting from scratch.
+**Phase 1: Per-Repo Optimization** (repeat for each repo)
+
+| Step | Command | What It Does |
+|------|---------|-------------|
+| 0 | `/github audit` | Diagnose: scores 6 categories, generates your SOP |
+| 1 | `/github legal` | Foundation: license, compliance, fork obligations |
+| 2 | `/github community` | Infrastructure: templates, CoC, devcontainer |
+| 3 | `/github release` | Versioning: CHANGELOG, badges, catch-up releases |
+| 4 | `/github seo` | Research: keyword data for description and README |
+| 5 | `/github meta` | Settings: description, topics, features (uses SEO data) |
+| 6 | `/github readme` | Capstone: README optimization (uses everything above) |
+| 7 | `/github audit` | Measure: re-audit to verify improvement |
+
+Skills scoring 90+ are skipped automatically. Each skill ends with a handoff telling you exactly what to run next. Each skill caches its findings in a `.github-audit/` directory so downstream skills build on previous results instead of starting from scratch.
+
+**Phase 2: Portfolio Optimization** (run once, after all repos are done)
+
+| Command | What It Does |
+|---------|-------------|
+| `/github empire` | Profile README, cross-linking, topic sync, branding, avatar |
+
+Empire assumes each repo is already in good shape. Always finish Phase 1 on all your repos first.
 
 ### What the Skills Read From Your Project
 
@@ -235,7 +254,7 @@ Getting the most out of the skill suite comes down to running from the right pla
 
 **Run audit first.** Always start with `/github audit`. It produces the baseline score and caches findings that every other skill reads. Without it, downstream skills gather data from scratch, which works but takes longer and misses cross-category insights.
 
-**Follow the recommended order.** After the audit: `/github legal` (license, security, citation), `/github readme` (content and banner), `/github meta` (description and topics), `/github community` (health files, .gitattributes, CI workflow), `/github release` (versioning and changelog), `/github seo` (keyword verification). Each skill builds on the cache from previous steps.
+**Follow the SOP.** After the audit, run skills in the order shown in the [Standard Operating Procedure](#standard-operating-procedure): legal, community, release, seo, meta, readme. Each skill hands off to the next and builds on the cache from previous steps.
 
 **Review before executing.** Every skill pauses at a confirmation gate before making live changes (pushing releases, editing repo settings, creating files). Read the proposal, adjust if needed, then approve.
 
