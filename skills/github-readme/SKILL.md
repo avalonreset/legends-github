@@ -515,3 +515,22 @@ Re-score the generated README against the same 7 criteria.
 - List of changes made with reasoning
 - Keyword integration summary
 - Image format audit: flag any existing repo images using the wrong format or >1MB
+
+### Post-Generation Image Links (REQUIRED)
+
+After generating or placing ANY image (banner, social preview, screenshot), always
+output clickable links so the user can access the file immediately:
+
+1. **Local file link:** `file:///[absolute-path]/assets/banner.webp`
+2. **Raw GitHub URL** (after push): `https://raw.githubusercontent.com/{owner}/{repo}/main/assets/banner.webp`
+3. **If the image doubles as a social preview**, also include the upload instructions:
+   ```
+   To set as your repo's social preview:
+   1. Download: https://raw.githubusercontent.com/{owner}/{repo}/main/{path}
+   2. Go to: https://github.com/{owner}/{repo}/settings
+   3. Scroll to "Social preview" > "Edit" > "Upload an image"
+   4. Save changes
+   ```
+
+Replace all placeholders with actual values. Never output just a relative path
+like `assets/banner.webp` without the clickable link next to it.

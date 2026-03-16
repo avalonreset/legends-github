@@ -372,12 +372,16 @@ exactly where the file is AND exactly where to upload it. If they need to change
 setting, link them to the exact page. Make the manual parts as close to automated
 as possible.
 
-**Social preview image rule:** When a social preview or banner image exists in the
-repo (check `screenshots/`, `assets/`, and root), ALWAYS include the raw GitHub URL
-to that image so it's clickable in the terminal:
-`https://raw.githubusercontent.com/{owner}/{repo}/main/{path/to/image.png}`
-Plus the settings page URL for upload. Never just mention the file path without the
-clickable download link.
+**Generated image link rule (banners, avatars, social previews):** Whenever ANY
+image is generated or referenced for manual upload, ALWAYS output TWO clickable links:
+1. **Local:** `file:///[absolute-path]/image.webp` (for immediate access)
+2. **Remote:** `https://raw.githubusercontent.com/{owner}/{repo}/main/{path}` (after push)
+Plus the relevant settings/upload URL. Never just mention a relative path like
+`assets/banner.webp` without the clickable link. This applies to:
+- README banners (github-readme skill)
+- Social preview images (github-meta skill)
+- Profile avatars (github-empire skill)
+- Any other generated image that requires manual upload
 
 **Image format pipeline:** All AI-generated images (banners, avatars) follow the
 same flow: request PNG from KIE.ai (lossless source) then convert to WebP (quality
