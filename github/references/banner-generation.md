@@ -361,14 +361,12 @@ years. There is no compatibility concern for GitHub-hosted content.
 
 ### Applying This to Avatars
 
-Same pipeline as banners, but GitHub rejects WebP for profile photo uploads:
+Same pipeline as banners, but always deliver as JPEG:
 1. Request PNG from KIE.ai (`output_format: "png"`, `aspect_ratio: "1:1"`)
 2. Download as `assets/avatar-source.png`
-3. Strip metadata to create clean PNG: `assets/avatar.png`
-4. Check file size. If under 1MB, deliver as PNG (best quality for flat graphics).
-   If over 1MB, convert to JPEG (quality 85): `assets/avatar.jpg`
-5. Delete the source file
-6. Provide `file:///` link for the user to upload
+3. Strip metadata + convert to JPEG: `assets/avatar.jpg` (quality 85)
+4. Delete the source PNG
+5. Provide `file:///` link to the JPEG for the user to upload
 
 ```python
 from PIL import Image
@@ -377,25 +375,15 @@ import os
 src = Image.open("assets/avatar-source.png")
 clean = Image.new(src.mode, src.size)
 clean.putdata(list(src.getdata()))
-
-# Try PNG first (lossless, best for flat graphics)
-clean.save("assets/avatar.png", "PNG", optimize=True)
-if os.path.getsize("assets/avatar.png") <= 1_048_576:
-    delivery = "assets/avatar.png"
-else:
-    # PNG too large, fall back to JPEG
-    clean.convert("RGB").save("assets/avatar.jpg", "JPEG", quality=85, optimize=True)
-    os.remove("assets/avatar.png")
-    delivery = "assets/avatar.jpg"
-
+clean.convert("RGB").save("assets/avatar.jpg", "JPEG", quality=85, optimize=True)
 os.remove("assets/avatar-source.png")
-print(f"Avatar saved: {delivery} ({os.path.getsize(delivery)//1024}KB)")
+print(f"Avatar saved: assets/avatar.jpg ({os.path.getsize('assets/avatar.jpg')//1024}KB)")
 ```
 
-**Why not WebP?** GitHub's profile photo uploader rejects WebP.
-**Why PNG first?** Avatars are flat graphics with clean edges. PNG preserves them
-perfectly. JPEG introduces compression artifacts on sharp lines. But some AI-generated
-PNGs exceed 1MB at 1K resolution, so JPEG is the automatic fallback.
+**Why JPEG?** GitHub's profile photo and social preview uploaders both reject WebP
+and enforce a 1MB limit. AI-generated PNGs at 1K resolution routinely exceed 1MB.
+JPEG at quality 85 produces avatars around 50-150KB with no visible quality loss
+at the sizes GitHub displays them (40px to 460px).
 
 ### Scanning Existing Repo Images
 

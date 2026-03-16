@@ -585,15 +585,7 @@ src = Image.open("assets/avatar-source.png")
 clean = Image.new(src.mode, src.size)
 clean.putdata(list(src.getdata()))
 # WebP, quality 80, method 6 (slowest encode = smallest file)
-# Try PNG first (best for flat graphics), fall back to JPEG if over 1MB
-clean.save("assets/avatar.png", "PNG", optimize=True)
-import os
-if os.path.getsize("assets/avatar.png") <= 1_048_576:
-    delivery = "assets/avatar.png"
-else:
-    clean.convert("RGB").save("assets/avatar.jpg", "JPEG", quality=85, optimize=True)
-    os.remove("assets/avatar.png")
-    delivery = "assets/avatar.jpg"
+clean.convert("RGB").save("assets/avatar.jpg", "JPEG", quality=85, optimize=True)
 os.remove("assets/avatar-source.png")
 ```
 
@@ -603,11 +595,11 @@ GitHub renders WebP natively. Use JPEG only if the user specifically requests it
 
 ### Post-Generation UX
 
-1. Save via the PNG-first pipeline (see banner-generation.md "Applying This to Avatars")
-2. **Show it inline** using the Read tool on the delivered file
+1. Save as JPEG via the avatar pipeline (see banner-generation.md "Applying This to Avatars")
+2. **Show it inline** using the Read tool on `assets/avatar.jpg`
 3. **Provide a clickable file link:**
    ```
-   Avatar saved: file:///[absolute-path]/assets/avatar.png (or .jpg if PNG exceeded 1MB)
+   Avatar saved: file:///[absolute-path]/assets/avatar.jpg
    ```
 4. Ask: "Here's your profile avatar. Use it, regenerate, or skip?"
 5. If approved, provide **upload instructions with direct links**:
@@ -615,11 +607,11 @@ GitHub renders WebP natively. Use JPEG only if the user specifically requests it
    To set as your GitHub profile photo:
    1. Go to: https://github.com/settings/profile
    2. Click your current avatar (or "Upload a photo")
-   3. Select: [file link from step 3]
+   3. Select: file:///[absolute-path]/assets/avatar.jpg
    4. Crop/adjust and save
    ```
    There is NO API for profile photos. This is the one manual step we can't avoid.
-   **Format note:** GitHub rejects WebP. Deliver as PNG (preferred) or JPEG fallback.
+   **Format note:** Always deliver as JPEG. GitHub rejects WebP and PNGs often exceed the 1MB upload limit.
 
 ### Profile Photo Detection
 
