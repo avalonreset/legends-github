@@ -361,12 +361,16 @@ years. There is no compatibility concern for GitHub-hosted content.
 
 ### Applying This to Avatars
 
-Same pipeline as banners:
+Same pipeline as banners, but output JPEG (GitHub profile photo upload rejects WebP):
 1. Request PNG from KIE.ai (`output_format: "png"`, `aspect_ratio: "1:1"`)
 2. Download as `assets/avatar-source.png`
-3. Strip metadata + convert to WebP: `assets/avatar.webp` (quality 80, method 6)
+3. Strip metadata + convert to JPEG: `assets/avatar.jpg` (quality 85, optimize=True)
 4. Delete the source PNG
-5. Provide `file:///` link to the WebP for the user to upload
+5. Provide `file:///` link to the JPEG for the user to upload
+
+**Why JPEG, not WebP?** GitHub's profile photo uploader (like the social preview
+uploader) rejects WebP files. JPEG is universally accepted. At 1:1 aspect ratio and
+typical avatar sizes, JPEG quality 85 produces files well under any size limit.
 
 ### Scanning Existing Repo Images
 

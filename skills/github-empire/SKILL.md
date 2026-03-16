@@ -238,7 +238,7 @@ clear tags showing what happens:
 7. [PIN] Pin these 6 repos in order: [list]
    -> https://github.com/{username}?tab=repositories -> "Customize your pins"
 8. [PHOTO] Upload profile avatar (generating now...)
-   -> file:///path/to/avatar.webp
+   -> file:///path/to/avatar.jpg
    -> https://github.com/settings/profile -> Click avatar -> Upload
 
 ### Future (run these sub-skills next)
@@ -585,7 +585,7 @@ src = Image.open("assets/avatar-source.png")
 clean = Image.new(src.mode, src.size)
 clean.putdata(list(src.getdata()))
 # WebP, quality 80, method 6 (slowest encode = smallest file)
-clean.save("assets/avatar.webp", "WEBP", quality=80, method=6)
+clean.convert("RGB").save("assets/avatar.jpg", "JPEG", quality=85, optimize=True)
 os.remove("assets/avatar-source.png")
 ```
 
@@ -595,23 +595,24 @@ GitHub renders WebP natively. Use JPEG only if the user specifically requests it
 
 ### Post-Generation UX
 
-1. Save to `assets/avatar.webp` (via PNG source + WebP conversion)
-2. **Show it inline** using the Read tool on `assets/avatar.webp`
+1. Save to `assets/avatar.jpg` (via PNG source + JPEG conversion, quality 85)
+2. **Show it inline** using the Read tool on `assets/avatar.jpg`
 3. **Provide a clickable file link:**
    ```
-   Avatar saved: file:///[absolute-path]/assets/avatar.webp
+   Avatar saved: file:///[absolute-path]/assets/avatar.jpg
    ```
 4. Ask: "Here's your profile avatar. Use it, regenerate, or skip?"
 5. If approved, provide **upload instructions with direct links**:
    ```
    To set as your GitHub profile photo:
-   1. Open your avatar: file:///[absolute-path]/assets/avatar.webp
+   1. Open your avatar: file:///[absolute-path]/assets/avatar.jpg
    2. Go to: https://github.com/settings/profile
    3. Click your current avatar (or "Upload a photo")
    4. Select the file
    5. Crop/adjust and save
    ```
    There is NO API for profile photos. This is the one manual step we can't avoid.
+   **Format note:** GitHub's profile photo uploader rejects WebP. Always use JPEG.
 
 ### Profile Photo Detection
 
