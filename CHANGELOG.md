@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-16
+
+### Added
+- Standard Operating Procedure (SOP) across all skills: audit generates a numbered remediation plan, each skill hands off to the next logical step, re-audit closes the loop
+- Canonical skill order: legal -> community -> release -> seo -> meta -> readme
+- Clickable image link rules: all generated images output both local file:// and raw GitHub URLs for immediate terminal access
+- Social preview generation guidance with download + upload links in github-meta skill
+
+### Changed
+- Avatar pipeline simplified to JPEG-only (GitHub rejects WebP, PNGs often exceed 1MB)
+- Lossless PNG originals preserved in assets/originals/ for user reference
+- Contact email updated to benjamin@rankenstein.pro
+- All em dashes removed from skill suite (replaced with regular hyphens)
+
+### Fixed
+- Social preview format policy enforced: JPEG only, under 1MB for GitHub upload
+- WebP input handling for banner recomposition via KIE.ai
+
 ## [1.1.0] - 2026-03-13
 
 ### Added
@@ -48,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset-pro/claude-github/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/avalonreset-pro/claude-github/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/avalonreset-pro/claude-github/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/avalonreset-pro/claude-github/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/avalonreset-pro/claude-github/releases/tag/v1.0.0
