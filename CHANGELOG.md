@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Standard Operating Procedure (SOP) across all skills: audit generates a numbered remediation plan, each skill hands off to the next logical step, re-audit closes the loop
+- Two-phase workflow: Phase 1 (per-repo optimization) and Phase 2 (portfolio optimization via /github empire)
 - Canonical skill order: legal -> community -> release -> seo -> meta -> readme
 - Clickable image link rules: all generated images output both local file:// and raw GitHub URLs for immediate terminal access
 - Social preview generation guidance with download + upload links in github-meta skill
