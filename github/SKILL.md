@@ -372,6 +372,13 @@ exactly where the file is AND exactly where to upload it. If they need to change
 setting, link them to the exact page. Make the manual parts as close to automated
 as possible.
 
+**Social preview image rule:** When a social preview or banner image exists in the
+repo (check `screenshots/`, `assets/`, and root), ALWAYS include the raw GitHub URL
+to that image so it's clickable in the terminal:
+`https://raw.githubusercontent.com/{owner}/{repo}/main/{path/to/image.png}`
+Plus the settings page URL for upload. Never just mention the file path without the
+clickable download link.
+
 **Image format pipeline:** All AI-generated images (banners, avatars) follow the
 same flow: request PNG from KIE.ai (lossless source) then convert to WebP (quality
 80) for delivery. WebP is ~30% smaller than JPEG at equivalent quality and GitHub

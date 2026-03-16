@@ -326,21 +326,34 @@ Provide the user with:
 - Content: Project name, tagline, logo/icon, key visual
 
 **Give the user everything they need in one block -- clickable links, no guessing:**
+
+**Rule: If a social preview image exists in the repo** (check `screenshots/`,
+`assets/`, and root for files named `social-preview.*`, `og-image.*`, or
+`social-card.*`), include a direct clickable link to the raw file on GitHub so
+the user can right-click and save it. Format:
+
 ```
 Social Preview Setup:
 
-1. Open your repo settings: https://github.com/{owner}/{repo}/settings
-2. Scroll to "Social preview" section
-3. Click "Edit" > "Upload an image"
-4. Select your image (1280x640px recommended)
-5. Save changes
+Image ready to upload:
+https://raw.githubusercontent.com/{owner}/{repo}/main/{path/to/social-preview.png}
+
+1. Download the image above (right-click > Save As)
+2. Open your repo settings: https://github.com/{owner}/{repo}/settings
+3. Scroll to "Social preview" section
+4. Click "Edit" > "Upload an image"
+5. Select the downloaded image
+6. Save changes
 
 Test it: paste your repo URL into https://www.opengraph.xyz to preview
 how it will look when shared on Twitter/X, LinkedIn, and Slack.
 ```
 
-Replace `{owner}/{repo}` with the actual owner and repo name so the link is
-clickable as-is. Never leave placeholder URLs when you know the actual values.
+If no social preview image exists in the repo, skip the download link and just
+show the settings URL with dimensions guidance (1280x640px).
+
+Replace `{owner}/{repo}` and `{path/to/social-preview.png}` with actual values.
+Never leave placeholder URLs when you know the actual values.
 
 **Why it matters:** Controls how the repo appears when shared on Twitter/X, LinkedIn,
 Slack, Discord, iMessage. Default auto-generated image uses name + description + avatar.
