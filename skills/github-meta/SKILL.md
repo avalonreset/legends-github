@@ -320,9 +320,14 @@ repo page. Don't waste it or leave it pointing somewhere wrong.
 
 **No API available** -- must be set via web UI. Make this as easy as possible for the user.
 
+**Social preview generation happens in `/github readme` (Step 6).** The readme skill
+generates the banner, then automatically runs the social preview pipeline (banner ->
+16:9 recompose -> 2:1 crop -> 1280x640 JPEG). This skill (meta) only handles the
+upload guidance for images that already exist.
+
 Provide the user with:
 - Recommended dimensions: 1280x640px
-- Format: WebP or PNG, under 1MB (WebP preferred for smaller size)
+- Format: JPEG, under 1MB (GitHub rejects WebP for social previews)
 - Content: Project name, tagline, logo/icon, key visual
 
 **Give the user everything they need in one block -- clickable links, no guessing:**
@@ -349,8 +354,9 @@ Test it: paste your repo URL into https://www.opengraph.xyz to preview
 how it will look when shared on Twitter/X, LinkedIn, and Slack.
 ```
 
-If no social preview image exists in the repo, skip the download link and just
-show the settings URL with dimensions guidance (1280x640px).
+If no social preview image exists in the repo, note that it will be generated
+during `/github readme` (Step 6) and show the settings URL with dimensions
+guidance (1280x640px JPEG).
 
 Replace `{owner}/{repo}` and `{path/to/social-preview.png}` with actual values.
 Never leave placeholder URLs when you know the actual values.

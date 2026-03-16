@@ -253,13 +253,16 @@ README creation/optimization workflow using the two-step process.
 Reference: Read `~/.claude/skills/github/references/banner-generation.md` for full details
 including prompt strategy, text compositing script, and positioning principles.
 
-**Two-step flow:**
+**Banner + Social Preview flow (MANDATORY -- do not skip any step):**
 1. Craft a background prompt (visual metaphor, NO text in image, subject offset to one side)
 2. Call KIE.ai API to generate background (21:9, 1K, **png** -- always request lossless source)
 3. Poll for completion, download as `assets/banner-source.png`
 4. Composite text overlay via Pillow (project name, tagline, optional features)
 5. Convert to WebP (quality 80): `assets/banner.webp`, delete source PNG
 6. Place at the very top of README, before H1:
+7. **Generate social preview from the banner** (see Social Preview Pipeline below)
+
+This is a 7-step flow, not 6. The social preview is not optional.
 
 ```markdown
 <p align="center">
@@ -295,6 +298,37 @@ Want to set this up now, or skip the banner and continue with the README?
 Wait for the user to respond. If they want to set it up, help them. If they
 say skip/continue/later, generate the rest of the README with a placeholder
 comment: `<!-- TODO: Add banner image -->` at the top.
+
+### Social Preview Pipeline (MANDATORY after banner generation)
+
+After generating the README banner, ALWAYS run the social preview pipeline.
+This is step 7 of the banner flow. Do NOT skip it.
+
+Reference: Read `~/.claude/skills/github/references/banner-generation.md` section
+"Social Preview Image Generation" for the full pipeline and Pillow script.
+
+**The pipeline:**
+1. Feed the banner into KIE.ai as `image_input` at **16:9** aspect ratio.
+   This recomposes the design for the new ratio (AI adapts layout, centers elements).
+   Use the raw GitHub URL of the pushed banner as the image_input source.
+   If the banner is WebP, convert to PNG first (Nano Banana 2 rejects WebP input).
+2. Poll for completion, download the 16:9 result.
+3. Crop the 16:9 to **2:1** (center crop, trim ~5% from top and bottom).
+4. Resize to exactly **1280x640** (GitHub's required dimensions).
+5. Save as **JPEG** at quality 85 (GitHub rejects WebP for social previews, and
+   PNGs at 1280x640 often exceed the 1MB upload limit). Strip all metadata.
+6. If over 1MB, re-save at quality 70.
+7. Save to `assets/social-preview.jpg`.
+8. Show the user the result via Read tool, provide clickable links, and provide
+   the manual upload instructions for https://github.com/{owner}/{repo}/settings.
+
+**When to skip (the ONLY valid reasons):**
+- User explicitly says they don't want a social preview
+- Repo is private (social sharing is unlikely)
+- Repo already has a custom social preview set (`usesCustomOpenGraphImage: true`)
+- KIE_API_KEY is not available (banner was also skipped)
+
+If the banner was generated, the social preview MUST be generated. No exceptions.
 
 ### H1 (Exactly One)
 - Format: `# Project Name - Keyword-rich tagline`
