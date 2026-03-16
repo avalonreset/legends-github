@@ -461,10 +461,19 @@ unless a category already scores 90+ (in which case, skip it).
 **Each skill ends with a handoff** pointing the user to the next step. The user
 should never finish a skill and wonder "what now?" -- the skill tells them.
 
-**Empire comes after all repos are individually optimized.** It operates at the
-portfolio level (profile README, cross-linking, topic synchronization) and
-assumes each repo is already in good shape. Run it once, after finishing the
-SOP on all repos you want to optimize.
+**Two-phase approach:**
+
+```
+Phase 1: Per-Repo Optimization (repeat for each repo)
+  /github audit -> legal -> community -> release -> seo -> meta -> readme -> audit
+
+Phase 2: Portfolio Optimization (run once, after all repos are done)
+  /github empire -> profile README, cross-linking, topic sync, branding, avatar
+```
+
+Empire operates at the portfolio level and assumes each repo is already in good
+shape. Running it before the individual repos are optimized means it will make
+recommendations based on incomplete data. Always finish Phase 1 on all repos first.
 
 ## Sub-Skills
 

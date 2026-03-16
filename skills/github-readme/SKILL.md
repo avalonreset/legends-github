@@ -543,7 +543,13 @@ After completing README optimization, always end with this handoff:
 README optimization complete. All skills have been run.
 Recommended final step:
   /github audit -- re-run the audit to measure your improvement and get your new score
+
+Once you've completed this process for all your repos:
+  /github empire -- portfolio-level optimization (profile README, cross-linking, avatar)
 ```
 
 If running as part of the audit SOP, reference the step number:
 "Step 6 complete. Ready for Step 7: `/github audit` to measure your improvement."
+
+If this is the user's last repo in a multi-repo session, also mention:
+"All repos optimized. When you're ready for portfolio-level work, run `/github empire`."

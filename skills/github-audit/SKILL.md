@@ -322,11 +322,19 @@ remediation plan. The order matters because later skills depend on earlier ones.
 
 Start with Step 1 when ready. Each skill will guide you through its changes
 and hand off to the next step.
+
+Once you've completed this SOP for all your repos, run:
+  /github empire -- portfolio-level optimization (profile README, cross-linking, topic sync)
 ```
 
 **After presenting the SOP, wait for the user.** Do not auto-run any skill.
 The user decides when to start and which step to run. If they say "go" or
 "start" or "let's do it", run Step 1.
+
+**Empire note:** The `/github empire` skill is NOT part of the per-repo SOP.
+It operates at the portfolio level (profile README, cross-linking, branding,
+avatar). Run it once after you've completed the SOP on all repos you want to
+optimize. The audit's SOP output includes this reminder at the bottom.
 
 ## Scoring Rubrics (Per Category)
 
