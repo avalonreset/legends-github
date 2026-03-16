@@ -88,8 +88,8 @@ Result URL is in `data.resultJson` → parse JSON → `resultUrls[0]`
 
 **Download the PNG source, then convert to optimal delivery format:**
 ```bash
-mkdir -p assets
-curl -s -o assets/banner-source.png "RESULT_URL"
+mkdir -p assets/originals
+curl -s -o assets/originals/banner.png "RESULT_URL"
 ```
 
 **Convert to delivery format (WebP preferred, JPEG fallback):**
@@ -354,36 +354,43 @@ years. There is no compatibility concern for GitHub-hosted content.
 ### Applying This to Banners
 
 1. Request PNG from KIE.ai (`output_format: "png"`)
-2. Download as `assets/banner-source.png`
+2. Download to `assets/originals/banner.png` (keep lossless original for the user)
 3. Strip metadata + convert to WebP: `assets/banner.webp` (quality 80, method 6)
-4. Delete the source PNG
-5. Reference in README as `assets/banner.webp`
+4. Reference in README as `assets/banner.webp`
+5. The user keeps `assets/originals/banner.png` for other uses (print, marketing, re-editing)
 
 ### Applying This to Avatars
 
-Same pipeline as banners, but always deliver as JPEG:
+Same pipeline as banners, but always deliver as JPEG for GitHub upload:
 1. Request PNG from KIE.ai (`output_format: "png"`, `aspect_ratio: "1:1"`)
-2. Download as `assets/avatar-source.png`
+2. Download as `assets/originals/avatar.png` (keep lossless original for the user)
 3. Strip metadata + convert to JPEG: `assets/avatar.jpg` (quality 85)
-4. Delete the source PNG
-5. Provide `file:///` link to the JPEG for the user to upload
+4. Provide `file:///` link to the JPEG for upload, mention the PNG original
 
 ```python
 from PIL import Image
 import os
 
-src = Image.open("assets/avatar-source.png")
+os.makedirs("assets/originals", exist_ok=True)
+
+# Download goes to originals/ (user keeps the lossless PNG)
+src = Image.open("assets/originals/avatar.png")
 clean = Image.new(src.mode, src.size)
 clean.putdata(list(src.getdata()))
 clean.convert("RGB").save("assets/avatar.jpg", "JPEG", quality=85, optimize=True)
-os.remove("assets/avatar-source.png")
 print(f"Avatar saved: assets/avatar.jpg ({os.path.getsize('assets/avatar.jpg')//1024}KB)")
+print(f"Original PNG kept: assets/originals/avatar.png")
 ```
 
-**Why JPEG?** GitHub's profile photo and social preview uploaders both reject WebP
-and enforce a 1MB limit. AI-generated PNGs at 1K resolution routinely exceed 1MB.
-JPEG at quality 85 produces avatars around 50-150KB with no visible quality loss
-at the sizes GitHub displays them (40px to 460px).
+**File organization:**
+- `assets/avatar.jpg` is the upload-ready JPEG (what you give to GitHub)
+- `assets/originals/avatar.png` is the lossless PNG original (yours to keep for
+  other uses like print, marketing, or re-editing)
+
+**Why JPEG for delivery?** GitHub's profile photo and social preview uploaders both
+reject WebP and enforce a 1MB limit. AI-generated PNGs at 1K resolution routinely
+exceed 1MB. JPEG at quality 85 produces avatars around 50-150KB with no visible
+quality loss at the sizes GitHub displays them (40px to 460px).
 
 ### Scanning Existing Repo Images
 
