@@ -441,3 +441,15 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact s
   2. FUNDING.yml line 2: [REPLACE: your-github-username] -- GitHub Sponsors username
   ```
   If no placeholders exist (e.g., solo repo where owner is obvious), state "No placeholders -- all files are ready to commit."
+
+### Next Step
+
+After completing community file generation, always end with this handoff:
+
+```
+Community health files complete. Next recommended step:
+  /github release -- versioning, CHANGELOG, badges, and release strategy
+```
+
+If running as part of the audit SOP, reference the step number:
+"Step 2 complete. Ready for Step 3: `/github release`"

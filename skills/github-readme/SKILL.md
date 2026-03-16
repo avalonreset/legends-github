@@ -534,3 +534,16 @@ output clickable links so the user can access the file immediately:
 
 Replace all placeholders with actual values. Never output just a relative path
 like `assets/banner.webp` without the clickable link next to it.
+
+### Next Step
+
+After completing README optimization, always end with this handoff:
+
+```
+README optimization complete. All skills have been run.
+Recommended final step:
+  /github audit -- re-run the audit to measure your improvement and get your new score
+```
+
+If running as part of the audit SOP, reference the step number:
+"Step 6 complete. Ready for Step 7: `/github audit` to measure your improvement."

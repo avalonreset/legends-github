@@ -416,3 +416,16 @@ Every run produces exactly this sequence:
 3. **The Proposal** -- ONE concrete yes/no proposal (always, this is the main output)
 
 The proposal is the deliverable. Everything else is context for the proposal.
+
+### Next Step
+
+After completing release work (CHANGELOG, badges, version proposal), always end
+with this handoff:
+
+```
+Release work complete. Next recommended step:
+  /github seo -- keyword research to optimize your description and README
+```
+
+If running as part of the audit SOP, reference the step number:
+"Step 3 complete. Ready for Step 4: `/github seo`"

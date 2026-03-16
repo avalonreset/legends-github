@@ -218,3 +218,16 @@ license: "[SPDX-ID]"
 - Compliance status: PASS / FAIL with specific issues
 - Fork compliance: PASS / FAIL / N/A
 - Dependency license conflicts: list any found
+
+### Next Step
+
+After completing legal fixes, always end with this handoff:
+
+```
+Legal fixes complete. Next recommended step:
+  /github community -- set up community health files and templates
+```
+
+If running as part of the audit SOP (the user ran `/github audit` first and is
+following the Recommended Next Steps table), reference the step number:
+"Step 1 complete. Ready for Step 2: `/github community`"

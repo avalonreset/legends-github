@@ -400,3 +400,15 @@ Every run produces this sequence:
 3. **Secondary Recommendations** -- homepage URL, feature toggles, social preview
 4. **Exact commands** -- numbered list of `gh repo edit` commands
 5. **Confirmation prompt** -- wait for user approval before executing anything
+
+### Next Step
+
+After completing metadata optimization, always end with this handoff:
+
+```
+Metadata optimization complete. Next recommended step:
+  /github readme -- optimize your README using SEO keywords and all the files you've set up
+```
+
+If running as part of the audit SOP, reference the step number:
+"Step 5 complete. Ready for Step 6: `/github readme`"

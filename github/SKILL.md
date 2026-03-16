@@ -425,16 +425,57 @@ When a sub-skill says `Read github/references/foo.md`, use the Read tool with th
 - **Medium**: Optimization opportunity (fix within 1 month)
 - **Low**: Nice to have (backlog)
 
+## Standard Operating Procedure (SOP)
+
+The skill suite is designed to be run in a specific order. Each skill builds on
+the work of the previous one. **Do not skip skills or run them out of order**
+unless a category already scores 90+ (in which case, skip it).
+
+**The canonical workflow:**
+
+```
+/github audit          Step 0: Diagnose (scores 6 categories, generates SOP)
+    |
+/github legal          Step 1: Foundation (license, compliance, fork obligations)
+    |
+/github community      Step 2: Infrastructure (templates, CoC, devcontainer)
+    |
+/github release        Step 3: Versioning (CHANGELOG, badges, catch-up releases)
+    |
+/github seo            Step 4: Research (keyword data for description + README)
+    |
+/github meta           Step 5: Settings (description, topics, features -- uses SEO data)
+    |
+/github readme         Step 6: Capstone (README optimization -- uses everything above)
+    |
+/github audit          Step 7: Measure (re-audit to verify improvement)
+```
+
+**Why this order:**
+- Legal must come first because every other file references the license
+- Community files must exist before releases reference them
+- SEO keyword research must happen before meta and readme consume those keywords
+- README is last because it references all other files and uses SEO keywords
+- The final audit measures the delta and catches anything that slipped through
+
+**Each skill ends with a handoff** pointing the user to the next step. The user
+should never finish a skill and wonder "what now?" -- the skill tells them.
+
+**Empire comes after all repos are individually optimized.** It operates at the
+portfolio level (profile README, cross-linking, topic synchronization) and
+assumes each repo is already in good shape. Run it once, after finishing the
+SOP on all repos you want to optimize.
+
 ## Sub-Skills
 
-1. **github-audit** -- Full repo health audit with 0-100 scoring
-2. **github-readme** -- README generation and optimization
-3. **github-legal** -- License, attribution, SECURITY.md, CITATION.cff
-4. **github-meta** -- Description, topics, settings, social preview
-5. **github-seo** -- Keyword research and content optimization
-6. **github-community** -- Community health files and templates
-7. **github-release** -- Release strategy, CHANGELOG, badges
-8. **github-empire** -- Portfolio strategy, profile README, org profile
+1. **github-audit** -- Full repo health audit with 0-100 scoring (Step 0 + Step 7)
+2. **github-legal** -- License, attribution, SECURITY.md, CITATION.cff (Step 1)
+3. **github-community** -- Community health files and templates (Step 2)
+4. **github-release** -- Release strategy, CHANGELOG, badges (Step 3)
+5. **github-seo** -- Keyword research and content optimization (Step 4)
+6. **github-meta** -- Description, topics, settings, social preview (Step 5)
+7. **github-readme** -- README generation and optimization (Step 6)
+8. **github-empire** -- Portfolio strategy, profile README, org profile (after all repos)
 
 ## Subagents
 

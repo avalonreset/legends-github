@@ -280,13 +280,53 @@ complete before proceeding to this step. NEVER use estimated scores.
 - **Medium** -- Optimization opportunity (README could be better structured)
 - **Low** -- Nice to have (add more badges, tweak topic selection)
 
-### 4. Execute (Guided Remediation)
+### 4. Execute (Standard Operating Procedure)
 
-After presenting the audit report, offer:
-- "Run `/github readme` to fix README issues"
-- "Run `/github legal` to fix compliance gaps"
-- "Run `/github meta` to optimize metadata"
-- etc.
+After presenting the audit report, generate a **numbered SOP** that tells the user
+exactly which skills to run and in what order. This is not a menu -- it is a step-by-step
+remediation plan. The order matters because later skills depend on earlier ones.
+
+**Canonical skill order (always this sequence):**
+
+| Step | Skill | Why This Order |
+|------|-------|---------------|
+| 1 | `/github legal` | Foundation -- license, compliance, fork obligations must be correct before anything else |
+| 2 | `/github community` | Infrastructure -- templates, CoC, devcontainer build on legal foundation |
+| 3 | `/github release` | Versioning -- CHANGELOG, badges, releases need legal + community in place |
+| 4 | `/github seo` | Research -- keyword data feeds into meta descriptions and README content |
+| 5 | `/github meta` | Settings -- description, topics, features use SEO keyword data |
+| 6 | `/github readme` | Capstone -- the README references everything above and uses SEO keywords |
+| 7 | Re-run `/github audit` | Measure improvement and verify all fixes landed |
+
+**SOP generation rules:**
+- **Only include skills where the score is below 90.** If legal scored 95, skip it.
+- **Show the current score** next to each skill so the user sees the priority.
+- **Show a brief reason** why that skill needs to run (from the action items).
+- **Always end with Step 7: re-audit.** Even if only one skill ran, measure the delta.
+- **Number the steps sequentially** (1, 2, 3...) skipping skills that scored 90+.
+
+**Output format for the SOP (append this AFTER the Action Items section):**
+
+```
+### Recommended Next Steps (run in order)
+
+| Step | Command | Current Score | What It Fixes |
+|------|---------|---------------|---------------|
+| 1 | `/github legal` | 67/100 | Fork copyright, missing CITATION.cff |
+| 2 | `/github community` | 52/100 | Missing CODE_OF_CONDUCT, no dependabot |
+| 3 | `/github release` | 56/100 | Catch-up releases, missing badges |
+| 4 | `/github seo` | 56/100 | Keyword research for description + README |
+| 5 | `/github meta` | 67/100 | Topics, settings, social preview |
+| 6 | `/github readme` | 52/100 | Full README optimization with SEO keywords |
+| 7 | `/github audit` | -- | Re-audit to measure improvement |
+
+Start with Step 1 when ready. Each skill will guide you through its changes
+and hand off to the next step.
+```
+
+**After presenting the SOP, wait for the user.** Do not auto-run any skill.
+The user decides when to start and which step to run. If they say "go" or
+"start" or "let's do it", run Step 1.
 
 ## Scoring Rubrics (Per Category)
 
@@ -461,8 +501,18 @@ For each selected repo:
 #### Low
 - [item with specific fix]
 
-### Quick Fixes (run these commands)
-- `/github readme` -- [specific issue to fix]
-- `/github meta` -- [specific issue to fix]
-- `/github legal` -- [specific issue to fix]
+### Recommended Next Steps (run in order)
+
+| Step | Command | Current Score | What It Fixes |
+|------|---------|---------------|---------------|
+| 1 | `/github legal` | XX/100 | [specific issues] |
+| 2 | `/github community` | XX/100 | [specific issues] |
+| 3 | `/github release` | XX/100 | [specific issues] |
+| 4 | `/github seo` | XX/100 | [specific issues] |
+| 5 | `/github meta` | XX/100 | [specific issues] |
+| 6 | `/github readme` | XX/100 | [specific issues] |
+| 7 | `/github audit` | -- | Re-audit to measure improvement |
+
+Start with Step 1 when ready. Each skill will guide you through
+its changes and hand off to the next step.
 ```

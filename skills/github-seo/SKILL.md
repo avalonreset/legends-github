@@ -478,3 +478,16 @@ Cost estimates per call type:
 - `search_intent`: ~0.02 per call
 
 Always show the receipt. Users deserve to know what they're spending.
+
+### Next Step
+
+After completing SEO keyword research, always end with this handoff:
+
+```
+SEO research complete. Keywords are cached in .github-audit/seo-data.json.
+Next recommended step:
+  /github meta -- optimize description, topics, and settings using your keyword data
+```
+
+If running as part of the audit SOP, reference the step number:
+"Step 4 complete. Ready for Step 5: `/github meta`"
