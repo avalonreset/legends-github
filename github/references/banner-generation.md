@@ -420,6 +420,179 @@ to get something great.
 | 429 | Rate limited | Wait 10 seconds, retry |
 | 501 | Generation failed | Retry with simplified prompt |
 
+## Nano Banana 2 Input Format Rules
+
+**Nano Banana 2 accepts PNG and JPEG only. It does NOT accept WebP.**
+
+This matters because our delivery pipeline converts images to WebP for size savings.
+When a skill needs to feed an existing image back into Nano Banana 2 (for example,
+to generate a social preview from an existing banner), the source image may already
+be WebP. You MUST convert it before passing it as `image_input`.
+
+**Dynamic format handling for image_input:**
+
+1. Check the source image format
+2. If WebP, convert to PNG (lossless, preserves quality) before sending
+3. If PNG or JPEG, use directly
+4. The image_input field accepts URLs, so either use a raw GitHub URL pointing to
+   a committed PNG/JPEG, or host the converted file temporarily
+
+```python
+from PIL import Image
+import os
+
+source = "assets/banner.webp"
+ext = os.path.splitext(source)[1].lower()
+
+if ext == ".webp":
+    # Convert to PNG for Nano Banana 2 compatibility
+    img = Image.open(source)
+    converted = source.rsplit(".", 1)[0] + "-input.png"
+    img.save(converted, "PNG")
+    print(f"Converted {source} to {converted} for API input")
+    # Use `converted` as the image_input source
+    # Clean up after API call completes
+```
+
+**When using a GitHub raw URL as image_input:** Make sure the committed file is
+PNG or JPEG. If the repo only has the WebP version (because we optimized it),
+either use an older commit's raw URL that still has the PNG/JPEG, or convert
+locally and use a different hosting method.
+
+---
+
+## Social Preview Image Generation
+
+GitHub social preview images (the card shown when a repo link is shared on Twitter/X,
+LinkedIn, Slack, Discord) require a 1280x640 image (2:1 aspect ratio).
+
+**Nano Banana 2 does not support 2:1 directly.** The closest supported ratio is 16:9.
+
+### Strategy: Banner-to-Social-Preview Pipeline
+
+The most efficient approach is to reuse the existing README banner rather than
+designing a social preview from scratch. This keeps branding consistent and avoids
+a separate design process.
+
+**The pipeline:**
+
+1. **Feed the existing banner into Nano Banana 2 as image_input at 16:9.**
+   This recomposes the design for the new aspect ratio rather than just cropping.
+   The AI adapts the layout, centering important elements.
+
+2. **Crop the 16:9 result to 2:1.**
+   A 16:9 image at 1K resolution is ~1680x945. Cropping to 2:1 means trimming
+   ~52px from top and bottom (about 5% of the image height). With centered
+   composition from step 1, nothing important gets clipped.
+
+3. **Resize to exactly 1280x640 and save as PNG.**
+   GitHub recommends PNG for social previews. Keep it as PNG (not WebP) because
+   social preview images are served by GitHub's CDN for external platforms, and
+   maximum compatibility matters here.
+
+**Important:** The image_input source must be PNG or JPEG (see Nano Banana 2 Input
+Format Rules above). If the banner is already WebP, convert to PNG first.
+
+### Social Preview Prompt Formula
+
+When feeding the banner as image_input, use this prompt pattern:
+
+```
+Recreate this exact banner design but recomposed for 16:9 aspect ratio.
+Keep the same style, colors, text, and visual elements. Center the
+composition so important elements are not at the extreme edges. Keep all
+text fully visible and legible. Same [describe key visual elements:
+background color, text style, main visual subject].
+```
+
+Key rules:
+- Explicitly mention centering the composition (critical for the subsequent crop)
+- Reference the specific visual elements you want preserved
+- Keep the prompt under 100 words (the image_input does the heavy lifting)
+
+### API Call
+
+```bash
+curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
+  -H "Authorization: Bearer $KIE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "nano-banana-2",
+    "input": {
+      "prompt": "Recreate this exact banner design but recomposed for 16:9...",
+      "image_input": ["https://raw.githubusercontent.com/{owner}/{repo}/main/path/to/banner.png"],
+      "google_search": false,
+      "aspect_ratio": "16:9",
+      "resolution": "1K",
+      "output_format": "png"
+    }
+  }'
+```
+
+Note: image_input tasks take longer (30-60 seconds vs 10-20 for text-only).
+Poll with longer intervals.
+
+### Crop and Resize Script
+
+```python
+from PIL import Image
+import os
+
+img = Image.open("assets/social-preview-16x9.png")
+w, h = img.size
+
+# Crop to 2:1 (center crop, trim top and bottom equally)
+target_h = w // 2
+trim = (h - target_h) // 2
+cropped = img.crop((0, trim, w, h - trim))
+
+# Resize to exactly 1280x640
+preview = cropped.resize((1280, 640), Image.LANCZOS)
+
+# Strip metadata
+clean = Image.new(preview.mode, preview.size)
+clean.putdata(list(preview.getdata()))
+
+# Save as PNG (social previews need max compatibility across platforms)
+clean.save("assets/social-preview.png", "PNG")
+
+# Clean up the 16:9 intermediate
+os.remove("assets/social-preview-16x9.png")
+
+print(f"Social preview saved: assets/social-preview.png ({os.path.getsize('assets/social-preview.png')//1024}KB)")
+```
+
+### Post-Generation
+
+1. Show the social preview to the user via Read tool and provide a clickable link:
+   ```
+   Social preview saved: file:///[absolute-path]/assets/social-preview.png
+   ```
+
+2. Provide the manual upload instructions (no API for this):
+   ```
+   To set your social preview:
+   1. Open: https://github.com/{owner}/{repo}/settings
+   2. Scroll to "Social preview"
+   3. Click "Edit" > "Upload an image"
+   4. Select: assets/social-preview.png
+   5. Save changes
+
+   Test it: paste your repo URL at https://www.opengraph.xyz
+   ```
+
+3. Save as PNG (not WebP). Social preview images are served by GitHub's CDN to
+   Twitter, LinkedIn, Slack, and other platforms. PNG ensures maximum compatibility
+   across all consumers. This is the one case where we do NOT convert to WebP.
+
+### When to Skip Social Preview Generation
+
+- User explicitly says they don't want one
+- The repo is private or internal (social sharing is unlikely)
+- The user already has a custom social preview set (`usesCustomOpenGraphImage: true`)
+
+---
+
 ## Data Retention
 
 KIE.ai stores images for 14 days. Always download and commit to `assets/` --
