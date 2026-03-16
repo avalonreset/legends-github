@@ -41,12 +41,12 @@ Claude GitHub is the most comprehensive collection of Claude Code skills for Git
 | Command | What It Does |
 |---------|-------------|
 | `/github audit` | Score any repo 0-100 across 6 categories with prioritized fixes |
-| `/github readme` | Generate or rewrite your README with SEO-optimized headings and banner images |
 | `/github legal` | Select a license, generate SECURITY.md, CITATION.cff by default, handle fork compliance |
-| `/github meta` | Optimize description, topics, homepage URL, feature toggles, and social preview |
-| `/github seo` | Run keyword research with real search volume and difficulty data |
 | `/github community` | Generate issue templates, CONTRIBUTING.md, CODE_OF_CONDUCT.md, .gitattributes, CI workflow, devcontainer |
 | `/github release` | Plan release strategy, CHANGELOG, badges, versioning, and package distribution |
+| `/github seo` | Run keyword research with real search volume and difficulty data |
+| `/github meta` | Optimize description, topics, homepage URL, feature toggles, and social preview |
+| `/github readme` | Generate or rewrite your README with SEO-optimized headings and banner images |
 | `/github empire` | Portfolio strategy, profile README, AI avatar generation, profile completeness, cross-linking |
 
 Every recommendation cites its source: DataForSEO keyword volume, GitHub API metadata, codebase analysis, or reference guides. Nothing is guesswork.
@@ -228,12 +228,12 @@ claude-github/
 │   └── references/            # 9 reference guides (loaded on-demand)
 ├── skills/                    # 8 sub-skills
 │   ├── github-audit/          # 0-100 health scoring with 6 parallel agents
-│   ├── github-readme/         # README generation, SEO optimization, banner images
 │   ├── github-legal/          # License selection, SECURITY.md, fork compliance
-│   ├── github-meta/           # Description, topics, settings, social preview
-│   ├── github-seo/            # Keyword research and content strategy
 │   ├── github-community/      # Community health files and templates
 │   ├── github-release/        # Release strategy, CHANGELOG, versioning
+│   ├── github-seo/            # Keyword research and content strategy
+│   ├── github-meta/           # Description, topics, settings, social preview
+│   ├── github-readme/         # README generation, SEO optimization, banner images
 │   └── github-empire/         # Portfolio strategy, profile README, cross-linking
 ├── agents/                    # 6 scoring agents (parallel audit)
 ├── extensions/

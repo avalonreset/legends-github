@@ -489,9 +489,9 @@ recommendations based on incomplete data. Always finish Phase 1 on all repos fir
 ## Subagents
 
 For parallel analysis during audits:
-- `github-readme` -- README quality scoring
-- `github-meta` -- Metadata and discovery scoring
 - `github-legal` -- Legal compliance scoring
 - `github-community` -- Community health scoring
 - `github-release` -- Release and maintenance scoring
 - `github-seo` -- SEO and discoverability scoring
+- `github-meta` -- Metadata and discovery scoring
+- `github-readme` -- README quality scoring

@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Orchestrator skill (`/github`) with intent detection, repo type classification, and DataForSEO integration
-- 8 sub-skills: audit, readme, legal, meta, seo, community, release, empire
+- 8 sub-skills: audit, legal, community, release, seo, meta, readme, empire
 - 6 parallel scoring agents for repository health audit (0-100 scoring across README, metadata, legal, community, releases, SEO)
 - 9 reference guides (banner generation, community files, community templates, license guide, readme framework, releases guide, repo type templates, SEO guide, shared data cache)
 - DataForSEO MCP server integration for live keyword research, SERP analysis, and AI visibility tracking

@@ -70,12 +70,12 @@ main() {
     cp "${SCRIPT_DIR}/github/references/"*.md "${SKILLS_DIR}/github/references/"
     echo -e "   ${G}${B}[+]${R} 9 Reference Files   ${D}SEO, legal, readme, community guides${R}"
 
-    for skill in github-audit github-readme github-legal github-meta github-seo github-community github-release github-empire; do
+    for skill in github-audit github-legal github-community github-release github-seo github-meta github-readme github-empire; do
         cp "${SCRIPT_DIR}/skills/${skill}/SKILL.md" "${SKILLS_DIR}/${skill}/SKILL.md"
     done
-    echo -e "   ${G}${B}[+]${R} 8 Sub-Skills        ${D}audit, readme, legal, meta, seo, community, release, empire${R}"
+    echo -e "   ${G}${B}[+]${R} 8 Sub-Skills        ${D}audit, legal, community, release, seo, meta, readme, empire${R}"
 
-    for agent in github-readme github-legal github-meta github-community github-release github-seo; do
+    for agent in github-legal github-community github-release github-seo github-meta github-readme; do
         cp "${SCRIPT_DIR}/agents/${agent}.md" "${AGENTS_DIR}/${agent}.md"
     done
     echo -e "   ${G}${B}[+]${R} 6 Scoring Agents    ${D}parallel audit across 6 categories${R}"

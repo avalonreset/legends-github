@@ -79,16 +79,16 @@ Write-Host "[+]" -NoNewline -ForegroundColor Green
 Write-Host " 9 Reference Files   " -NoNewline
 Write-Host "SEO, legal, readme, community guides" -ForegroundColor DarkGray
 
-$skills = @("github-audit", "github-readme", "github-legal", "github-meta", "github-seo", "github-community", "github-release", "github-empire")
+$skills = @("github-audit", "github-legal", "github-community", "github-release", "github-seo", "github-meta", "github-readme", "github-empire")
 foreach ($skill in $skills) {
     Copy-Item (Join-Path $ScriptDir "skills\$skill\SKILL.md") (Join-Path $SkillsDir "$skill\SKILL.md") -Force
 }
 Write-Host "   " -NoNewline
 Write-Host "[+]" -NoNewline -ForegroundColor Green
 Write-Host " 8 Sub-Skills        " -NoNewline
-Write-Host "audit, readme, legal, meta, seo, community, release, empire" -ForegroundColor DarkGray
+Write-Host "audit, legal, community, release, seo, meta, readme, empire" -ForegroundColor DarkGray
 
-$agents = @("github-readme", "github-legal", "github-meta", "github-community", "github-release", "github-seo")
+$agents = @("github-legal", "github-community", "github-release", "github-seo", "github-meta", "github-readme")
 foreach ($agent in $agents) {
     Copy-Item (Join-Path $ScriptDir "agents\$agent.md") (Join-Path $AgentsDir "$agent.md") -Force
 }
