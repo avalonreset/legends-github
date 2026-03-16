@@ -24,7 +24,7 @@ The `.gitignore` in this project excludes `.env` files by default.
 If you discover a security vulnerability in this project, please report
 it responsibly. **Do not open public issues for security vulnerabilities.**
 
-**Email:** benjamin@avalonreset.com
+**Email:** benjamin@rankenstein.pro
 
 **What to include:**
 

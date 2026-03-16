@@ -263,7 +263,7 @@ No. Every skill works without DataForSEO by falling back to codebase analysis, G
 
 This is a private project distributed to authorized community members. If you find a bug or have a feature request, open an issue in this repository.
 
-For security vulnerabilities, **do not open a public issue.** Email benjamin@avalonreset.com directly. See [SECURITY.md](SECURITY.md) for the full disclosure policy and response timelines.
+For security vulnerabilities, **do not open a public issue.** Email benjamin@rankenstein.pro directly. See [SECURITY.md](SECURITY.md) for the full disclosure policy and response timelines.
 
 ## Disclaimer
 

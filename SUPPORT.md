@@ -28,7 +28,7 @@ Have an idea for a new feature or improvement?
 
 ### Security Issues
 
-Found a security vulnerability? **Do not open a public issue.** Email benjamin@avalonreset.com directly. See [SECURITY.md](SECURITY.md) for details.
+Found a security vulnerability? **Do not open a public issue.** Email benjamin@rankenstein.pro directly. See [SECURITY.md](SECURITY.md) for details.
 
 ## Common Issues
 
