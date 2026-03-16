@@ -31,7 +31,7 @@ main() {
     echo '   ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝'
     echo '    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ '
     echo -e "${R}"
-    echo -e "   ${M}░▒▓${R}${G}${B} v1.1 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
+    echo -e "   ${M}░▒▓${R}${G}${B} v1.2 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
     echo ""
 
     # Check prerequisites
@@ -272,16 +272,19 @@ ENVEOF
     echo -e "   ${D}The skills read your source code, configs, and git remote to make${R}"
     echo -e "   ${D}informed recommendations. Running from an empty folder won't work well.${R}"
     echo ""
-    echo -e "   ${M}Available commands:${R}"
+    echo -e "   ${M}Standard Operating Procedure (run in this order):${R}"
     echo ""
-    echo -e "   ${C}/github audit${R}           ${D}Score your repo 0-100 across 6 categories${R}"
-    echo -e "   ${C}/github readme${R}          ${D}Generate a keyword-optimized README${R}"
-    echo -e "   ${C}/github legal${R}           ${D}LICENSE, SECURITY.md, CITATION.cff${R}"
-    echo -e "   ${C}/github meta${R}            ${D}Description, topics, feature toggles${R}"
-    echo -e "   ${C}/github seo${R}             ${D}Live keyword research and SERP analysis${R}"
-    echo -e "   ${C}/github community${R}       ${D}Issue templates, CONTRIBUTING, CODE_OF_CONDUCT${R}"
-    echo -e "   ${C}/github release${R}         ${D}CHANGELOG, versioning, badges${R}"
-    echo -e "   ${C}/github empire${R}          ${D}Portfolio strategy across all repos${R}"
+    echo -e "   ${W}Step 0${R}  ${C}/github audit${R}       ${D}Diagnose: score 0-100, generates your SOP${R}"
+    echo -e "   ${W}Step 1${R}  ${C}/github legal${R}       ${D}Foundation: license, SECURITY.md, CITATION.cff${R}"
+    echo -e "   ${W}Step 2${R}  ${C}/github community${R}   ${D}Infrastructure: templates, CoC, devcontainer${R}"
+    echo -e "   ${W}Step 3${R}  ${C}/github release${R}     ${D}Versioning: CHANGELOG, badges, releases${R}"
+    echo -e "   ${W}Step 4${R}  ${C}/github seo${R}         ${D}Research: keyword data for description + README${R}"
+    echo -e "   ${W}Step 5${R}  ${C}/github meta${R}        ${D}Settings: description, topics, features${R}"
+    echo -e "   ${W}Step 6${R}  ${C}/github readme${R}      ${D}Capstone: README optimization with SEO keywords${R}"
+    echo -e "   ${W}Step 7${R}  ${C}/github audit${R}       ${D}Measure: re-audit to verify improvement${R}"
+    echo ""
+    echo -e "   ${D}After all repos are optimized:${R}"
+    echo -e "           ${C}/github empire${R}      ${D}Portfolio strategy, profile README, avatar${R}"
     echo ""
 }
 

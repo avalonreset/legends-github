@@ -23,7 +23,7 @@ Write-Host @"
 
 Write-Host "   " -NoNewline
 Write-Host "░▒▓" -NoNewline -ForegroundColor Magenta
-Write-Host " v1.1 " -NoNewline -ForegroundColor Green
+Write-Host " v1.2 " -NoNewline -ForegroundColor Green
 Write-Host "▓▒░" -NoNewline -ForegroundColor Magenta
 Write-Host "  Repository Optimization Skills for Claude Code" -ForegroundColor DarkGray
 Write-Host ""
@@ -307,22 +307,35 @@ Write-Host " Run skills from inside the project you want to optimize."
 Write-Host "   The skills read your source code, configs, and git remote to make" -ForegroundColor DarkGray
 Write-Host "   informed recommendations. Running from an empty folder won't work well." -ForegroundColor DarkGray
 Write-Host ""
-Write-Host "   Available commands:" -ForegroundColor Magenta
+Write-Host "   Standard Operating Procedure (run in this order):" -ForegroundColor Magenta
 Write-Host ""
-Write-Host "   /github audit           " -NoNewline -ForegroundColor Cyan
-Write-Host "Score your repo 0-100 across 6 categories" -ForegroundColor DarkGray
-Write-Host "   /github readme          " -NoNewline -ForegroundColor Cyan
-Write-Host "Generate a keyword-optimized README" -ForegroundColor DarkGray
-Write-Host "   /github legal           " -NoNewline -ForegroundColor Cyan
-Write-Host "LICENSE, SECURITY.md, CITATION.cff" -ForegroundColor DarkGray
-Write-Host "   /github meta            " -NoNewline -ForegroundColor Cyan
-Write-Host "Description, topics, feature toggles" -ForegroundColor DarkGray
-Write-Host "   /github seo             " -NoNewline -ForegroundColor Cyan
-Write-Host "Live keyword research and SERP analysis" -ForegroundColor DarkGray
-Write-Host "   /github community       " -NoNewline -ForegroundColor Cyan
-Write-Host "Issue templates, CONTRIBUTING, CODE_OF_CONDUCT" -ForegroundColor DarkGray
-Write-Host "   /github release         " -NoNewline -ForegroundColor Cyan
-Write-Host "CHANGELOG, versioning, badges" -ForegroundColor DarkGray
-Write-Host "   /github empire          " -NoNewline -ForegroundColor Cyan
-Write-Host "Portfolio strategy across all repos" -ForegroundColor DarkGray
+Write-Host "   Step 0  " -NoNewline -ForegroundColor White
+Write-Host "/github audit       " -NoNewline -ForegroundColor Cyan
+Write-Host "Diagnose: score 0-100, generates your SOP" -ForegroundColor DarkGray
+Write-Host "   Step 1  " -NoNewline -ForegroundColor White
+Write-Host "/github legal       " -NoNewline -ForegroundColor Cyan
+Write-Host "Foundation: license, SECURITY.md, CITATION.cff" -ForegroundColor DarkGray
+Write-Host "   Step 2  " -NoNewline -ForegroundColor White
+Write-Host "/github community   " -NoNewline -ForegroundColor Cyan
+Write-Host "Infrastructure: templates, CoC, devcontainer" -ForegroundColor DarkGray
+Write-Host "   Step 3  " -NoNewline -ForegroundColor White
+Write-Host "/github release     " -NoNewline -ForegroundColor Cyan
+Write-Host "Versioning: CHANGELOG, badges, releases" -ForegroundColor DarkGray
+Write-Host "   Step 4  " -NoNewline -ForegroundColor White
+Write-Host "/github seo         " -NoNewline -ForegroundColor Cyan
+Write-Host "Research: keyword data for description + README" -ForegroundColor DarkGray
+Write-Host "   Step 5  " -NoNewline -ForegroundColor White
+Write-Host "/github meta        " -NoNewline -ForegroundColor Cyan
+Write-Host "Settings: description, topics, features" -ForegroundColor DarkGray
+Write-Host "   Step 6  " -NoNewline -ForegroundColor White
+Write-Host "/github readme      " -NoNewline -ForegroundColor Cyan
+Write-Host "Capstone: README optimization with SEO keywords" -ForegroundColor DarkGray
+Write-Host "   Step 7  " -NoNewline -ForegroundColor White
+Write-Host "/github audit       " -NoNewline -ForegroundColor Cyan
+Write-Host "Measure: re-audit to verify improvement" -ForegroundColor DarkGray
+Write-Host ""
+Write-Host "   After all repos are optimized:" -ForegroundColor DarkGray
+Write-Host "           " -NoNewline
+Write-Host "/github empire      " -NoNewline -ForegroundColor Cyan
+Write-Host "Portfolio strategy, profile README, avatar" -ForegroundColor DarkGray
 Write-Host ""
