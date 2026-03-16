@@ -553,20 +553,28 @@ preview = cropped.resize((1280, 640), Image.LANCZOS)
 clean = Image.new(preview.mode, preview.size)
 clean.putdata(list(preview.getdata()))
 
-# Save as PNG (social previews need max compatibility across platforms)
-clean.save("assets/social-preview.png", "PNG")
+# Save as JPEG (GitHub social preview upload requires JPEG, rejects WebP and
+# PNG is often over the 1MB limit at 1280x640)
+clean.convert("RGB").save("assets/social-preview.jpg", "JPEG", quality=85, optimize=True)
+
+# Verify under 1MB (GitHub rejects files over 1MB)
+size = os.path.getsize("assets/social-preview.jpg")
+if size > 1_048_576:
+    # Re-save at lower quality to fit under 1MB
+    clean.convert("RGB").save("assets/social-preview.jpg", "JPEG", quality=70, optimize=True)
+    size = os.path.getsize("assets/social-preview.jpg")
 
 # Clean up the 16:9 intermediate
 os.remove("assets/social-preview-16x9.png")
 
-print(f"Social preview saved: assets/social-preview.png ({os.path.getsize('assets/social-preview.png')//1024}KB)")
+print(f"Social preview saved: assets/social-preview.jpg ({size//1024}KB)")
 ```
 
 ### Post-Generation
 
 1. Show the social preview to the user via Read tool and provide a clickable link:
    ```
-   Social preview saved: file:///[absolute-path]/assets/social-preview.png
+   Social preview saved: file:///[absolute-path]/assets/social-preview.jpg
    ```
 
 2. Provide the manual upload instructions (no API for this):
@@ -575,15 +583,18 @@ print(f"Social preview saved: assets/social-preview.png ({os.path.getsize('asset
    1. Open: https://github.com/{owner}/{repo}/settings
    2. Scroll to "Social preview"
    3. Click "Edit" > "Upload an image"
-   4. Select: assets/social-preview.png
+   4. Select: assets/social-preview.jpg
    5. Save changes
 
    Test it: paste your repo URL at https://www.opengraph.xyz
    ```
 
-3. Save as PNG (not WebP). Social preview images are served by GitHub's CDN to
-   Twitter, LinkedIn, Slack, and other platforms. PNG ensures maximum compatibility
-   across all consumers. This is the one case where we do NOT convert to WebP.
+3. **Format policy: JPEG only, under 1MB.**
+   GitHub's social preview uploader rejects WebP and PNG files at 1280x640
+   routinely exceed the 1MB upload limit. JPEG at quality 85 produces files
+   around 100-200KB, well within the limit. If a JPEG somehow exceeds 1MB
+   (unlikely at 1280x640), the script automatically re-saves at quality 70.
+   This is the one case where we use JPEG instead of WebP.
 
 ### When to Skip Social Preview Generation
 
