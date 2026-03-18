@@ -34,10 +34,23 @@ Key sections to include:
 ### CODE_OF_CONDUCT.md
 
 Recommended: **Contributor Covenant v2.1** (most widely adopted).
-GitHub provides a template at repo Settings > Code of Conduct.
 
-Key sections: Our Pledge, Our Standards, Enforcement Responsibilities,
-Scope, Enforcement, Attribution.
+**IMPORTANT: Do NOT generate the Contributor Covenant text inline.** The full text
+contains language that triggers AI content filters and causes generation failures.
+Instead, always fetch it from GitHub's built-in API:
+
+```bash
+gh api codes_of_conduct/contributor_covenant --jq '.body' \
+  | sed 's/\[INSERT CONTACT METHOD\]/YOUR_EMAIL/g' \
+  > CODE_OF_CONDUCT.md
+```
+
+This returns the canonical Contributor Covenant v2.1 text (~128 lines) with
+the enforcement contact placeholder already substituted. Verify with:
+`wc -l CODE_OF_CONDUCT.md` and `grep -c 'INSERT CONTACT' CODE_OF_CONDUCT.md` (should be 0).
+
+Key sections (for reference only, do not write manually):
+Our Pledge, Our Standards, Enforcement Responsibilities, Scope, Enforcement, Attribution.
 
 ### SECURITY.md
 

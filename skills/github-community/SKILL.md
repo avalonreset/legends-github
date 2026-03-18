@@ -193,9 +193,20 @@ every placeholder that needs user action. Do not guess emails or usernames.
 - Link to issue templates and CoC
 
 ### CODE_OF_CONDUCT.md
-- Default: Contributor Covenant v2.1 (most widely adopted)
-- Include enforcement contact (ask user for email)
-- Adapt scope section to project context
+- **IMPORTANT: Do NOT write the Contributor Covenant text inline.** The full text
+  triggers content filters and causes API errors. Instead, fetch it from GitHub's
+  built-in API and write the file via Bash:
+  ```bash
+  gh api codes_of_conduct/contributor_covenant --jq '.body' \
+    | sed 's/\[INSERT CONTACT METHOD\]/CONTACT_EMAIL/g' \
+    > CODE_OF_CONDUCT.md
+  ```
+  Replace `CONTACT_EMAIL` with the user's enforcement email. If unknown, use
+  the email from the LICENSE file, git config, or ask the user.
+- This produces the standard Contributor Covenant v2.1 (most widely adopted)
+- Verify the file was written: `wc -l CODE_OF_CONDUCT.md` (should be ~128 lines)
+- Verify contact was substituted: `grep -c 'INSERT CONTACT' CODE_OF_CONDUCT.md`
+  (should return 0)
 
 ### Issue Templates (YAML Forms)
 Generate at minimum:
