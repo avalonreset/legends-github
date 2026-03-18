@@ -320,6 +320,13 @@ repo page. Don't waste it or leave it pointing somewhere wrong.
 
 **No API available** -- must be set via web UI. Make this as easy as possible for the user.
 
+**IMPORTANT: Private repos on free org plans cannot set a social preview.** GitHub
+does not display the "Social preview" upload section in repo settings for private
+repos on free organization plans. The option only appears for public repos or orgs
+on paid plans (Team/Enterprise). Before providing upload guidance, check:
+`gh repo view --json visibility` -- if "PRIVATE", skip this section entirely and
+note: "Social preview upload is not available for private repos on free org plans."
+
 **Social preview generation happens in `/github readme` (Step 6).** The readme skill
 generates the banner, then automatically runs the social preview pipeline (banner ->
 16:9 recompose -> 2:1 crop -> 1280x640 JPEG). This skill (meta) only handles the

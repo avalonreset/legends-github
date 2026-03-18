@@ -622,8 +622,14 @@ print(f"Social preview saved: assets/social-preview.jpg ({size//1024}KB)")
 
 ### When to Skip Social Preview Generation
 
+- **Repo is private on a free org plan.** GitHub does not display the "Social
+  preview" upload section in repo settings for private repos on free organization
+  plans. The upload option only appears for public repos or orgs on paid plans
+  (Team/Enterprise). Generating the image wastes KIE.ai credits (~4 cents per
+  image) with no way to upload it. Check visibility before generating:
+  `gh repo view --json visibility` -- if "PRIVATE", skip the social preview
+  pipeline entirely and note why to the user.
 - User explicitly says they don't want one
-- The repo is private or internal (social sharing is unlikely)
 - The user already has a custom social preview set (`usesCustomOpenGraphImage: true`)
 
 ---

@@ -340,12 +340,19 @@ because there's no existing design to recompose from and the 2:1 crop will trim
 the top and bottom.
 
 **When to skip (the ONLY valid reasons):**
+- **Repo is private on a free org plan.** GitHub does not show the "Social
+  preview" upload option in settings for private repos on free organization
+  plans (only available for public repos or orgs on Team/Enterprise). Generating
+  the image wastes KIE.ai credits with no way to upload it. Check visibility:
+  `gh repo view --json visibility` -- if "PRIVATE", skip entirely and tell the
+  user why. This overrides the "banner was generated so social preview MUST be
+  generated" rule below.
 - User explicitly says they don't want a social preview
-- Repo is private (social sharing is unlikely)
 - Repo already has a custom social preview set (`usesCustomOpenGraphImage: true`)
 - KIE_API_KEY is not available (banner was also skipped)
 
-If the banner was generated, the social preview MUST be generated. No exceptions.
+If the banner was generated AND the repo is public (or on a paid org plan),
+the social preview MUST be generated. No exceptions.
 If the banner was skipped but KIE_API_KEY is available, offer to generate a
 standalone social preview using the fallback prompt above.
 
