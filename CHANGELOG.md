@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-26
+
+### Changed
+- License changed from proprietary to MIT for open source release
+- Repository moved from avalonreset-pro/claude-github to avalonreset/claude-github
+- All internal URLs and badge references updated to public repository
+- CONTRIBUTING.md rewritten with open source contribution guidelines
+- CITATION.cff updated with MIT license and public repository URLs
+- GitHub Discussions enabled for community Q&A
+
+### Added
+- .github/CODEOWNERS for automated PR review assignment
+
+### Removed
+- Proprietary license restrictions (membership requirement, redistribution ban)
+- Private project language from community files
+
 ## [1.2.0] - 2026-03-16
 
 ### Added
@@ -67,7 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset-pro/claude-github/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/avalonreset-pro/claude-github/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/avalonreset-pro/claude-github/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/avalonreset-pro/claude-github/releases/tag/v1.0.0
+[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/avalonreset/claude-github/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/avalonreset/claude-github/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/avalonreset/claude-github/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/avalonreset/claude-github/releases/tag/v1.0.0
