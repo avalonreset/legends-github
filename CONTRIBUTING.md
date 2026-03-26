@@ -4,7 +4,7 @@ Thank you for being part of the community. This guide covers how to report issue
 
 ## Reporting Bugs
 
-Found something broken? Open a [Bug Report](https://github.com/avalonreset-pro/claude-github/issues/new?template=bug_report.yml) with:
+Found something broken? Open a [Bug Report](https://github.com/avalonreset/claude-github/issues/new?template=bug_report.yml) with:
 
 - Which skill triggered the issue (`/github audit`, `/github readme`, etc.)
 - What you expected to happen vs. what actually happened
@@ -15,11 +15,11 @@ The more detail you provide, the faster we can fix it.
 
 ## Requesting Features
 
-Have an idea for a new skill, a missing check in the audit, or a better workflow? Open a [Feature Request](https://github.com/avalonreset-pro/claude-github/issues/new?template=feature_request.yml). Include the problem you are trying to solve, not just the solution you imagine. Understanding the "why" helps us design the right fix.
+Have an idea for a new skill, a missing check in the audit, or a better workflow? Open a [Feature Request](https://github.com/avalonreset/claude-github/issues/new?template=feature_request.yml). Include the problem you are trying to solve, not just the solution you imagine. Understanding the "why" helps us design the right fix.
 
 ## Asking Questions
 
-For general questions, troubleshooting, and discussion, use [GitHub Discussions](https://github.com/avalonreset-pro/claude-github/discussions). Keep Issues for confirmed bugs and feature requests.
+For general questions, troubleshooting, and discussion, use [GitHub Discussions](https://github.com/avalonreset/claude-github/discussions). Keep Issues for confirmed bugs and feature requests.
 
 Common questions to check first:
 

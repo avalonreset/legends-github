@@ -4,9 +4,9 @@
 
 # Claude GitHub - Claude Code Skills for Repository Optimization
 
-[![Version](https://img.shields.io/github/v/release/avalonreset-pro/claude-github)](https://github.com/avalonreset-pro/claude-github/releases)
-[![CI](https://img.shields.io/github/actions/workflow/status/avalonreset-pro/claude-github/ci.yml?label=CI)](https://github.com/avalonreset-pro/claude-github/actions)
-[![License: Proprietary](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
+[![Version](https://img.shields.io/github/v/release/avalonreset/claude-github)](https://github.com/avalonreset/claude-github/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/avalonreset/claude-github/ci.yml?label=CI)](https://github.com/avalonreset/claude-github/actions)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills-to-claude-code)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-blueviolet)](https://claude.com/claude-code)
 
@@ -122,14 +122,14 @@ This quick-scans all public repos, selects the top candidates for deep analysis,
 
 **macOS / Linux:**
 ```bash
-git clone https://github.com/avalonreset-pro/claude-github.git
+git clone https://github.com/avalonreset/claude-github.git
 cd claude-github
 bash install.sh
 ```
 
 **Windows (PowerShell):**
 ```powershell
-git clone https://github.com/avalonreset-pro/claude-github.git
+git clone https://github.com/avalonreset/claude-github.git
 cd claude-github
 .\install.ps1
 ```
@@ -280,7 +280,7 @@ No. Every skill works without DataForSEO by falling back to codebase analysis, G
 
 ## Contributing and Security
 
-This is a private project distributed to authorized community members. If you find a bug or have a feature request, open an issue in this repository.
+Contributions are welcome. If you find a bug or have a feature request, open an issue. Pull requests are encouraged - see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 For security vulnerabilities, **do not open a public issue.** Email benjamin@rankenstein.pro directly. See [SECURITY.md](SECURITY.md) for the full disclosure policy and response timelines.
 
@@ -292,4 +292,4 @@ This tool provides automated recommendations for GitHub repository optimization,
 
 ## License
 
-[Proprietary](LICENSE). Licensed to authorized community members only. See LICENSE for full terms.
+[MIT](LICENSE). Free and open source. See LICENSE for full terms.
