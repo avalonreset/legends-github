@@ -8,7 +8,7 @@ If you need help with Claude GitHub, here are your options:
 
 For "how do I..." questions, troubleshooting, and general discussion:
 
-**[GitHub Discussions](https://github.com/avalonreset-pro/claude-github/discussions)**
+**[GitHub Discussions](https://github.com/avalonreset/claude-github/discussions)**
 
 This is the best place to ask questions, share tips, and connect with other community members.
 
@@ -16,7 +16,7 @@ This is the best place to ask questions, share tips, and connect with other comm
 
 If something is broken or not working as expected:
 
-**[Open a Bug Report](https://github.com/avalonreset-pro/claude-github/issues/new?template=bug_report.yml)**
+**[Open a Bug Report](https://github.com/avalonreset/claude-github/issues/new?template=bug_report.yml)**
 
 Please include the skill name, what happened, and your OS/Claude Code version.
 
@@ -24,7 +24,7 @@ Please include the skill name, what happened, and your OS/Claude Code version.
 
 Have an idea for a new feature or improvement?
 
-**[Open a Feature Request](https://github.com/avalonreset-pro/claude-github/issues/new?template=feature_request.yml)**
+**[Open a Feature Request](https://github.com/avalonreset/claude-github/issues/new?template=feature_request.yml)**
 
 ### Security Issues
 
