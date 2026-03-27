@@ -7,23 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-## [1.3.0] - 2026-03-26
-
-### Changed
-- License changed from proprietary to MIT for open source release
-- Repository moved from avalonreset-pro/claude-github to avalonreset/claude-github
-- All internal URLs and badge references updated to public repository
-- CONTRIBUTING.md rewritten with open source contribution guidelines
-- CITATION.cff updated with MIT license and public repository URLs
-- GitHub Discussions enabled for community Q&A
-
-### Added
-- .github/CODEOWNERS for automated PR review assignment
-
-### Removed
-- Proprietary license restrictions (membership requirement, redistribution ban)
-- Private project language from community files
-
 ## [1.2.0] - 2026-03-16
 
 ### Added
@@ -32,12 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Canonical skill order: legal -> community -> release -> seo -> meta -> readme
 - Clickable image link rules: all generated images output both local file:// and raw GitHub URLs for immediate terminal access
 - Social preview generation guidance with download + upload links in github-meta skill
+- .github/CODEOWNERS for automated PR review assignment
 
 ### Changed
+- License changed from proprietary to MIT for open source release
+- Repository published at avalonreset/claude-github (public)
+- All internal URLs and badge references updated to public repository
+- CONTRIBUTING.md rewritten with open source contribution guidelines
+- CITATION.cff updated with MIT license and public repository URLs
+- GitHub Discussions enabled for community Q&A
 - Avatar pipeline simplified to JPEG-only (GitHub rejects WebP, PNGs often exceed 1MB)
 - Lossless PNG originals preserved in assets/originals/ for user reference
 - Contact email updated to benjamin@rankenstein.pro
 - All em dashes removed from skill suite (replaced with regular hyphens)
+
+### Removed
+- Proprietary license restrictions (membership requirement, redistribution ban)
+- Private project language from community files
 
 ### Fixed
 - Social preview format policy enforced: JPEG only, under 1MB for GitHub upload
@@ -84,8 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.3.0...HEAD
-[1.3.0]: https://github.com/avalonreset/claude-github/compare/v1.2.0...v1.3.0
+[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.2.0...HEAD
 [1.2.0]: https://github.com/avalonreset/claude-github/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/avalonreset/claude-github/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/avalonreset/claude-github/releases/tag/v1.0.0
