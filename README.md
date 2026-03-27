@@ -106,7 +106,7 @@ Run `/github audit` and 6 specialized agents score your repo in parallel:
 | Release and Maintenance | 15% | Releases, CHANGELOG, CI badges, dependabot, recency |
 | SEO and Discoverability | 10% | Keyword placement, GitHub Explore signals, AI citability |
 
-Each agent uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Agents run simultaneously in a single message, so a full audit completes in under 60 seconds.
+Each agent uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Agents run simultaneously in a single message, so a full audit completes in under 2 minutes.
 
 ### Portfolio Mode
 
