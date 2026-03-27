@@ -10,9 +10,9 @@
 [![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills-to-claude-code)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-blueviolet)](https://claude.com/claude-code)
 
-Most GitHub repos are invisible. No keywords in the description, no structured README, missing license files, zero community health signals. Search engines skip them. Developers scroll past them. Stars stay at zero.
-
 Claude GitHub is the most comprehensive collection of Claude Code skills for GitHub repository optimization. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
+
+Most GitHub repos are invisible - no keywords in the description, no structured README, missing license files, zero community health signals. Search engines skip them. Developers scroll past them.
 
 > Built with the [Agent Skills](https://github.com/anthropics/claude-code) open standard for Claude Code.
 > Scaffolded with [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
@@ -76,13 +76,13 @@ Top 3 Actions (by impact):
 ### SEO Keyword Discovery
 
 ```
-Primary Keyword: "claude code skills" (3,600/mo, difficulty 34, Sweet Spot)
+Primary Keyword: "claude code skills" (5,400/mo, difficulty 34, Sweet Spot)
 GitHub ranks #2 for this query. Recommended for H1, description, first paragraph.
 
 Secondary Keywords:
-- "claude code skills marketplace" (320/mo, +171% quarterly)
-- "best claude code skills" (110/mo, +321% quarterly)
-- "claude code agent skills" (70/mo, difficulty 42)
+- "claude code skills marketplace" (320/mo, difficulty 17, +171% quarterly)
+- "best claude code skills" (110/mo, difficulty 1, +321% quarterly)
+- "how to add skills to claude code" (70/mo, difficulty 32, +586% quarterly)
 
 Topics recommended: claude-code, claude-code-skills, github-optimization...
 ```
@@ -277,6 +277,10 @@ Skills are instruction files (SKILL.md) that Claude loads based on triggers in y
 ### Do I need DataForSEO to use this?
 
 No. Every skill works without DataForSEO by falling back to codebase analysis, GitHub API data, and built-in reference guides. However, keyword recommendations will be marked "unverified" without live search data. DataForSEO adds real volume numbers, difficulty scores, and SERP verification for about 15-30 cents per repo analysis.
+
+### What makes Claude GitHub one of the best Claude Code skills for GitHub?
+
+It is the only skill suite that combines live keyword research (via DataForSEO), AI image generation (via KIE.ai), and a structured audit across 6 categories into a single workflow. Most Claude Code skills handle one task. Claude GitHub handles eight, and they share data through a cache so each step builds on the last. The audit-to-readme pipeline takes a repo from zero community health signals to a fully optimized public project in under an hour.
 
 ## Contributing and Security
 
