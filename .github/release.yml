@@ -1,14 +1,5 @@
 changelog:
-  exclude:
-    labels:
-      - ignore-for-release
-    authors:
-      - dependabot
-      - dependabot[bot]
   categories:
-    - title: Breaking Changes
-      labels:
-        - breaking
     - title: New Features
       labels:
         - enhancement
@@ -17,13 +8,13 @@ changelog:
       labels:
         - bug
         - fix
-    - title: Security
-      labels:
-        - security
     - title: Documentation
       labels:
-        - docs
         - documentation
+    - title: Maintenance
+      labels:
+        - dependencies
+        - chore
     - title: Other Changes
       labels:
         - "*"
