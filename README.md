@@ -33,6 +33,8 @@ Most GitHub repos are invisible - no keywords in the description, no structured 
 - [Best Practices](#best-practices)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Contributing and Security](#contributing-and-security)
+- [Community](#community)
+- [Other Projects](#other-projects)
 - [Disclaimer](#disclaimer)
 - [License](#license)
 
@@ -287,6 +289,18 @@ It is the only skill suite that combines live keyword research (via DataForSEO),
 Contributions are welcome. If you find a bug or have a feature request, open an issue. Pull requests are encouraged - see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 For security vulnerabilities, **do not open a public issue.** Email benjamin@rankenstein.pro directly. See [SECURITY.md](SECURITY.md) for the full disclosure policy and response timelines.
+
+## Community
+
+Join [AI Marketing Hub Pro](https://www.skool.com/ai-marketing-hub-pro/about?ref=59f96e9d9f2b4047b53627692d8c8f0c) for access to exclusive projects (referral link).
+
+## Other Projects
+
+**[gemini-seo](https://github.com/avalonreset/gemini-seo)** - 14 professional SEO workflows for Gemini CLI. Technical audits, schema markup, Core Web Vitals, E-E-A-T, and AI search readiness.
+
+**[BenjaminTerm](https://github.com/avalonreset/BenjaminTerm)** - Hacker-styled WezTerm distribution for Windows. Smart clipboard, paste undo, 86 curated dark themes, borderless glass mode.
+
+**[wan2gp-operator](https://github.com/avalonreset/wan2gp-operator)** - CLI operator for Wan2GP text-to-video. VRAM-aware compose, headless batch runs, and a music video pipeline.
 
 ## Disclaimer
 
