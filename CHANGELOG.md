@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [1.2.0] - 2026-03-16
 
 ### Added
+
 - Standard Operating Procedure (SOP) across all skills: audit generates a numbered remediation plan, each skill hands off to the next logical step, re-audit closes the loop
 - Two-phase workflow: Phase 1 (per-repo optimization) and Phase 2 (portfolio optimization via /github empire)
 - Canonical skill order: legal -> community -> release -> seo -> meta -> readme
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - .github/CODEOWNERS for automated PR review assignment
 
 ### Changed
+
 - License changed from proprietary to MIT for open source release
 - Repository published at avalonreset/claude-github (public)
 - All internal URLs and badge references updated to public repository
@@ -30,16 +32,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - All em dashes removed from skill suite (replaced with regular hyphens)
 
 ### Removed
+
 - Proprietary license restrictions (membership requirement, redistribution ban)
 - Private project language from community files
 
 ### Fixed
+
 - Social preview format policy enforced: JPEG only, under 1MB for GitHub upload
 - WebP input handling for banner recomposition via KIE.ai
 
 ## [1.1.0] - 2026-03-13
 
 ### Added
+
 - Empire skill redesign: empire builder mode with profile completeness checks and AI avatar generation
 - WebP image pipeline with metadata stripping across all conversion scripts
 - Getting Started guide, install screenshot, FAQ, and Best Practices sections in README
@@ -48,12 +53,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Skill Forge attribution in README
 
 ### Changed
+
 - All images converted from PNG/JPG to WebP for smaller file sizes
 - Installer splash screen updated to v1.1 with stronger service messaging
 - README optimized for secondary keyword opportunities
 - Banner generation reference updated for WebP delivery
 
 ### Fixed
+
 - DataForSEO cost gate and competitor search field name
 - Avatar detection method for image format rubric
 - Markdownlint CI failures with config and rule adjustments
@@ -62,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [1.0.0] - 2026-03-13
 
 ### Added
+
 - Orchestrator skill (`/github`) with intent detection, repo type classification, and DataForSEO integration
 - 8 sub-skills: audit, legal, community, release, seo, meta, readme, empire
 - 6 parallel scoring agents for repository health audit (0-100 scoring across README, metadata, legal, community, releases, SEO)

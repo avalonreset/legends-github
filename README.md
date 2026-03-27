@@ -123,6 +123,7 @@ This quick-scans all public repos, selects the top candidates for deep analysis,
 **Prerequisites:** [Claude Code](https://claude.com/claude-code) and [GitHub CLI](https://cli.github.com/) (`gh`), both installed and authenticated.
 
 **macOS / Linux:**
+
 ```bash
 git clone https://github.com/avalonreset/claude-github.git
 cd claude-github
@@ -130,6 +131,7 @@ bash install.sh
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 git clone https://github.com/avalonreset/claude-github.git
 cd claude-github
