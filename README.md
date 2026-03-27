@@ -138,8 +138,8 @@ cd claude-github
 
 The installer copies all skills, agents, and reference files to `~/.claude/skills/github/`, then walks you through setting up two services:
 
-- **[DataForSEO](https://dataforseo.com)** (strongly recommended) -- powers live keyword research, SERP rankings, and AI visibility tracking. The installer configures the MCP server with your credentials automatically. Without it, SEO-dependent skills fall back to codebase-only analysis and all keyword recommendations are marked "unverified." A free account includes enough credits for hundreds of analyses. A single repo analysis costs about 15-30 cents.
-- **[KIE.ai](https://kie.ai/api-key)** (strongly recommended) -- generates AI banner images for READMEs and AI profile avatars for your GitHub profile. The installer saves your API key to `.env`. Without it, image generation is skipped entirely. Each image costs about 4 cents.
+- **[DataForSEO](https://dataforseo.com)** (strongly recommended) - powers live keyword research, SERP rankings, and AI visibility tracking. The installer configures the MCP server with your credentials automatically. Without it, SEO-dependent skills fall back to codebase-only analysis and all keyword recommendations are marked "unverified." A free account includes enough credits for hundreds of analyses. A single repo analysis costs about 15-30 cents.
+- **[KIE.ai](https://kie.ai/api-key)** (strongly recommended) - generates AI banner images for READMEs and AI profile avatars for your GitHub profile. The installer saves your API key to `.env`. Without it, image generation is skipped entirely. Each image costs about 4 cents.
 
 Both services are technically optional, but without them you lose the two most differentiated features of the suite: data-backed keyword optimization and professional AI-generated visuals. **Set them up during installation.** It takes 5 minutes and makes every other skill dramatically more useful.
 
@@ -154,12 +154,12 @@ Restart Claude Code after installing. Skills register on startup.
 The skills read your actual source code, configuration files, git history, and GitHub remote to understand what your project is and how to improve it. If you run them from an empty folder or from the wrong directory, Claude has no real data to work with and recommendations will be generic at best.
 
 ```bash
-# Right -- run from inside your project
+# Right - run from inside your project
 cd ~/projects/my-awesome-tool
 claude
 > /github audit
 
-# Wrong -- running from a random directory
+# Wrong - running from a random directory
 cd ~/Desktop
 claude
 > /github audit   # Claude can't see your code, configs, or git remote
