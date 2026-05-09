@@ -1,15 +1,6 @@
 ---
 name: github-empire
-description: >
-  Portfolio-level GitHub empire builder. Scans your entire public presence, identifies
-  gaps, and then BUILDS -- updates profile bio/location/social via API, creates the
-  profile README repo, synchronizes topics across repos, writes cross-linking sections
-  into READMEs, generates AI profile avatars, and tracks growth over time. Not a
-  consultant that hands you a to-do list. An architect that builds your empire while
-  you watch. Use when user says "empire", "github empire", "portfolio", "all my repos",
-  "profile readme", "github profile", "profile photo", "avatar", "profile picture",
-  "org profile", "pinned repos", "branding", "cross-linking", "github strategy",
-  "github consulting", "optimize all repos", or "github presence".
+description: Portfolio-level GitHub empire builder — scans presence, builds profile README, syncs topics, cross-links repos, generates avatars.
 ---
 
 # GitHub Empire -- Build Your GitHub Presence
@@ -74,17 +65,35 @@ and I'll set it right now." Never say "you should pin these repos." Say "Pin the
 6 repos in this order: [list]. Go to https://github.com/{username}?tab=repositories
 and click 'Customize your pins.'"
 
+## Headless Contract
+
+For deterministic CLI/API use, the shipped runner now exposes:
+
+```bash
+python3 scripts/run_headless.py empire --path /path/to/repo
+python3 scripts/run_headless.py empire --path /path/to/repo --username your-login
+python3 scripts/run_headless.py empire --path /path/to/repo --generate-avatar
+```
+
+This writes `.github-audit/empire-data.json` plus `EMPIRE-REPORT.md`,
+`EMPIRE-BLUEPRINT.md`, `PROFILE-README-DRAFT.md`, and `EMPIRE-SUMMARY.json`.
+The runner builds a deterministic portfolio blueprint, profile README draft,
+cross-link plan, and explicit `gh` commands without auto-applying account-wide
+mutations. `--generate-avatar` creates `assets/avatar.jpg` when KIE and Pillow
+are available. Pin ordering and final profile-photo upload remain GitHub web UI
+steps and must stay explicit.
+
 ## Process (GARE Pattern)
 
 ### 1. Gather
 
 **Step 0 -- Check shared data cache:**
 Check `.github-audit/` for cached data from other skills.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
-- `audit-data.json` (recommended) -- per-repo scores from `/github audit`. If available,
+- `audit-data.json` (recommended) -- per-repo scores from `github-audit`. If available,
   use scores directly. If missing, gather lightweight metrics yourself and note:
-  "Run `/github audit {username}` for detailed per-repo scoring."
+  "Run `github-audit {username}` for detailed per-repo scoring."
 - `seo-data.json` (optional) -- keyword landscape for profile README SEO.
 - `empire-data.json` (optional) -- **previous Empire run**. If found, load it for
   growth delta reporting. Compare stars, views, topic counts, and portfolio health
@@ -224,15 +233,15 @@ clear tags showing what happens:
 ## Build Plan
 
 ### Automated (I'll execute these via API after your approval)
-1. [PROFILE] Set bio: "Developer building SEO optimization tools for AI-powered CLIs -- Claude, Codex, Gemini"
+1. [PROFILE] Set bio: "Developer building SEO optimization tools for AI-powered CLIs -- Codex and other AI CLIs"
 2. [PROFILE] Set website: https://avalonreset.com
 3. [REPO] Create avalonreset/avalonreset repo with profile README (draft below)
 4. [TOPICS] Sync topics across all repos:
-   - gemini-seo: +seo-tools, +ai-cli, +developer-tools
    - codex-seo: +seo-tools, +ai-cli, +developer-tools
-   - claude-knife: +ai-cli, +developer-tools
+   - codex-seo: +seo-tools, +ai-cli, +developer-tools
+   - codex-github: +ai-cli, +developer-tools
 5. [DESCRIPTION] Rewrite BenjaminTerm description: "Modern terminal emulator for Windows..."
-6. [CROSS-LINK] Add "See Also" sections to gemini-seo and codex-seo READMEs
+6. [CROSS-LINK] Add "See Also" sections to codex-seo and codex-seo READMEs
 
 ### Manual (I'll guide you step-by-step with direct links)
 7. [PIN] Pin these 6 repos in order: [list]
@@ -242,8 +251,8 @@ clear tags showing what happens:
    -> https://github.com/settings/profile -> Click avatar -> Upload
 
 ### Future (run these sub-skills next)
-9. [SKILL] Run `/github readme` on BenjaminTerm (weakest README)
-10. [SKILL] Run `/github audit` for detailed per-repo scoring
+9. [SKILL] Run `github-readme` on BenjaminTerm (weakest README)
+10. [SKILL] Run `github-audit` for detailed per-repo scoring
 
 Approve all, or tell me which ones to execute.
 ```
@@ -315,7 +324,7 @@ Example:
 ```markdown
 ## Related Projects
 
-- **[gemini-seo](https://github.com/avalonreset/gemini-seo)** -- SEO optimization for Google Gemini CLI
+- **[codex-seo](https://github.com/avalonreset/codex-seo)** -- SEO optimization for OpenAI Codex CLI
 - **[codex-seo](https://github.com/avalonreset/codex-seo)** -- SEO optimization for OpenAI Codex CLI
 ```
 
@@ -443,8 +452,8 @@ Present a summary:
 2. Upload avatar: [link]
 
 ### Recommended Next Steps
-- Run `/github audit {username}` for detailed per-repo scoring
-- Run `/github readme` on [weakest repo] to improve its README
+- Run `github-audit {username}` for detailed per-repo scoring
+- Run `github-readme` on [weakest repo] to improve its README
 ```
 
 ## Portfolio Pruning
@@ -471,7 +480,7 @@ Scale the depth of analysis to the portfolio size:
 
 **Hard cap:** Deep-dive analysis on max 15 repos. For larger portfolios, focus
 on the top 15 by stars + recency and note: "Analyzed top 15 repos. Run
-`/github audit` on specific repos for detailed scoring."
+`github-audit` on specific repos for detailed scoring."
 
 ## Organization Profiles
 
@@ -484,8 +493,8 @@ If the user has a GitHub org:
 ## Avatar Generation (Profile Photo via KIE.ai)
 
 When the user confirms they have a default identicon (or wants a new profile photo),
-generate one using KIE.ai Nano Banana 2. Reference:
-`~/.claude/skills/github/references/banner-generation.md` for API mechanics.
+generate one using KIE.ai GPT Image 2. Reference:
+`github/references/banner-generation.md` for API mechanics.
 
 ### Avatar vs Banner -- Different Goals
 
@@ -557,22 +566,18 @@ curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $KIE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "nano-banana-2",
+    "model": "gpt-image-2-text-to-image",
     "input": {
       "prompt": "YOUR_AVATAR_PROMPT_HERE",
-      "image_input": [],
-      "google_search": false,
-      "aspect_ratio": "1:1",
-      "resolution": "1K",
-      "output_format": "png"
+      "aspect_ratio": "1:1"
     }
   }'
 ```
 
 **Key differences from banners:**
 - `aspect_ratio`: **"1:1"** (not "21:9")
-- `output_format`: **"png"** (always request lossless source -- convert after)
-- Resolution: 1K is fine (GitHub resizes to 460x460 anyway)
+- Source file: keep the KIE result as the lossless original, then convert after download
+- Resolution: default KIE GPT Image 2 output is fine (GitHub resizes to 460x460 anyway)
 
 ### Post-Download Conversion (required -- strip metadata + convert to WebP)
 
@@ -651,7 +656,7 @@ gh api repos/{owner}/{repo}/traffic/clones --jq '{count: .count, uniques: .uniqu
 **Delta reporting:** If empire-data.json exists from a previous run, compare:
 - Portfolio Health Score: 38 -> 62 (+24)
 - Total stars: 12 -> 18 (+6)
-- Per-repo changes: "gemini-seo: 5 -> 12 stars since March 8"
+- Per-repo changes: "codex-seo: 5 -> 12 stars since March 8"
 - New repos since last run
 - Repos that went stale since last run
 
@@ -675,7 +680,7 @@ branding_assessment (object with consistency ratings), profile_readme_status
 actions_executed (array of action descriptions), growth_snapshot (per-repo stars
 and views at time of run).
 
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for patterns.
+Reference: `github/references/shared-data-cache.md` for patterns.
 
 ## Output Flow
 
@@ -689,3 +694,4 @@ Every run produces this exact sequence:
 
 The Blueprint is the proposal. Execution is the delivery. The user finishes
 this session with a built empire, not a to-do list.
+

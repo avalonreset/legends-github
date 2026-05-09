@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-05-09
+
+### Added
+
+- Codex compatibility layer with `install-codex.sh` and `install-codex.ps1`.
+- Deterministic headless runtime under `github/scripts/run_headless.py` for audit, SEO, legal, community, metadata, README, release, and empire workflows.
+- Python runtime requirements under `github/requirements.txt`.
+- Dual-runtime audit orchestration guidance: Claude Code subagents and Codex multi-agents use the same 6 scoring roles.
+
+### Changed
+
+- Claude installers now also copy the headless runtime into `~/.claude/skills/github/scripts/`.
+- Image generation standard moved to GPT Image 2 via KIE.ai.
+- Skill docs now use Codex-native command names where appropriate while preserving Claude slash-command compatibility.
+
 ## [1.2.0] - 2026-03-16
 
 ### Added
@@ -75,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - 6 parallel scoring agents for repository health audit (0-100 scoring across README, metadata, legal, community, releases, SEO)
 - 9 reference guides (banner generation, community files, community templates, license guide, readme framework, releases guide, repo type templates, SEO guide, shared data cache)
 - DataForSEO MCP server integration for live keyword research, SERP analysis, and AI visibility tracking
-- KIE.ai banner generation with one-shot Nano Banana 2 image generation
+- KIE.ai banner generation with one-shot GPT Image 2 image generation
 - Cross-platform installers (Bash for macOS/Linux, PowerShell for Windows)
 - Shared data cache system (`.github-audit/` directory) for inter-skill communication
 - Portfolio audit mode (`/github audit username`) with parallel multi-repo analysis
@@ -86,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/avalonreset/claude-github/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/avalonreset/claude-github/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/avalonreset/claude-github/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/avalonreset/claude-github/releases/tag/v1.0.0

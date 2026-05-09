@@ -1,15 +1,6 @@
 ---
 name: github-seo
-description: >
-  Keyword research and SEO content optimization strategy for GitHub repositories.
-  Analyzes what Google indexes on GitHub, identifies target keywords for repo
-  descriptions and README content, optimizes topics and tags for GitHub Explore
-  and Google search, provides GEO optimization for AI citability by ChatGPT,
-  Perplexity, and AI Overviews. For GitHub repo SEO only -- not website or blog
-  SEO. Data-producing skill consumed by github-readme and github-meta. Use when
-  user says "seo", "github seo", "keywords", "keyword research", "optimize for
-  search", "discoverability", "ranking", "github ranking", "seo strategy",
-  "ai citability", "geo", or "search optimization".
+description: Keyword research and SEO content optimization for GitHub repositories — descriptions, topics, README content, plus GEO/AI citability.
 ---
 
 # GitHub SEO -- Keyword Research and Content Optimization
@@ -17,6 +8,20 @@ description: >
 This is a **data-producing skill**. Its output is consumed by github-readme (for content
 optimization) and github-meta (for description and topic selection). It can also run
 standalone for SEO strategy analysis.
+
+## Headless/API Contract
+
+For non-interactive systems, use:
+
+```bash
+python3 scripts/run_headless.py seo --path /path/to/repo
+```
+
+That deterministic runner writes `.github-audit/seo-data.json` plus report
+artifacts under `.github-audit/output/`. It is intentionally a fallback-grade
+cache seeding path: no DataForSEO MCP calls, so keyword volume, difficulty,
+intent, AI visibility, and SERP fields are marked unverified. Interactive
+`github seo` runs are still the path for live DataForSEO research.
 
 ## The GitHub SEO Problem (Why This Isn't Normal SEO)
 
@@ -152,7 +157,7 @@ Most users are on the free tier (includes credit balance) -- keep costs low.
 
 **Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
 - `repo-context.json` (optional) -- if present, use repo type, intent, language, metadata
   instead of re-querying `gh repo view`. If missing, gather yourself in Step 1a.
@@ -275,7 +280,7 @@ These are fallbacks, not standard steps.
 
 ### 2. Analyze
 
-Reference: Read `~/.claude/skills/github/references/github-seo-guide.md` for
+Reference: Read `github/references/github-seo-guide.md` for
 ranking factors and indexing rules.
 
 **With DataForSEO data -- apply the Opportunity Framework:**
@@ -426,7 +431,7 @@ primary_keyword (keyword, volume, difficulty, category, intent),
 secondary_keywords array, skip_keywords array, recommended_description,
 recommended_topics, paa_questions, ai_visibility, serp_verified flag,
 github_in_serp flag, github_serp_position.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact schema.
+Reference: `github/references/shared-data-cache.md` for exact schema.
 
 SEO skill primarily produces recommendations -- execution happens in other skills:
 - github-readme applies keyword recommendations to README content
@@ -486,8 +491,9 @@ After completing SEO keyword research, always end with this handoff:
 ```
 SEO research complete. Keywords are cached in .github-audit/seo-data.json.
 Next recommended step:
-  /github meta -- optimize description, topics, and settings using your keyword data
+  github-meta -- optimize description, topics, and settings using your keyword data
 ```
 
 If running as part of the audit SOP, reference the step number:
-"Step 4 complete. Ready for Step 5: `/github meta`"
+"Step 4 complete. Next skill: `github-meta`"
+

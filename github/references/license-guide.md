@@ -140,3 +140,4 @@ These situations are too nuanced for automated analysis:
 - **GPL linking** -- what constitutes "linking" vs "mere aggregation" is legally gray
 - **Mixed-license repos** -- different licenses for different directories
 - **License header requirements** -- GPL/Apache may require headers in every source file
+

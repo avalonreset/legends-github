@@ -23,7 +23,7 @@ Write-Host @"
 
 Write-Host "   " -NoNewline
 Write-Host "░▒▓" -NoNewline -ForegroundColor Magenta
-Write-Host " v1.2 " -NoNewline -ForegroundColor Green
+Write-Host " v1.3 " -NoNewline -ForegroundColor Green
 Write-Host "▓▒░" -NoNewline -ForegroundColor Magenta
 Write-Host "  Repository Optimization Skills for Claude Code" -ForegroundColor DarkGray
 Write-Host ""
@@ -43,6 +43,7 @@ $AgentsDir = Join-Path $ClaudeDir "agents"
 # Create directories
 $dirs = @(
     (Join-Path $SkillsDir "github\references"),
+    (Join-Path $SkillsDir "github\scripts"),
     (Join-Path $SkillsDir "github-audit"),
     (Join-Path $SkillsDir "github-readme"),
     (Join-Path $SkillsDir "github-legal"),
@@ -78,6 +79,13 @@ Write-Host "   " -NoNewline
 Write-Host "[+]" -NoNewline -ForegroundColor Green
 Write-Host " 9 Reference Files   " -NoNewline
 Write-Host "SEO, legal, readme, community guides" -ForegroundColor DarkGray
+
+Copy-Item (Join-Path $ScriptDir "github\requirements.txt") (Join-Path $SkillsDir "github\requirements.txt") -Force
+Copy-Item (Join-Path $ScriptDir "github\scripts\*.py") (Join-Path $SkillsDir "github\scripts\") -Force
+Write-Host "   " -NoNewline
+Write-Host "[+]" -NoNewline -ForegroundColor Green
+Write-Host " Headless Runtime    " -NoNewline
+Write-Host "deterministic audit and release helpers" -ForegroundColor DarkGray
 
 $skills = @("github-audit", "github-legal", "github-community", "github-release", "github-seo", "github-meta", "github-readme", "github-empire")
 foreach ($skill in $skills) {

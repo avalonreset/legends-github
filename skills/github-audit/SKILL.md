@@ -1,15 +1,6 @@
 ---
 name: github-audit
-description: >
-  Comprehensive GitHub repository health audit with 0-100 scoring across 6
-  categories: README quality, metadata and discovery, legal compliance,
-  community health, release and maintenance, SEO and discoverability. Audits
-  GitHub repos only -- not websites or web applications. Supports single repo
-  audit, remote repo audit, and portfolio-level audit across all public repos.
-  Spawns 6 parallel agents for scoring. Produces prioritized action items. Use
-  when user says "audit", "github audit", "repo audit", "audit my repo",
-  "repo score", "health check", "github score", "rate my repo", "repo health",
-  "audit my github", "portfolio audit", or "score".
+description: GitHub repo health audit with 0-100 scoring across README, metadata, legal, community, releases, SEO. Single, remote, or portfolio mode.
 ---
 
 # GitHub Audit -- Repository Health Scoring
@@ -18,9 +9,21 @@ Primary data-gathering skill. Produces the richest dataset that other skills con
 
 ## Modes
 
-- `/github audit` -- Audit the repo in the current directory
-- `/github audit <owner/repo>` -- Audit a specific remote repo
-- `/github audit <username>` -- Audit entire portfolio (all public repos)
+- `github-audit` -- Audit the repo in the current directory
+- `github-audit <owner/repo>` -- Audit a specific remote repo
+- `github-audit <username>` -- Audit entire portfolio (all public repos)
+
+## Headless Scope
+
+The deterministic script entrypoint currently covers local repo audits only:
+
+```bash
+python3 scripts/run_headless.py audit --path /path/to/repo
+```
+
+Remote repo audits and portfolio audits remain conversational skill flows for
+now. Do not imply the headless runner supports them unless that script contract
+has been extended.
 
 ## Process (GARE Pattern)
 
@@ -28,7 +31,7 @@ Primary data-gathering skill. Produces the richest dataset that other skills con
 
 **Step 0 -- Check shared data cache:**
 Before running a full audit, check `.github-audit/audit-data.json`.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
 - If `audit-data.json` exists and is from today: offer the user a choice --
   "Cached audit scores found from earlier today. Reuse them or re-run fresh?"
@@ -133,18 +136,23 @@ gh repo list {username} --visibility public --limit 500 \
 
 **Important:** Save ALL gathered data -- you will pass it to agents in Step 2.
 
-### 2. Analyze (Spawn 6 Parallel Scoring Agents)
+### 2. Analyze (Run 6 Parallel Review Agents)
 
-**You MUST use the Agent tool to spawn all 6 agents in parallel.** Do NOT score
-categories yourself inline -- the agents have detailed point-by-point rubrics and
-load reference files for deep domain analysis.
+Use the fastest parallel agent primitive available in the host runtime. Do NOT
+score categories yourself inline when agent delegation is available -- the category
+reviewers have detailed point-by-point rubrics and load reference files for deep
+domain analysis.
 
-Launch all 6 agents in a **single message** (6 parallel Agent tool calls).
-Each agent has its own rubric, scoring criteria, and reference file -- you just
-need to pass the gathered data.
+- **Claude Code:** use the Agent tool and spawn all 6 category subagents in one message.
+- **Codex:** use multi-agent delegation / `spawn_agent` for all 6 category reviewers in one round.
+- **No agent primitive available:** run the same six rubrics sequentially and say parallel review was unavailable.
 
-| subagent_type | Category | Weight |
-|---------------|----------|--------|
+Launch all 6 reviewers in parallel. Each reviewer gets the same gathered data,
+uses its own rubric, and returns only its category score, findings, and action
+items. Wait for all six to finish before aggregating.
+
+| Reviewer | Category | Weight |
+|----------|----------|--------|
 | `github-readme` | README Quality | 25% |
 | `github-meta` | Metadata & Discovery | 20% |
 | `github-legal` | Legal Compliance | 15% |
@@ -152,7 +160,7 @@ need to pass the gathered data.
 | `github-release` | Release & Maintenance | 15% |
 | `github-seo` | SEO & Discoverability | 10% |
 
-**Agent invocation -- use this exact pattern for EACH of the 6 agents:**
+**Claude Code invocation pattern for EACH reviewer:**
 
 ```
 Agent tool call:
@@ -160,6 +168,18 @@ Agent tool call:
   description: "Score {repo} README"
   prompt: <the data payload below>
 ```
+
+**Codex invocation pattern for EACH reviewer:**
+
+```
+spawn_agent:
+  agent_type: "github-readme"
+  message: <the data payload below>
+```
+
+If custom `github-*` agent types are not exposed in the current Codex runtime,
+spawn default workers with an explicit category assignment and tell each worker
+which rubric/reference file to apply.
 
 **Data payload template (same for all 6 agents):**
 
@@ -236,16 +256,16 @@ Image Files (assets/):
   Even if the README is 500+ lines, pass it in full. Summarizing causes agents to
   score stub content and produces artificially low scores.
 - Pass the FULL README content to every agent (especially readme, seo, meta)
-- Use `subagent_type` -- do NOT use general-purpose agents
-- All 6 agents in ONE message (parallel, not sequential)
-- Each agent loads its own reference file and applies its own rubric
-- Each agent returns: score (0-100), point breakdown table, findings, prioritized issues
-- Agents do NOT have Bash access -- they CANNOT fetch data themselves
+- Prefer the named `github-*` reviewer type when the runtime exposes it.
+- Start all 6 reviewers before waiting on any one reviewer.
+- Each reviewer loads its own reference file and applies its own rubric.
+- Each reviewer returns: score (0-100), point breakdown table, findings, prioritized issues.
+- Reviewers do NOT have Bash access unless the host explicitly provides it. They CANNOT fetch data themselves.
 
 ### 2b. Write to Shared Data Cache
 
 After all 6 agents return, write results to `.github-audit/audit-data.json`.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schema.
+Reference: `github/references/shared-data-cache.md` for schema.
 
 ```bash
 mkdir -p .github-audit
@@ -290,13 +310,13 @@ remediation plan. The order matters because later skills depend on earlier ones.
 
 | Step | Skill | Why This Order |
 |------|-------|---------------|
-| 1 | `/github legal` | Foundation -- license, compliance, fork obligations must be correct before anything else |
-| 2 | `/github community` | Infrastructure -- templates, CoC, devcontainer build on legal foundation |
-| 3 | `/github release` | Versioning -- CHANGELOG, badges, releases need legal + community in place |
-| 4 | `/github seo` | Research -- keyword data feeds into meta descriptions and README content |
-| 5 | `/github meta` | Settings -- description, topics, features use SEO keyword data |
-| 6 | `/github readme` | Capstone -- the README references everything above and uses SEO keywords |
-| 7 | Re-run `/github audit` | Measure improvement and verify all fixes landed |
+| 1 | `github-legal` | Foundation -- license, compliance, fork obligations must be correct before anything else |
+| 2 | `github-community` | Infrastructure -- templates, CoC, devcontainer build on legal foundation |
+| 3 | `github-release` | Versioning -- CHANGELOG, badges, releases need legal + community in place |
+| 4 | `github-seo` | Research -- keyword data feeds into meta descriptions and README content |
+| 5 | `github-meta` | Settings -- description, topics, features use SEO keyword data |
+| 6 | `github-readme` | Capstone -- the README references everything above and uses SEO keywords |
+| 7 | Re-run `github-audit` | Measure improvement and verify all fixes landed |
 
 **SOP generation rules:**
 - **Only include skills where the score is below 90.** If legal scored 95, skip it.
@@ -312,26 +332,26 @@ remediation plan. The order matters because later skills depend on earlier ones.
 
 | Step | Command | Current Score | What It Fixes |
 |------|---------|---------------|---------------|
-| 1 | `/github legal` | 67/100 | Fork copyright, missing CITATION.cff |
-| 2 | `/github community` | 52/100 | Missing CODE_OF_CONDUCT, no dependabot |
-| 3 | `/github release` | 56/100 | Catch-up releases, missing badges |
-| 4 | `/github seo` | 56/100 | Keyword research for description + README |
-| 5 | `/github meta` | 67/100 | Topics, settings, social preview |
-| 6 | `/github readme` | 52/100 | Full README optimization with SEO keywords |
-| 7 | `/github audit` | -- | Re-audit to measure improvement |
+| 1 | `github-legal` | 67/100 | Fork copyright, missing CITATION.cff |
+| 2 | `github-community` | 52/100 | Missing CODE_OF_CONDUCT, no dependabot |
+| 3 | `github-release` | 56/100 | Catch-up releases, missing badges |
+| 4 | `github-seo` | 56/100 | Keyword research for description + README |
+| 5 | `github-meta` | 67/100 | Topics, settings, social preview |
+| 6 | `github-readme` | 52/100 | Full README optimization with SEO keywords |
+| 7 | `github-audit` | -- | Re-audit to measure improvement |
 
 Start with Step 1 when ready. Each skill will guide you through its changes
 and hand off to the next step.
 
 Once you've completed this SOP for all your repos, run:
-  /github empire -- portfolio-level optimization (profile README, cross-linking, topic sync)
+  github-empire -- portfolio-level optimization (profile README, cross-linking, topic sync)
 ```
 
 **After presenting the SOP, wait for the user.** Do not auto-run any skill.
 The user decides when to start and which step to run. If they say "go" or
 "start" or "let's do it", run Step 1.
 
-**Empire note:** The `/github empire` skill is NOT part of the per-repo SOP.
+**Empire note:** The `github-empire` skill is NOT part of the per-repo SOP.
 It operates at the portfolio level (profile README, cross-linking, branding,
 avatar). Run it once after you've completed the SOP on all repos you want to
 optimize. The audit's SOP output includes this reminder at the bottom.
@@ -400,7 +420,7 @@ optimize. The audit's SOP output includes this reminder at the bottom.
 
 ## Portfolio Audit Mode
 
-For `/github audit <username>`:
+For `github-audit <username>`:
 
 ### Step 0: Filter Out Noise
 
@@ -513,14 +533,15 @@ For each selected repo:
 
 | Step | Command | Current Score | What It Fixes |
 |------|---------|---------------|---------------|
-| 1 | `/github legal` | XX/100 | [specific issues] |
-| 2 | `/github community` | XX/100 | [specific issues] |
-| 3 | `/github release` | XX/100 | [specific issues] |
-| 4 | `/github seo` | XX/100 | [specific issues] |
-| 5 | `/github meta` | XX/100 | [specific issues] |
-| 6 | `/github readme` | XX/100 | [specific issues] |
-| 7 | `/github audit` | -- | Re-audit to measure improvement |
+| 1 | `github-legal` | XX/100 | [specific issues] |
+| 2 | `github-community` | XX/100 | [specific issues] |
+| 3 | `github-release` | XX/100 | [specific issues] |
+| 4 | `github-seo` | XX/100 | [specific issues] |
+| 5 | `github-meta` | XX/100 | [specific issues] |
+| 6 | `github-readme` | XX/100 | [specific issues] |
+| 7 | `github-audit` | -- | Re-audit to measure improvement |
 
 Start with Step 1 when ready. Each skill will guide you through
 its changes and hand off to the next step.
 ```
+

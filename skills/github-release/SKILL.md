@@ -1,18 +1,6 @@
 ---
 name: github-release
-description: >
-  GitHub release consultant -- analyzes release health, recommends next version,
-  drafts changelog entries from commit history, identifies release gaps, manages
-  release infrastructure (CHANGELOG.md, release.yml, badges), and advises on
-  package distribution strategy (npm, PyPI, Docker, GitHub Packages). Acts as
-  a strategic advisor: tells you WHEN to release, WHAT version number to use,
-  WHETHER to publish to a package registry, and drafts the changelog entry for
-  you. Also generates files if missing.
-  Use when user says "release", "releases", "github releases", "changelog",
-  "CHANGELOG.md", "version", "versioning", "semver", "badges", "shields.io",
-  "badge", "release strategy", "semantic versioning", "git tags", "ready to
-  release", "cut a release", "new version", "what version should I use",
-  "packages", "github packages", "publish", "distribution", or "npm publish".
+description: GitHub release consultant — recommends version, drafts changelogs from commits, manages CHANGELOG/release.yml/badges, advises on package distribution.
 ---
 
 # GitHub Releases -- Release Consultant, Versioning, and Changelog
@@ -48,13 +36,33 @@ release on its own. Use judgment, not just pattern matching.
 
 File generation is secondary. The consulting is the value.
 
+## Deterministic entrypoint
+
+For API agents and non-interactive runners, use the deterministic script
+entrypoint:
+
+```bash
+python3 scripts/run_headless.py release --path /path/to/repo
+python3 scripts/run_headless.py release --path /path/to/repo --write-files
+python3 scripts/run_headless.py release --path /path/to/repo --create-release
+python3 scripts/run_headless.py release --path /path/to/repo --create-release --publish
+```
+
+`release` defaults to plan mode. It writes `.github-audit/releases-data.json`
+plus `RELEASE-REPORT.md`, `RELEASE-PROPOSAL.md`, and `RELEASE-SUMMARY.json`.
+
+`--write-files` is the explicit approval gate for writing `CHANGELOG.md` and
+`.github/release.yml`. `--create-release` is the explicit approval gate for
+creating a GitHub release after file preparation. It defaults to draft creation;
+add `--publish` only when you explicitly want a live release created.
+
 ## Process (GARE Pattern)
 
 ### 1. Gather
 
 **Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
 - `repo-context.json` (optional) -- repo type, intent. If missing, gather yourself.
 
@@ -95,7 +103,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
 
 ### 2. Analyze
 
-Reference: Read `~/.claude/skills/github/references/releases-guide.md` for semver
+Reference: Read `github/references/releases-guide.md` for semver
 rules, changelog format, and badge URLs.
 
 #### Release Health Dashboard
@@ -323,7 +331,7 @@ the changes:
 **Creating GitHub Releases modifies the live repo.** The proposal IS the
 confirmation gate. Once the user says yes, proceed without further confirmation.
 
-If running inside the orchestrator (`/github` or `/github-audit`), file generation
+If running inside the orchestrator (`github` or `github-audit`), file generation
 proceeds automatically. Release creation still requires the proposal + approval
 unless the orchestrator explicitly pre-approves releases.
 
@@ -405,7 +413,7 @@ grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .g
 Include: timestamp, changelog_created, release_yml_created, latest_version,
 changelog_latest_version, version_match, commits_since_release, release_verdict,
 recommended_next_version, badges array (markdown strings), versioning_scheme.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact schema.
+Reference: `github/references/shared-data-cache.md` for exact schema.
 
 ## Output
 
@@ -424,8 +432,9 @@ with this handoff:
 
 ```
 Release work complete. Next recommended step:
-  /github seo -- keyword research to optimize your description and README
+  github-seo -- keyword research to optimize your description and README
 ```
 
 If running as part of the audit SOP, reference the step number:
-"Step 3 complete. Ready for Step 4: `/github seo`"
+"Step 3 complete. Next skill: `github-seo`"
+

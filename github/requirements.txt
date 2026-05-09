@@ -1,0 +1,8 @@
+# Codex GitHub headless runtime dependencies.
+Pillow>=10,<12
+tomli>=2,<3; python_version < "3.11"
+#
+# Optional external runtimes:
+# - git
+# - gh
+# - node / npx
