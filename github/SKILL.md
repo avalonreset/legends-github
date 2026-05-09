@@ -1,43 +1,30 @@
 ---
 name: github
-description: >
-  Comprehensive GitHub repository optimization suite. Orchestrates 8 sub-skills
-  and 6 scoring agents to audit, optimize, and professionalize GitHub repos.
-  Covers README quality, legal compliance, metadata, SEO, community health,
-  releases, and portfolio strategy. Data-first approach -- every recommendation
-  cites its source. Does NOT handle GitHub Actions, CI/CD pipelines, git
-  commands, or deployment. Use when user says "github", "optimize repo",
-  "github setup", "optimize my github", "github help", "professionalize my
-  repo", "make my repo look good", "repo optimization", or "github optimization".
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - WebFetch
+description: GitHub repository optimization suite. Orchestrates sub-skills to audit and professionalize repos across README, legal, metadata, SEO, community, and releases.
 ---
 
 # GitHub -- Repository Optimization Suite
 
 Comprehensive GitHub optimization across SEO, legal, community, and discoverability.
-Orchestrates 8 specialized sub-skills and 6 subagents. Data-first: every recommendation
+Orchestrates 8 specialized sub-skills and 6 scoring workers: Claude Code
+subagents or Codex multi-agents. Data-first: every recommendation
 traces back to a data source.
 
 ## Quick Reference
 
-| Command | What it does |
+| Entry point | What it does |
 |---------|-------------|
-| `/github audit` | Full repo health audit with 0-100 scoring |
-| `/github audit <owner/repo>` | Audit a specific remote repo |
-| `/github audit <username>` | Audit entire portfolio (empire-level) |
-| `/github readme` | Generate or optimize README |
-| `/github legal` | License, SECURITY.md, CITATION.cff, fork compliance |
-| `/github meta` | Description, topics, settings, social preview |
-| `/github seo` | Keyword research and content optimization strategy |
-| `/github community` | Templates, CONTRIBUTING, CODE_OF_CONDUCT, devcontainer |
-| `/github release` | CHANGELOG, badges, versioning, release strategy |
-| `/github empire` | Multi-repo portfolio strategy, profile README |
-| `/github dataforseo` | Live keyword/SERP data (requires DataForSEO account) |
+| `github-audit` | Full repo health audit with 0-100 scoring |
+| `github-audit` with remote target | Audit a specific remote repo |
+| `github-empire` or portfolio audit flow | Audit an entire portfolio |
+| `github-readme` | Generate or optimize README |
+| `github-legal` | License, SECURITY.md, CITATION.cff, fork compliance |
+| `github-meta` | Description, topics, settings, social preview |
+| `github-seo` | Keyword research and content optimization strategy |
+| `github-community` | Templates, CONTRIBUTING, CODE_OF_CONDUCT, devcontainer |
+| `github-release` | CHANGELOG, badges, versioning, release strategy |
+| `github-empire` | Multi-repo portfolio strategy, profile README |
+| `extensions/dataforseo` | Live keyword/SERP data (requires DataForSEO account) |
 
 ## Prerequisites
 
@@ -58,7 +45,6 @@ setup, Step 0 below will catch it and guide them before any skill runs.
 
 **1. DataForSEO (MCP server -- NOT .env)**
 DataForSEO provides live keyword and SERP data. It runs as an MCP server
-(`dataforseo-mcp-server`) configured via `~/.claude/settings.json`.
 The install script handles this automatically. When configured, tools like
 `dataforseo_labs_google_keyword_suggestions` are available directly in conversation.
 If the MCP server is not configured, SEO skills fall back to codebase analysis.
@@ -66,14 +52,14 @@ If the MCP server is not configured, SEO skills fall back to codebase analysis.
 **2. KIE.ai (REST API -- uses .env)**
 KIE.ai generates banner images for READMEs. It requires an API key in a `.env` file.
 
-**Standard .env location:** Check these paths in order:
-1. Current working directory: `./.env`
-2. Skill root: `~/.claude/skills/github/.env`
-3. User home: `~/.env`
+**Standard dotenv locations:** Check these paths in order:
+1. Current working directory: `./.env.local`, then `./.env`
+2. Skill root: `github/.env.local`, then `github/.env`
+3. User home: `~/.env.local`, then `~/.env`
 
 **Loading credentials:** Before banner generation, load the .env:
 ```bash
-for envfile in ./.env ~/.claude/skills/github/.env ~/.env; do
+for envfile in ./.env.local ./.env github/.env.local github/.env ~/.env.local ~/.env; do
   if [ -f "$envfile" ]; then
     export $(grep -v '^#' "$envfile" | xargs) 2>/dev/null
     break
@@ -83,8 +69,8 @@ done
 
 | Key | Required By | Purpose |
 |-----|------------|---------|
-| `KIE_API_KEY` | `/github readme` (banner generation) | KIE.ai image generation |
-| DataForSEO credentials | SEO data pass, `/github seo`, `/github meta`, `/github readme`, `/github empire` | Configured via MCP server, not .env |
+| `KIE_API_KEY` | `github-readme` banner generation | KIE.ai image generation |
+| DataForSEO credentials | SEO data pass across `github-seo`, `github-meta`, `github-readme`, `github-empire` | Configured via MCP server, not .env |
 
 ## Shared Data Cache
 
@@ -93,18 +79,113 @@ without re-gathering. The orchestrator writes `repo-context.json` after baseline
 gathering. Each sub-skill reads cached data before gathering and writes its own
 cache file after executing.
 
-Reference: Read `~/.claude/skills/github/references/shared-data-cache.md` for
+Reference: Read `github/references/shared-data-cache.md` for
 JSON schemas, dependency map, and freshness rules.
 
 **Orchestrator responsibilities:** Cache writes are embedded directly in Step 2
 and Step 3.5 below -- look for the **CACHE:** callouts in each step.
+
+## Headless Contract
+
+For API agents and non-interactive runners, use the deterministic script entrypoint:
+
+```bash
+python3 scripts/run_headless.py verify --mode both --path /path/to/repo
+python3 scripts/run_headless.py audit --path /path/to/repo
+python3 scripts/run_headless.py seo --path /path/to/repo
+python3 scripts/run_headless.py legal --path /path/to/repo
+python3 scripts/run_headless.py legal --path /path/to/repo --write-files
+python3 scripts/run_headless.py meta --path /path/to/repo
+python3 scripts/run_headless.py community --path /path/to/repo
+python3 scripts/run_headless.py community --path /path/to/repo --write-files
+python3 scripts/run_headless.py readme --path /path/to/repo
+python3 scripts/run_headless.py readme --path /path/to/repo --generate-assets
+python3 scripts/run_headless.py release --path /path/to/repo
+python3 scripts/run_headless.py release --path /path/to/repo --write-files
+python3 scripts/run_headless.py empire --path /path/to/repo
+python3 scripts/run_headless.py empire --path /path/to/repo --generate-avatar
+python3 scripts/run_headless.py cache-status --path /path/to/repo
+```
+
+The deterministic commands write:
+
+- `.github-audit/repo-context.json`
+- `.github-audit/audit-data.json`
+- `.github-audit/seo-data.json`
+- `.github-audit/legal-data.json`
+- `.github-audit/community-data.json`
+- `.github-audit/meta-data.json`
+- `.github-audit/readme-data.json`
+- `.github-audit/releases-data.json`
+- `.github-audit/empire-data.json`
+- `.github-audit/output/<repo>-<timestamp>/GITHUB-AUDIT-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/ACTION-PLAN.md`
+- `.github-audit/output/<repo>-<timestamp>/SUMMARY.json`
+- `.github-audit/output/<repo>-<timestamp>/SEO-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/SEO-SUMMARY.json`
+- `.github-audit/output/<repo>-<timestamp>/LEGAL-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/LEGAL-PLAN.md`
+- `.github-audit/output/<repo>-<timestamp>/LEGAL-SUMMARY.json`
+- `.github-audit/output/<repo>-<timestamp>/COMMUNITY-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/COMMUNITY-PLAN.md`
+- `.github-audit/output/<repo>-<timestamp>/COMMUNITY-SUMMARY.json`
+- `.github-audit/output/<repo>-<timestamp>/META-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/META-SUMMARY.json`
+- `.github-audit/output/<repo>-<timestamp>/README-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/README-PREVIEW.md`
+- `.github-audit/output/<repo>-<timestamp>/README-SUMMARY.json`
+- `.github-audit/output/<repo>-<timestamp>/RELEASE-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/RELEASE-PROPOSAL.md`
+- `.github-audit/output/<repo>-<timestamp>/RELEASE-SUMMARY.json`
+- `.github-audit/output/<owner>-<timestamp>/EMPIRE-REPORT.md`
+- `.github-audit/output/<owner>-<timestamp>/EMPIRE-BLUEPRINT.md`
+- `.github-audit/output/<owner>-<timestamp>/PROFILE-README-DRAFT.md`
+- `.github-audit/output/<owner>-<timestamp>/EMPIRE-SUMMARY.json`
+
+`run_headless.py seo` is a deterministic fallback cache seeding path. It does
+not call DataForSEO MCP, so live volume, difficulty, intent, AI visibility, and
+SERP checks remain part of the interactive `github seo` skill flow.
+
+`run_headless.py legal` is a deterministic legal planning path. By default it
+emits a compliance report plus `legal-data.json` without mutating the repo. Use
+`--write-files` to create or refresh `LICENSE`, `SECURITY.md`, `CITATION.cff`,
+and `NOTICE` when the plan marks them as missing or weak. Complex legal edge
+cases remain explicitly flagged for human review rather than being guessed.
+
+`run_headless.py meta` is a deterministic metadata planning path. It writes a
+machine-readable metadata plan and only mutates live repo settings when
+explicitly invoked with `--apply`.
+
+`run_headless.py community` is a deterministic community-health planning path.
+By default it scores the current Community Standards surface and emits a file
+plan without mutating the repo. Use `--write-files` to create or refresh
+deterministic community-health files, including YAML issue templates and YAML
+discussion category forms when discussion category slugs are discoverable.
+
+`run_headless.py readme` is a deterministic README planning path. By default it
+builds a scored preview and cache without rewriting `README.md`. Use `--write`
+to save the generated README to disk. Use `--generate-assets` to reuse an
+existing banner, generate a KIE-backed banner when needed, and emit a generated
+`social-preview.jpg` plus file/raw/settings links for the final platform step.
+
+`run_headless.py release` is a deterministic release planning path. By default
+it emits a release dashboard, proposal, and `releases-data.json` cache without
+mutating the repo. Use `--write-files` to prepare `CHANGELOG.md` and
+`.github/release.yml`. Use `--create-release` for explicit draft creation, and
+add `--publish` only when you intentionally want a live release created.
+
+`run_headless.py empire` is a deterministic portfolio planning path. It writes
+`empire-data.json`, an empire blueprint, a profile README draft, and explicit
+`gh` commands for safe follow-up execution. Use `--generate-avatar` when you
+want the headless runner to generate `assets/avatar.jpg`; pin ordering and the
+final profile-photo upload remain explicit GitHub web UI steps.
 
 ## Orchestration Logic
 
 ### Step 0: Setup Check (runs ONCE per session, before anything else)
 
 Before routing to any sub-skill, check if the user has the recommended services
-configured. This runs the FIRST time any `/github` command is used in a session.
+configured. This runs the FIRST time any `github` orchestration request is used in a session.
 After showing the setup status once, do not repeat it.
 
 **Check 1 -- DataForSEO MCP:**
@@ -112,7 +193,7 @@ Use ToolSearch to look for `dataforseo_labs_google_keyword_suggestions`.
 
 **Check 2 -- KIE.ai API Key:**
 ```bash
-for envfile in ./.env ~/.claude/skills/github/.env ~/.env; do
+for envfile in ./.env.local ./.env github/.env.local github/.env ~/.env.local ~/.env; do
   if [ -f "$envfile" ] && grep -q 'KIE_API_KEY=.' "$envfile" 2>/dev/null; then
     echo "KIE_CONFIGURED=true"; break
   fi
@@ -139,7 +220,6 @@ KIE.ai      [not configured]  -- powers AI-generated banner images for READMEs
 1. Create a free account at https://dataforseo.com
    (free tier includes enough credits for hundreds of keyword analyses)
 2. Go to https://app.dataforseo.com/api-access to find your login and password
-3. From the claude-github directory you cloned during install, run:
    - macOS/Linux: bash extensions/dataforseo/install.sh
    - Windows: powershell -File extensions\dataforseo\install.ps1
    The installer will prompt for your credentials and configure the MCP server.
@@ -148,7 +228,7 @@ KIE.ai      [not configured]  -- powers AI-generated banner images for READMEs
 
 1. Go to https://kie.ai/api-key and create a free account
 2. Copy your API key
-3. Paste it into ~/.claude/skills/github/.env:
+3. Paste it into `./.env.local` (preferred) or `github/.env`:
    KIE_API_KEY=your_key_here
 
 Want to set these up now, or continue without them?
@@ -249,14 +329,14 @@ volume or difficulty calls needed.
 1. Generate 2-3 seed phrases from: repo name + description + primary language
 
    SEED QUALITY RULES (critical -- bad seeds waste API calls):
-   - Keep seeds SHORT: 2-3 words max. "seo audit tool" not "gemini cli seo audit tool"
+   - Keep seeds SHORT: 2-3 words max. "seo audit tool" not "github seo audit tool"
    - Use CATEGORY-LEVEL terms, not project-specific jargon
    - Think: "what would a developer Google to find this kind of project?"
    - Good seeds: "python web framework", "open source seo tools", "terminal emulator"
-   - Bad seeds: "gemini cli seo tools", "lightweight WSGI microframework server"
+   - Bad seeds: "github seo tools", "lightweight WSGI microframework server"
 
    SEED FALLBACK: If a seed returns zero results, it was too specific.
-   Broaden it by removing words. "gemini cli seo" → "seo tools" → "open source seo tools".
+   Broaden it by removing words. "github seo" → "seo tools" → "open source seo tools".
    Budget: max 4 keyword_suggestions calls total. If all 4 return nothing usable,
    fall back to codebase + GitHub search analysis (no DataForSEO).
 
@@ -312,7 +392,7 @@ before portfolio analysis (multiply by repo count).
 Pass intent + repo type + baseline data + SEO data (if available) to the
 appropriate sub-skill.
 
-**Default behavior for bare `/github <owner/repo>` (no sub-command):**
+**Default behavior for bare `github <owner/repo>` (no sub-command):**
 When the user provides a repo without specifying a sub-skill, run Steps 1-3.5
 (intent, baseline, repo type, SEO data), then present a **Quick Health Summary**:
 
@@ -323,20 +403,20 @@ When the user provides a repo without specifying a sub-skill, run Steps 1-3.5
 **Stars:** X | **License:** MIT | **Last release:** vX.X.X (date)
 
 ### Top 3 Recommended Actions (by impact)
-1. [Highest impact action] → use `/github [sub-skill]`
-2. [Second action] → use `/github [sub-skill]`
-3. [Third action] → use `/github [sub-skill]`
+1. [Highest impact action] → use `github-[sub-skill]`
+2. [Second action] → use `github-[sub-skill]`
+3. [Third action] → use `github-[sub-skill]`
 
 ### SEO Snapshot (if DataForSEO available)
 Primary keyword opportunity: "[keyword]" (X/mo, difficulty Y, GitHub at #Z)
 
-Run `/github audit` for a full 0-100 score, or pick an action above to start.
+Run `github-audit` for a full 0-100 score, or pick a specialized skill above to start.
 ```
 
 This gives the user immediate value and a clear next step, instead of just
 showing a menu.
 
-For commands explicitly matching a sub-skill (e.g., `/github readme`), route
+For requests explicitly matching a sub-skill (for example, README optimization), route
 directly to that sub-skill.
 
 ## The GARE Pattern
@@ -392,16 +472,16 @@ renders it natively. See `banner-generation.md` Image Format Pipeline for detail
 
 Load on-demand as needed -- do NOT load all at startup.
 
-**Path resolution:** Reference files are installed at `~/.claude/skills/github/references/`.
+**Path resolution:** Reference files are installed at `github/references/`.
 When a sub-skill says `Read github/references/foo.md`, use the Read tool with the full path:
-`~/.claude/skills/github/references/foo.md`
+`github/references/foo.md`
 
 - `references/license-guide.md` -- License types, compatibility, fork obligations
 - `references/readme-framework.md` -- README structure, SEO patterns, headings
 - `references/github-seo-guide.md` -- GitHub ranking factors, Google indexing rules
 - `references/community-files-guide.md` -- Standard files, best practices, priority by intent
 - `references/community-templates.md` -- YAML issue forms, PR template, devcontainer, dependabot
-- `references/banner-generation.md` -- KIE.ai Nano Banana 2 API, prompt engineering, defaults
+- `references/banner-generation.md` -- KIE.ai GPT Image 2 API, prompt engineering, defaults
 - `references/releases-guide.md` -- Semver, changelog format, badge URLs
 - `references/repo-type-templates.md` -- Per-type defaults for all repo types
 - `references/shared-data-cache.md` -- Cross-skill data persistence schemas and rules
@@ -434,21 +514,21 @@ unless a category already scores 90+ (in which case, skip it).
 **The canonical workflow:**
 
 ```
-/github audit          Step 0: Diagnose (scores 6 categories, generates SOP)
+github-audit          Step 0: Diagnose (scores 6 categories, generates SOP)
     |
-/github legal          Step 1: Foundation (license, compliance, fork obligations)
+github-legal          Step 1: Foundation (license, compliance, fork obligations)
     |
-/github community      Step 2: Infrastructure (templates, CoC, devcontainer)
+github-community      Step 2: Infrastructure (templates, CoC, devcontainer)
     |
-/github release        Step 3: Versioning (CHANGELOG, badges, catch-up releases)
+github-release        Step 3: Versioning (CHANGELOG, badges, catch-up releases)
     |
-/github seo            Step 4: Research (keyword data for description + README)
+github-seo            Step 4: Research (keyword data for description + README)
     |
-/github meta           Step 5: Settings (description, topics, features -- uses SEO data)
+github-meta           Step 5: Settings (description, topics, features -- uses SEO data)
     |
-/github readme         Step 6: Capstone (README optimization -- uses everything above)
+github-readme         Step 6: Capstone (README optimization -- uses everything above)
     |
-/github audit          Step 7: Measure (re-audit to verify improvement)
+github-audit          Step 7: Measure (re-audit to verify improvement)
 ```
 
 **Why this order:**
@@ -465,10 +545,10 @@ should never finish a skill and wonder "what now?" -- the skill tells them.
 
 ```
 Phase 1: Per-Repo Optimization (repeat for each repo)
-  /github audit -> legal -> community -> release -> seo -> meta -> readme -> audit
+  github-audit -> github-legal -> github-community -> github-release -> github-seo -> github-meta -> github-readme -> audit
 
 Phase 2: Portfolio Optimization (run once, after all repos are done)
-  /github empire -> profile README, cross-linking, topic sync, branding, avatar
+  github-empire -> profile README, cross-linking, topic sync, branding, avatar
 ```
 
 Empire operates at the portfolio level and assumes each repo is already in good
@@ -486,12 +566,14 @@ recommendations based on incomplete data. Always finish Phase 1 on all repos fir
 7. **github-readme** -- README generation and optimization (Step 6)
 8. **github-empire** -- Portfolio strategy, profile README, org profile (after all repos)
 
-## Subagents
+## Parallel Reviewers
 
-For parallel analysis during audits:
+For parallel analysis during audits, use Claude Code subagents or Codex
+multi-agents with these category assignments:
 - `github-legal` -- Legal compliance scoring
 - `github-community` -- Community health scoring
 - `github-release` -- Release and maintenance scoring
 - `github-seo` -- SEO and discoverability scoring
 - `github-meta` -- Metadata and discovery scoring
 - `github-readme` -- README quality scoring
+

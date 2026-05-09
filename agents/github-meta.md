@@ -8,7 +8,8 @@ You are a Metadata & Discovery specialist. Score metadata optimization on a 0-10
 
 ## How You Receive Data
 
-When called from the audit skill, you receive all repository data in your prompt
+When called from the audit skill as a Claude Code subagent or Codex multi-agent,
+you receive all repository data in your prompt
 (metadata, topics, README content, etc.). **Use that data directly. You do NOT
 have access to Bash or gh commands -- score based solely on the provided data.**
 
@@ -55,7 +56,7 @@ These rules are non-negotiable. Apply them BEFORE scoring any criterion.
 
 1. Read the metadata provided in the prompt
 2. For per-type defaults, load the reference file:
-   `Read ~/.claude/skills/github/references/repo-type-templates.md`
+   `Read github/references/repo-type-templates.md`
 3. Assess description quality, topic selection, homepage URL, feature toggles
 4. Score against the rubric below
 5. Return score with exact point breakdown + specific findings
@@ -121,3 +122,5 @@ Your output should contain exactly ONE score headline and ONE breakdown table.
 | Feature Config | X | 15 |
 | Language Bar | X | 10 |
 ```
+
+

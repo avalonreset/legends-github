@@ -1,18 +1,23 @@
 ---
 name: github-meta
-description: >
-  Optimize GitHub repository metadata and settings for maximum discoverability.
-  Sets keyword-optimized descriptions, selects topics/tags for GitHub Explore
-  and search, configures homepage URL, manages feature toggles (issues, wiki,
-  discussions), provides social preview image guidance, and creates .gitattributes
-  for accurate language bar display. Automates settings via gh CLI. Use when user
-  says "metadata", "description", "topics", "topic tags", "repo tags", "github meta",
-  "github settings",
-  "repo settings", "social preview", "language bar", "gitattributes", "optimize
-  metadata", or "repo description".
+description: Optimize GitHub repo metadata for discoverability — descriptions, topics, homepage, feature toggles, social preview, gitattributes.
 ---
 
 # GitHub Meta -- Metadata, Topics, and Settings Optimization
+
+## Headless Scope
+
+The deterministic script entrypoint now covers local metadata planning:
+
+```bash
+python3 scripts/run_headless.py meta --path /path/to/repo
+python3 scripts/run_headless.py meta --path /path/to/repo --apply
+```
+
+Default behavior is plan-only: write `.github-audit/meta-data.json` plus report
+artifacts without mutating the live repo. `--apply` is explicit and only runs
+ready `gh repo edit` commands. Ambiguous homepage choices and social preview
+upload remain blocked/manual even in headless mode.
 
 ## Role
 
@@ -28,7 +33,7 @@ Think like this:
 - "You have 6 topics -- that's on the low end. Based on search volume data, adding
   `open-source` (320/mo) and `developer-tools` (curated GitHub page) would put you
   in front of more eyeballs. Here's what I'd add and why."
-- "Your homepage URL points to rankenstein.pro, but this repo is gemini-seo -- those
+- "Your homepage URL points to rankenstein.pro, but this repo is codex-seo -- those
   are different products. Do you have a docs site or landing page for this project
   specifically? If not, I'd clear it for now."
 
@@ -88,7 +93,7 @@ one actually does and why it matters:
 
 **Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
 - `seo-data.json` (**REQUIRED -- do NOT skip**) -- primary keyword for description,
   secondary keywords for topics, volume data for topic selection. **If this cache file
@@ -134,7 +139,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
     - Secondary keywords → map to GitHub topics (lowercase, hyphenated)
     - "Skip" keywords → do NOT use as topics, Google won't associate them with GitHub
     - Volume data → when choosing between topic options, pick higher-volume terms
-  - If running standalone (`/github meta` directly), gather SEO data yourself:
+  - If running standalone via `github-meta`, gather SEO data yourself:
     - If DataForSEO MCP available: run the Keyword Opportunity Framework from
       github-seo skill. At minimum: keyword suggestions → volume check → difficulty
       check. The SERP viability check tells you which keywords are worth using as
@@ -144,7 +149,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
 
 ### 2. Analyze
 
-Reference: Read `~/.claude/skills/github/references/repo-type-templates.md` for per-type defaults.
+Reference: Read `github/references/repo-type-templates.md` for per-type defaults.
 
 Present a clear comparison table:
 
@@ -193,7 +198,7 @@ default. Don't assume a default when you've asked a question.
 
 Do NOT run any `gh repo edit` commands until the user explicitly approves.
 
-If running inside the orchestrator (`/github`), the orchestrator must have explicitly
+If running inside the `github` orchestrator, the orchestrator must have explicitly
 pre-approved metadata changes. If unclear, ask.
 
 Commands to apply:
@@ -327,7 +332,7 @@ on paid plans (Team/Enterprise). Before providing upload guidance, check:
 `gh repo view --json visibility` -- if "PRIVATE", skip this section entirely and
 note: "Social preview upload is not available for private repos on free org plans."
 
-**Social preview generation happens in `/github readme` (Step 6).** The readme skill
+**Social preview generation happens in `github-readme` (Step 6).** The readme skill
 generates the banner, then automatically runs the social preview pipeline (banner ->
 16:9 recompose -> 2:1 crop -> 1280x640 JPEG). This skill (meta) only handles the
 upload guidance for images that already exist.
@@ -362,7 +367,7 @@ how it will look when shared on Twitter/X, LinkedIn, and Slack.
 ```
 
 If no social preview image exists in the repo, note that it will be generated
-during `/github readme` (Step 6) and show the settings URL with dimensions
+during `github-readme` (Step 6) and show the settings URL with dimensions
 guidance (1280x640px JPEG).
 
 Replace `{owner}/{repo}` and `{path/to/social-preview.png}` with actual values.
@@ -395,14 +400,15 @@ third_party/** linguist-vendored
 
 ### Write to Shared Data Cache
 
-After applying metadata changes, write `.github-audit/meta-data.json`:
+After planning or applying metadata changes, write `.github-audit/meta-data.json`:
 ```bash
 mkdir -p .github-audit
 grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .gitignore
 ```
-Include: timestamp, description_set, topics_set array, homepage_url,
-features_toggled (discussions, wiki, issues), gitattributes_created, social_preview_set.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact schema.
+Include: timestamp, mode, applied, description_set, topics_set array,
+homepage_url, features_toggled (discussions, wiki, issues), gitattributes_created,
+social_preview_set, commands, and blocked/manual notes.
+Reference: `github/references/shared-data-cache.md` for exact schema.
 
 ## Output
 
@@ -420,8 +426,9 @@ After completing metadata optimization, always end with this handoff:
 
 ```
 Metadata optimization complete. Next recommended step:
-  /github readme -- optimize your README using SEO keywords and all the files you've set up
+  github-readme -- optimize your README using SEO keywords and all the files you've set up
 ```
 
 If running as part of the audit SOP, reference the step number:
-"Step 5 complete. Ready for Step 6: `/github readme`"
+"Step 5 complete. Next skill: `github-readme`"
+

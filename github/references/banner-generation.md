@@ -4,24 +4,24 @@
 ## Overview
 
 Every GitHub repo deserves a professional banner. We generate the entire banner --
-art, text, and layout -- in a single AI image generation call via KIE.ai Nano Banana 2.
+art, text, and layout -- in a single AI image generation call via KIE.ai GPT Image 2.
 
-**Why one-shot?** Nano Banana 2 renders text at ~87% accuracy. When the AI designs
+**Why one-shot?** GPT Image 2 renders text at ~87% accuracy. When the AI designs
 the text as part of the composition, it looks integrated and stylized -- not like a
 sticker slapped on top. If text comes out garbled (~13% of the time), just regenerate.
 At ~4 cents per shot, iteration is cheap.
 
 **Pillow is the fallback, not the primary approach.** Only use Pillow compositing if
-Nano Banana consistently fails on a specific text string after 2-3 attempts.
+GPT Image 2 consistently fails on a specific text string after 2-3 attempts.
 
 ## Defaults
 
 | Setting | Default | Customizable |
 |---------|---------|-------------|
-| Model | nano-banana-2 | No (suite standard) |
-| Resolution | 1K | Yes (1K, 2K, 4K) |
+| Model | gpt-image-2-text-to-image | No (suite standard) |
+| Resolution | Provider default | No |
 | Aspect Ratio | 21:9 | Yes (see supported list) |
-| API Format | png | No (always request PNG source -- convert after) |
+| API Model | gpt-image-2-text-to-image / gpt-image-2-image-to-image | No (suite standard) |
 | Delivery Format | webp | Yes (webp, jpg, png -- see Image Format Pipeline) |
 
 ## Supported Aspect Ratios
@@ -65,14 +65,10 @@ curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $KIE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "nano-banana-2",
+    "model": "gpt-image-2-text-to-image",
     "input": {
       "prompt": "YOUR_PROMPT_HERE",
-      "image_input": [],
-      "google_search": false,
-      "aspect_ratio": "21:9",
-      "resolution": "1K",
-      "output_format": "png"
+      "aspect_ratio": "21:9"
     }
   }'
 ```
@@ -86,7 +82,7 @@ curl -X GET "https://api.kie.ai/api/v1/jobs/recordInfo?taskId=TASK_ID" \
 States: `waiting` → `queuing` → `generating` → `success` / `fail`
 Result URL is in `data.resultJson` → parse JSON → `resultUrls[0]`
 
-**Download the PNG source, then convert to optimal delivery format:**
+**Download the generated source, then convert to optimal delivery format:**
 ```bash
 mkdir -p assets/originals
 curl -s -o assets/originals/banner.png "RESULT_URL"
@@ -134,7 +130,7 @@ Wide cinematic 21:9 GitHub repository banner.
 [MOOD]: [background, lighting, color palette, overall aesthetic]
 ```
 
-**Keep it under 150 words.** Nano Banana responds better to focused prompts.
+**Keep it under 150 words.** GPT Image 2 responds better to focused prompts.
 
 ### What Makes a Great Banner Prompt
 
@@ -279,10 +275,11 @@ os.remove("assets/banner-bg.png")
 **The strategy: always start with the highest quality source, then convert to the
 optimal delivery format.** We control the conversion, not the API.
 
-### Step 1: Generate as PNG (lossless source)
+### Step 1: Generate source via GPT Image 2
 
-Always request `output_format: "png"` from KIE.ai. This gives us a lossless source
-image with maximum quality. We never lose data at the generation step.
+Use KIE.ai GPT Image 2 as the generation source. For text-only prompts use
+`gpt-image-2-text-to-image`; for banner recomposition from an existing image use
+`gpt-image-2-image-to-image` with `input_urls`.
 
 ### Step 2: Convert, strip metadata, and optimize
 
@@ -353,7 +350,7 @@ years. There is no compatibility concern for GitHub-hosted content.
 
 ### Applying This to Banners
 
-1. Request PNG from KIE.ai (`output_format: "png"`)
+1. Request image generation from KIE.ai GPT Image 2
 2. Download to `assets/originals/banner.png` (keep lossless original for the user)
 3. Strip metadata + convert to WebP: `assets/banner.webp` (quality 80, method 6)
 4. Reference in README as `assets/banner.webp`
@@ -362,7 +359,7 @@ years. There is no compatibility concern for GitHub-hosted content.
 ### Applying This to Avatars
 
 Same pipeline as banners, but always deliver as JPEG for GitHub upload:
-1. Request PNG from KIE.ai (`output_format: "png"`, `aspect_ratio: "1:1"`)
+1. Request image generation from KIE.ai GPT Image 2 (`aspect_ratio: "1:1"`)
 2. Download as `assets/originals/avatar.png` (keep lossless original for the user)
 3. Strip metadata + convert to JPEG: `assets/avatar.jpg` (quality 85)
 4. Provide `file:///` link to the JPEG for upload, mention the PNG original
@@ -444,21 +441,21 @@ to get something great.
 | 429 | Rate limited | Wait 10 seconds, retry |
 | 501 | Generation failed | Retry with simplified prompt |
 
-## Nano Banana 2 Input Format Rules
+## GPT Image 2 Input Format Rules
 
-**Nano Banana 2 accepts PNG and JPEG only. It does NOT accept WebP.**
+**GPT Image 2 accepts PNG and JPEG only. It does NOT accept WebP.**
 
 This matters because our delivery pipeline converts images to WebP for size savings.
-When a skill needs to feed an existing image back into Nano Banana 2 (for example,
+When a skill needs to feed an existing image back into GPT Image 2 (for example,
 to generate a social preview from an existing banner), the source image may already
-be WebP. You MUST convert it before passing it as `image_input`.
+be WebP. You MUST convert it before passing it as `input_urls`.
 
-**Dynamic format handling for image_input:**
+**Dynamic format handling for input_urls:**
 
 1. Check the source image format
 2. If WebP, convert to PNG (lossless, preserves quality) before sending
 3. If PNG or JPEG, use directly
-4. The image_input field accepts URLs, so either use a raw GitHub URL pointing to
+4. The input_urls field accepts URLs, so either use a raw GitHub URL pointing to
    a committed PNG/JPEG, or host the converted file temporarily
 
 ```python
@@ -469,16 +466,16 @@ source = "assets/banner.webp"
 ext = os.path.splitext(source)[1].lower()
 
 if ext == ".webp":
-    # Convert to PNG for Nano Banana 2 compatibility
+    # Convert to PNG for GPT Image 2 compatibility
     img = Image.open(source)
     converted = source.rsplit(".", 1)[0] + "-input.png"
     img.save(converted, "PNG")
     print(f"Converted {source} to {converted} for API input")
-    # Use `converted` as the image_input source
+    # Use `converted` as the input_urls source
     # Clean up after API call completes
 ```
 
-**When using a GitHub raw URL as image_input:** Make sure the committed file is
+**When using a GitHub raw URL as input_urls:** Make sure the committed file is
 PNG or JPEG. If the repo only has the WebP version (because we optimized it),
 either use an older commit's raw URL that still has the PNG/JPEG, or convert
 locally and use a different hosting method.
@@ -490,7 +487,7 @@ locally and use a different hosting method.
 GitHub social preview images (the card shown when a repo link is shared on Twitter/X,
 LinkedIn, Slack, Discord) require a 1280x640 image (2:1 aspect ratio).
 
-**Nano Banana 2 does not support 2:1 directly.** The closest supported ratio is 16:9.
+**GPT Image 2 does not support 2:1 directly.** The closest supported ratio is 16:9.
 
 ### Strategy: Banner-to-Social-Preview Pipeline
 
@@ -500,7 +497,7 @@ a separate design process.
 
 **The pipeline:**
 
-1. **Feed the existing banner into Nano Banana 2 as image_input at 16:9.**
+1. **Feed the existing banner into GPT Image 2 as input_urls at 16:9.**
    This recomposes the design for the new aspect ratio rather than just cropping.
    The AI adapts the layout, centering important elements.
 
@@ -514,12 +511,12 @@ a separate design process.
    social preview images are served by GitHub's CDN for external platforms, and
    maximum compatibility matters here.
 
-**Important:** The image_input source must be PNG or JPEG (see Nano Banana 2 Input
+**Important:** The input_urls source must be PNG or JPEG (see GPT Image 2 Input
 Format Rules above). If the banner is already WebP, convert to PNG first.
 
 ### Social Preview Prompt Formula
 
-When feeding the banner as image_input, use this prompt pattern:
+When feeding the banner as input_urls, use this prompt pattern:
 
 ```
 Recreate this exact banner design but recomposed for 16:9 aspect ratio.
@@ -532,7 +529,7 @@ background color, text style, main visual subject].
 Key rules:
 - Explicitly mention centering the composition (critical for the subsequent crop)
 - Reference the specific visual elements you want preserved
-- Keep the prompt under 100 words (the image_input does the heavy lifting)
+- Keep the prompt under 100 words (the input_urls does the heavy lifting)
 
 ### API Call
 
@@ -541,19 +538,16 @@ curl -X POST https://api.kie.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $KIE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "nano-banana-2",
+    "model": "gpt-image-2-image-to-image",
     "input": {
       "prompt": "Recreate this exact banner design but recomposed for 16:9...",
-      "image_input": ["https://raw.githubusercontent.com/{owner}/{repo}/main/path/to/banner.png"],
-      "google_search": false,
-      "aspect_ratio": "16:9",
-      "resolution": "1K",
-      "output_format": "png"
+      "input_urls": ["https://raw.githubusercontent.com/{owner}/{repo}/main/path/to/banner.png"],
+      "aspect_ratio": "16:9"
     }
   }'
 ```
 
-Note: image_input tasks take longer (30-60 seconds vs 10-20 for text-only).
+Note: input_urls tasks take longer (30-60 seconds vs 10-20 for text-only).
 Poll with longer intervals.
 
 ### Crop and Resize Script
@@ -638,3 +632,4 @@ print(f"Social preview saved: assets/social-preview.jpg ({size//1024}KB)")
 
 KIE.ai stores images for 14 days. Always download and commit to `assets/` --
 never hotlink the KIE URL.
+

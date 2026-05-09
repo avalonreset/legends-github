@@ -1,19 +1,26 @@
 ---
 name: github-readme
-description: >
-  Generate new or optimize existing GitHub README files with SEO optimization
-  and professional banner image generation. Creates structured READMEs with
-  keyword-optimized headings, badge rows, table of contents, installation
-  instructions, usage examples, and proper heading hierarchy for search engine
-  ranking. Generates 21:9 banner images via KIE.ai Nano Banana 2 as standard
-  practice. Adapts tone and structure to repo type and user intent. Consumes
-  keyword data from github-seo. Use when user says "readme", "github readme",
-  "write readme", "optimize readme", "improve readme", "README.md", "generate
-  readme", "rewrite readme", "readme template", "readme optimization", "banner",
-  "repo banner", or "github banner".
+description: Generate or optimize GitHub README files with SEO-optimized structure, badges, and 21:9 banner image generation via GPT Image 2.
 ---
 
 # GitHub README -- Generation and Optimization
+
+## Headless Contract
+
+For deterministic local preview/write flows, use:
+
+```bash
+python3 scripts/run_headless.py readme --path /path/to/repo
+python3 scripts/run_headless.py readme --path /path/to/repo --generate-assets
+python3 scripts/run_headless.py readme --path /path/to/repo --write
+```
+
+`readme` defaults to preview mode. It writes `.github-audit/readme-data.json`
+plus `README-REPORT.md`, `README-PREVIEW.md`, and `README-SUMMARY.json`.
+`--write` is the explicit approval gate for rewriting `README.md`.
+`--generate-assets` reuses an existing banner asset when present, otherwise it
+can generate a KIE-backed banner plus `assets/social-preview.jpg` and records
+local/raw/settings links in the cache and report artifacts.
 
 ## Process (GARE Pattern)
 
@@ -21,7 +28,7 @@ description: >
 
 **Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
 - `seo-data.json` (**REQUIRED -- do NOT skip**) -- primary keyword, secondary keywords, PAA
   questions, AI visibility. **If this cache file is missing, you MUST gather SEO data
@@ -59,7 +66,7 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
       optimize headings or structure around it. The distinction is between "targeting"
       (building structure around a keyword) and "mentioning" (natural use in prose).
     - AI citation status → if not cited, add stronger "X is a Y that does Z" definition
-  - If running standalone (`/github readme` directly), gather SEO data yourself:
+  - If running standalone via `github-readme`, gather SEO data yourself:
     - If DataForSEO MCP available: run the Keyword Opportunity Framework from
       github-seo skill (seed generation → keyword expansion → volume → difficulty →
       SERP viability check). The SERP check is critical -- only target keywords where
@@ -70,14 +77,14 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
   - Every keyword placed in the README must have a justification (volume data, competitor
     analysis, or codebase relevance)
 - **Legal data:** Check LICENSE type for License section
-- **Audit data:** If a prior `/github audit` ran, use its README quality findings
+- **Audit data:** If a prior `github-audit` run exists, use its README quality findings
 - **Intent + repo type:** From orchestrator context
 - **Banner status:** Does the repo already have a banner image? Check for `assets/banner.webp`, `assets/banner.jpg`, `assets/banner.png`, or any image referenced at the top of README
 
 ### 2. Analyze
 
-Reference: Read `~/.claude/skills/github/references/readme-framework.md` for structure patterns.
-Reference: Read `~/.claude/skills/github/references/repo-type-templates.md` for per-type README structure.
+Reference: Read `github/references/readme-framework.md` for structure patterns.
+Reference: Read `github/references/repo-type-templates.md` for per-type README structure.
 
 **Docs-site detection:** If the Homepage URL points to a documentation site
 (readthedocs, github.io, custom docs domain) or the README links to external
@@ -164,7 +171,7 @@ Present README plan before writing:
 [breakdown by criterion]
 
 ### Proposed Structure:
-1. Banner image (generated via KIE.ai Nano Banana 2)
+1. Banner image (generated via KIE.ai GPT Image 2)
 2. H1: [Project Name -- keyword-rich tagline]
 3. Badges: [CI, version, license, downloads]
 4. Opening paragraph: [with primary keyword]
@@ -187,7 +194,7 @@ Present README plan before writing:
 
 ### 4. Execute (with user approval)
 
-**PAUSE HERE.** After presenting the optimization plan (Step 3), ask the user:
+**PAUSE HERE for interactive runs.** After presenting the optimization plan (Step 3), ask the user:
 "Ready to generate the optimized README? (This will also generate a banner image
 if KIE_API_KEY is available.)"
 
@@ -197,6 +204,8 @@ or add/remove sections before you write anything.
 
 If the user invoked the skill with a clear directive like "generate a readme" or
 "optimize this readme", treat that as pre-approval and proceed without pausing.
+For deterministic `run_headless.py readme --write`, the `--write` flag is the
+explicit approval signal.
 
 Generate the full README.md or a rewritten version of the existing one.
 
@@ -208,13 +217,13 @@ grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .g
 Write `.github-audit/readme-data.json` with: timestamp, score_before, score_after,
 banner_generated, banner_path, keywords_integrated (primary_in_h1, primary_in_first_paragraph,
 secondary_in_h2 list), sections list.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact schema.
+Reference: `github/references/shared-data-cache.md` for exact schema.
 
 ## README Generation Rules
 
 ### Image Format Optimization (applies to ALL images)
 
-Reference: Read `~/.claude/skills/github/references/banner-generation.md` -- see the
+Reference: Read `github/references/banner-generation.md` -- see the
 **Image Format Optimization** section for the full decision table.
 
 **The pipeline: always generate as PNG (lossless source), then convert to the
@@ -250,13 +259,13 @@ print(f"{old//1024}KB -> {new//1024}KB ({100-new*100//old}% smaller, metadata st
 Every README should include a professional banner. Generate one as part of the standard
 README creation/optimization workflow using the two-step process.
 
-Reference: Read `~/.claude/skills/github/references/banner-generation.md` for full details
+Reference: Read `github/references/banner-generation.md` for full details
 including prompt strategy, text compositing script, and positioning principles.
 
 **Banner + Social Preview flow (MANDATORY -- do not skip any step):**
 1. Craft a background prompt (visual metaphor, NO text in image, subject offset to one side)
-2. Call KIE.ai API to generate background (21:9, 1K, **png** -- always request lossless source)
-3. Poll for completion, download as `assets/banner-source.png`
+2. Call KIE.ai GPT Image 2 API to generate background (21:9)
+3. Poll for completion, download the generated source as `assets/banner-source.png`
 4. Composite text overlay via Pillow (project name, tagline, optional features)
 5. Convert to WebP (quality 80): `assets/banner.webp`, delete source PNG
 6. Place at the very top of README, before H1:
@@ -270,10 +279,10 @@ This is a 7-step flow, not 6. The social preview is not optional.
 </p>
 ```
 
-**Prerequisite:** Load KIE_API_KEY from `.env` (standard practice):
+**Prerequisite:** Load KIE_API_KEY from the standard dotenv locations:
 ```bash
 if [ -z "$KIE_API_KEY" ]; then
-  for envfile in ./.env ~/.claude/skills/github/.env ~/.env; do
+  for envfile in ./.env.local ./.env github/.env.local github/.env ~/.env.local ~/.env; do
     if [ -f "$envfile" ]; then
       export $(grep -v '^#' "$envfile" | xargs) 2>/dev/null
       break
@@ -282,14 +291,14 @@ if [ -z "$KIE_API_KEY" ]; then
 fi
 [ -n "$KIE_API_KEY" ] && echo "KIE_API_KEY loaded" || echo "KIE_API_KEY NOT FOUND"
 ```
-If key is not found after checking `.env`, **STOP and show this message:**
+If the key is not found after checking those dotenv locations, **STOP and show this message:**
 
 ```
 Banner generation requires a KIE.ai API key. It takes about 2 minutes to set up:
 
 1. Go to https://kie.ai/api-key and create a free account
 2. Copy your API key
-3. Paste it into ~/.claude/skills/github/.env:
+3. Paste it into `./.env.local` (preferred) or `github/.env`:
    KIE_API_KEY=your_key_here
 
 Want to set this up now, or skip the banner and continue with the README?
@@ -304,14 +313,14 @@ comment: `<!-- TODO: Add banner image -->` at the top.
 After generating the README banner, ALWAYS run the social preview pipeline.
 This is step 7 of the banner flow. Do NOT skip it.
 
-Reference: Read `~/.claude/skills/github/references/banner-generation.md` section
+Reference: Read `github/references/banner-generation.md` section
 "Social Preview Image Generation" for the full pipeline and Pillow script.
 
 **The pipeline:**
-1. Feed the banner into KIE.ai as `image_input` at **16:9** aspect ratio.
+1. Feed the banner into KIE.ai as `input_urls` with `gpt-image-2-image-to-image` at **16:9** aspect ratio.
    This recomposes the design for the new ratio (AI adapts layout, centers elements).
-   Use the raw GitHub URL of the pushed banner as the image_input source.
-   If the banner is WebP, convert to PNG first (Nano Banana 2 rejects WebP input).
+   Use the raw GitHub URL of the pushed banner as the input_urls source.
+   If the banner is WebP, convert to PNG first (GPT Image 2 rejects WebP input).
 2. Poll for completion, download the 16:9 result.
 3. Crop the 16:9 to **2:1** (center crop, trim ~5% from top and bottom).
 4. Resize to exactly **1280x640** (GitHub's required dimensions).
@@ -323,8 +332,8 @@ Reference: Read `~/.claude/skills/github/references/banner-generation.md` sectio
    the manual upload instructions for https://github.com/{owner}/{repo}/settings.
 
 **Fallback: No banner exists (new project or banner was skipped):**
-If there is no banner to feed as image_input, generate the social preview from
-scratch as a standalone KIE.ai call at 16:9. Use this prompt formula:
+If there is no banner to feed as `input_urls`, generate the social preview from
+scratch as a standalone `gpt-image-2-text-to-image` KIE.ai call at 16:9. Use this prompt formula:
 
 ```
 Professional 16:9 social preview card for a GitHub project called "[Project Name]".
@@ -381,7 +390,7 @@ Place immediately after H1, before opening paragraph:
 [![CI](badge-url)](link) [![Version](badge-url)](link) [![License](badge-url)](link)
 ```
 
-Select badges based on repo type (see `~/.claude/skills/github/references/releases-guide.md` for URLs).
+Select badges based on repo type (see `github/references/releases-guide.md` for URLs).
 
 ### Heading Hierarchy
 - H1: Project name (exactly one)
@@ -495,7 +504,7 @@ Google-confirmed queries that real people ask about this topic.
 
 **Selection criteria:**
 - Only use PAA questions directly relevant to the project
-- Skip PAA questions about competitors (e.g., "Is Knifeprint free?" in a claude-knife README)
+- Skip PAA questions about competitors (e.g., "Is Knifeprint free?" in a codex-knife README)
 - Skip off-topic PAA drift (Google's PAA often drifts to unrelated topics)
 - Prioritize questions that showcase the project's strengths
 
@@ -602,14 +611,15 @@ After completing README optimization, always end with this handoff:
 ```
 README optimization complete. All skills have been run.
 Recommended final step:
-  /github audit -- re-run the audit to measure your improvement and get your new score
+  github-audit -- re-run the audit to measure your improvement and get your new score
 
 Once you've completed this process for all your repos:
-  /github empire -- portfolio-level optimization (profile README, cross-linking, avatar)
+  github-empire -- portfolio-level optimization (profile README, cross-linking, avatar)
 ```
 
 If running as part of the audit SOP, reference the step number:
-"Step 6 complete. Ready for Step 7: `/github audit` to measure your improvement."
+"Step 6 complete. Next skill: `github-audit` to measure your improvement."
 
 If this is the user's last repo in a multi-repo session, also mention:
-"All repos optimized. When you're ready for portfolio-level work, run `/github empire`."
+"All repos optimized. When you're ready for portfolio-level work, run `github-empire`."
+

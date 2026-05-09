@@ -1,19 +1,31 @@
 ---
 name: github-community
-description: >
-  Set up GitHub community health files and templates. Generates CONTRIBUTING.md,
-  CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms),
-  PR templates, discussion templates, devcontainer configuration, dependabot.yml,
-  release.yml, .gitattributes (linguist overrides for accurate language bar),
-  and CI workflows (language-appropriate linting via GitHub Actions). Completes
-  GitHub's Community Standards checklist. Use when user says "community",
-  "github community", "contributing", "code of conduct", "issue template",
-  "pr template", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "codeowners",
-  "devcontainer", "dependabot", "community standards", "community health",
-  "templates", "gitattributes", "ci workflow", or "github actions".
+description: Generate GitHub community health files — CONTRIBUTING, CODE_OF_CONDUCT, SUPPORT, CODEOWNERS, issue/PR templates, dependabot, devcontainer.
 ---
 
 # GitHub Community -- Health Files and Templates
+
+## Deterministic Entrypoint
+
+For API agents and non-interactive runs, use the deterministic runner:
+
+```bash
+python3 scripts/run_headless.py community --path /path/to/repo
+python3 scripts/run_headless.py community --path /path/to/repo --write-files
+```
+
+Behavior:
+
+- Default mode is plan-only and does not mutate the repo.
+- `--write-files` is the explicit approval gate for creating or refreshing
+  community-health files.
+- The runner writes `.github-audit/community-data.json`,
+  `COMMUNITY-REPORT.md`, `COMMUNITY-PLAN.md`, and `COMMUNITY-SUMMARY.json`.
+- Issue templates are written as YAML forms.
+- Discussion templates are written as `.github/DISCUSSION_TEMPLATE/*.yml` only
+  when live discussion category slugs are discoverable. If discussions are
+  disabled or category metadata is unavailable, the runner skips them cleanly
+  instead of guessing invalid filenames.
 
 ## Process (GARE Pattern)
 
@@ -21,13 +33,13 @@ description: >
 
 **Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
 - `repo-context.json` (optional) -- repo type, intent, language, has_discussions.
   If missing, gather yourself via `gh repo view`.
 - `legal-data.json` (optional) -- SECURITY.md status. If present, use
   `security_md_exists` to know whether to note "SECURITY.md: already exists" or
-  "SECURITY.md: not found -- run `/github legal` to generate." If missing, check
+  "SECURITY.md: not found -- run `github-legal` to generate." If missing, check
   SECURITY.md existence yourself.
 
 - Check which community files already exist:
@@ -63,12 +75,12 @@ Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas
 
 ### 2. Analyze
 
-Reference: Read `~/.claude/skills/github/references/community-files-guide.md` for file specs and priorities.
-Reference: Read `~/.claude/skills/github/references/community-templates.md` for YAML templates and code.
+Reference: Read `github/references/community-files-guide.md` for file specs and priorities.
+Reference: Read `github/references/community-templates.md` for YAML templates and code.
 
 **Branding consistency check:** For every existing file, verify it references the
 correct project name. Forks, ports, and copied templates often contain the upstream
-or source project's name (e.g., "codex-seo" in a gemini-seo repo, "wezterm" in a
+or source project's name (e.g., "codex-github" in a codex-seo repo, "wezterm" in a
 BenjaminTerm repo). Flag any file where the project name, repo URL, or owner doesn't
 match the current repo. These need updating even if the file is otherwise good quality.
 
@@ -79,7 +91,7 @@ and assess quality** -- don't just check existence.
 |------|---------|---------|---------------|
 | CONTRIBUTING.md | ? | ? | ? |
 | CODE_OF_CONDUCT.md | ? | ? | ? |
-| SECURITY.md | ? | ? | ? -- **Handled by /github legal** (note: do NOT generate here, just check existence) |
+| SECURITY.md | ? | ? | ? -- **Handled by `github-legal`** (note: do NOT generate here, just check existence) |
 | SUPPORT.md | ? | ? | ? |
 | CODEOWNERS | ? | ? | ? |
 | FUNDING.yml | ? | ? | ? |
@@ -438,7 +450,7 @@ grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .g
 ```
 Include: timestamp, files_created array, files_skipped object (with reasons),
 scorecard_before, scorecard_after, placeholders array.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact schema.
+Reference: `github/references/shared-data-cache.md` for exact schema.
 
 ### Deliverables
 
@@ -459,8 +471,9 @@ After completing community file generation, always end with this handoff:
 
 ```
 Community health files complete. Next recommended step:
-  /github release -- versioning, CHANGELOG, badges, and release strategy
+  github-release -- versioning, CHANGELOG, badges, and release strategy
 ```
 
 If running as part of the audit SOP, reference the step number:
-"Step 2 complete. Ready for Step 3: `/github release`"
+"Step 2 complete. Next skill: `github-release`"
+

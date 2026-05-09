@@ -174,3 +174,4 @@ Include a ToC for READMEs longer than 4 sections. Use markdown links:
 - No license mentioned
 - Wall of text without structure
 - README that describes what the project IS instead of what it DOES
+

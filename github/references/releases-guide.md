@@ -192,3 +192,4 @@ jobs:
 | Business / Brand | Frequent releases signal momentum, auto-generated notes |
 | Academic / Research | Versioned releases tied to paper submissions, DOI integration |
 | Hobby / Learning | Informal releases when ready, focus on CHANGELOG |
+

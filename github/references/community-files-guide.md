@@ -143,3 +143,4 @@ See `community-templates.md` for the full dependabot.yml template.
 | Internal to Public | SECURITY.md (critical), CONTRIBUTING (detailed), CODEOWNERS |
 | Academic / Research | CONTRIBUTING (methodology), CITATION.cff (separate skill) |
 | Hobby / Learning | Minimal -- CONTRIBUTING, basic issue template |
+

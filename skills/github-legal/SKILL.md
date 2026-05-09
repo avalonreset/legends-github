@@ -1,17 +1,31 @@
 ---
 name: github-legal
-description: >
-  GitHub legal compliance for repositories. Selects and generates LICENSE files
-  (MIT, Apache, GPL, BSD, ISC, MPL, Unlicense), handles fork compliance and
-  attribution, generates SECURITY.md with vulnerability reporting policy,
-  creates CITATION.cff for academic citations, and produces NOTICE files.
-  Checks license compatibility with dependencies. Use when user says "license",
-  "legal", "github legal", "add license", "fork compliance", "security policy",
-  "SECURITY.md", "citation", "CITATION.cff", "NOTICE file", "open source license",
-  "legal compliance", or "attribution".
+description: GitHub legal compliance — generate LICENSE, SECURITY.md, CITATION.cff, NOTICE; handle fork attribution and dependency compatibility.
 ---
 
 # GitHub Legal -- License, Compliance, and Security Policy
+
+## Deterministic Entrypoint
+
+For API agents and non-interactive runs, use the deterministic legal runner:
+
+```bash
+python3 scripts/run_headless.py legal --path /path/to/repo
+python3 scripts/run_headless.py legal --path /path/to/repo --write-files
+python3 scripts/run_headless.py legal --path /path/to/repo --write-files --license MIT
+```
+
+This writes:
+
+- `.github-audit/legal-data.json`
+- `.github-audit/output/<repo>-<timestamp>/LEGAL-REPORT.md`
+- `.github-audit/output/<repo>-<timestamp>/LEGAL-PLAN.md`
+- `.github-audit/output/<repo>-<timestamp>/LEGAL-SUMMARY.json`
+
+By default this is a plan-only pass. `--write-files` is the explicit approval
+gate for writing `LICENSE`, `SECURITY.md`, `CITATION.cff`, and `NOTICE`.
+Complex or ambiguous legal situations must be flagged for human review instead
+of being guessed.
 
 ## Disclaimer -- ALWAYS Include in Output
 
@@ -36,7 +50,7 @@ copyleft code, trademark issues), consult a qualified attorney.
 
 **Step 0 -- Check shared data cache:**
 Before gathering, check `.github-audit/` for cached data from other skills.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for schemas.
+Reference: `github/references/shared-data-cache.md` for schemas.
 
 - `repo-context.json` (optional) -- repo type, intent, is_fork flag. If missing,
   gather yourself via `gh repo view`.
@@ -103,7 +117,7 @@ Every recommendation must cite its source:
 - "Upstream project detected: [project] is licensed under [license] -- your project
   must comply with those terms"
 
-Reference: Read `~/.claude/skills/github/references/license-guide.md` for compatibility matrix and fork obligations.
+Reference: Read `github/references/license-guide.md` for compatibility matrix and fork obligations.
 
 **When edge cases are detected, flag them clearly:**
 ```
@@ -124,7 +138,7 @@ After completing the Recommend step, present the user with:
 3. Any placeholders they'll need to fill in
 
 Wait for the user to confirm before proceeding. If running inside the
-orchestrator (`/github` or `/github-audit`), skip the confirmation gate
+orchestrator (`github` or `github-audit`), skip the confirmation gate
 and proceed -- the orchestrator has already obtained user consent.
 
 **Author info for CITATION.cff:** Pull the author name from `git config user.name`
@@ -139,7 +153,7 @@ grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .g
 Write `.github-audit/legal-data.json` with: timestamp, license_type, license_file_exists,
 license_file_path, security_md_exists, security_md_path, citation_cff_exists,
 notice_file_exists, is_fork, fork_compliant, dependency_conflicts array.
-Reference: `~/.claude/skills/github/references/shared-data-cache.md` for exact schema.
+Reference: `github/references/shared-data-cache.md` for exact schema.
 
 - Generate LICENSE file with correct year and copyright holder
 - Generate SECURITY.md with supported versions and reporting process
@@ -225,9 +239,10 @@ After completing legal fixes, always end with this handoff:
 
 ```
 Legal fixes complete. Next recommended step:
-  /github community -- set up community health files and templates
+  github-community -- set up community health files and templates
 ```
 
-If running as part of the audit SOP (the user ran `/github audit` first and is
+If running as part of the audit SOP (the user ran `github-audit` first and is
 following the Recommended Next Steps table), reference the step number:
-"Step 1 complete. Ready for Step 2: `/github community`"
+"Step 1 complete. Next skill: `github-community`"
+

@@ -158,3 +158,4 @@ updates:
 ```
 
 Adapt `package-ecosystem` to the project: npm, pip, cargo, gomod, maven, gradle, etc.
+

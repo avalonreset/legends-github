@@ -1,20 +1,27 @@
 <p align="center">
-  <img src="assets/banner.webp" alt="Claude GitHub - Claude Code skills for GitHub repository optimization" width="100%">
+  <img src="assets/banner.webp" alt="Claude GitHub - GitHub repository optimization skills for Claude Code and Codex" width="100%">
 </p>
 
-# Claude GitHub - Claude Code Skills for Repository Optimization
+# Claude GitHub - GitHub Skills for Claude Code and Codex
 
 [![Version](https://img.shields.io/github/v/release/avalonreset/claude-github)](https://github.com/avalonreset/claude-github/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/avalonreset/claude-github/ci.yml?label=CI)](https://github.com/avalonreset/claude-github/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills-to-claude-code)
-[![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-blueviolet)](https://claude.com/claude-code)
+[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills)
+[![Claude Code](https://img.shields.io/badge/works%20with-Claude%20Code-blueviolet)](https://claude.com/claude-code)
+[![Codex](https://img.shields.io/badge/works%20with-Codex-111111)](https://openai.com/codex)
 
-Claude GitHub is the most comprehensive collection of Claude Code skills for GitHub repository optimization. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
+Claude GitHub is a GitHub repository optimization suite for Claude Code and Codex. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
+
+The same skill suite now installs into either runtime:
+
+- **Claude Code:** slash-command workflow such as `/github audit`, installed under `~/.claude/skills/`
+- **Codex:** native skill workflow such as `github-audit`, installed under `~/.codex/skills/`
+- **Headless/API:** deterministic runner at `github/scripts/run_headless.py` for audits, metadata plans, legal files, community files, README previews, releases, and portfolio reports
 
 Most GitHub repos are invisible - no keywords in the description, no structured README, missing license files, zero community health signals. Search engines skip them. Developers scroll past them.
 
-> Built with the [Agent Skills](https://github.com/anthropics/claude-code) open standard for Claude Code.
+> Built with portable `SKILL.md` instructions for Claude Code and Codex.
 > Scaffolded with [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
 > SEO methodology adapted from [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
 
@@ -25,10 +32,11 @@ Most GitHub repos are invisible - no keywords in the description, no structured 
 - [What You Get](#what-you-get)
 - [Skill Examples](#skill-examples)
 - [How the Audit Works](#how-the-audit-works)
-- [How to Add Skills to Claude Code](#how-to-add-skills-to-claude-code)
+- [How to Add Skills](#how-to-add-skills)
 - [Getting Started](#getting-started)
 - [Standard Operating Procedure](#standard-operating-procedure)
-- [How Claude Code Skills Communicate](#how-claude-code-skills-communicate)
+- [How Skills Communicate](#how-skills-communicate)
+- [Headless Runtime](#headless-runtime)
 - [Architecture](#architecture)
 - [Best Practices](#best-practices)
 - [Frequently Asked Questions](#frequently-asked-questions)
@@ -95,7 +103,7 @@ Run `/github audit` and it generates a numbered Standard Operating Procedure wit
 
 ## How the Audit Works
 
-Run `/github audit` and 6 specialized agents score your repo in parallel:
+Run `/github audit` in Claude Code or `github-audit` in Codex and 6 specialized reviewers score your repo in parallel:
 
 | Category | Weight | What It Checks |
 |----------|--------|----------------|
@@ -106,7 +114,7 @@ Run `/github audit` and 6 specialized agents score your repo in parallel:
 | Release and Maintenance | 15% | Releases, CHANGELOG, CI badges, dependabot, recency |
 | SEO and Discoverability | 10% | Keyword placement, GitHub Explore signals, AI citability |
 
-Each agent uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Agents run simultaneously in a single message, so a full audit completes in under 2 minutes.
+Each reviewer uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Claude Code uses subagents; Codex uses multi-agent delegation. All six reviewers launch before aggregation, so a full audit completes quickly instead of walking categories one by one.
 
 ### Portfolio Mode
 
@@ -118,9 +126,11 @@ Audit an entire GitHub profile at once:
 
 This quick-scans all public repos, selects the top candidates for deep analysis, spawns up to 6 agents per repo, and produces a cross-portfolio report with shared patterns and priorities.
 
-## How to Add Skills to Claude Code
+## How to Add Skills
 
-**Prerequisites:** [Claude Code](https://claude.com/claude-code) and [GitHub CLI](https://cli.github.com/) (`gh`), both installed and authenticated.
+**Prerequisites:** [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated. Install either [Claude Code](https://claude.com/claude-code), Codex, or both depending on where you want to run the skills.
+
+### Claude Code Install
 
 **macOS / Linux:**
 
@@ -138,7 +148,29 @@ cd claude-github
 .\install.ps1
 ```
 
-The installer copies all skills, agents, and reference files to `~/.claude/skills/github/`, then walks you through setting up two services:
+The Claude installer copies all skills, agents, and reference files to `~/.claude/skills/github/`, then walks you through setting up two services:
+
+### Codex Install
+
+**macOS / Linux:**
+
+```bash
+git clone https://github.com/avalonreset/claude-github.git
+cd claude-github
+bash install-codex.sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+git clone https://github.com/avalonreset/claude-github.git
+cd claude-github
+.\install-codex.ps1
+```
+
+The Codex installer copies the orchestrator to `~/.codex/skills/github/`, the specialized skills to `~/.codex/skills/github-*`, the scoring-agent references to `~/.codex/agents/`, and the deterministic runtime to `~/.codex/skills/github/scripts/`.
+
+Both installers can help set up:
 
 - **[DataForSEO](https://dataforseo.com)** (strongly recommended) - powers live keyword research, SERP rankings, and AI visibility tracking. The installer configures the MCP server with your credentials automatically. Without it, SEO-dependent skills fall back to codebase-only analysis and all keyword recommendations are marked "unverified." A free account includes enough credits for hundreds of analyses. A single repo analysis costs about 15-30 cents.
 - **[KIE.ai](https://kie.ai/api-key)** (strongly recommended) - generates AI banner images for READMEs and AI profile avatars for your GitHub profile. The installer saves your API key to `.env`. Without it, image generation is skipped entirely. Each image costs about 4 cents.
@@ -147,7 +179,7 @@ Both services are technically optional, but without them you lose the two most d
 
 <img src="docs/images/install-experience.webp" alt="Claude GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="600">
 
-Restart Claude Code after installing. Skills register on startup.
+Restart Claude Code or Codex after installing. Skills register on startup.
 
 ## Getting Started
 
@@ -160,6 +192,11 @@ The skills read your actual source code, configuration files, git history, and G
 cd ~/projects/my-awesome-tool
 claude
 > /github audit
+
+# Codex
+cd ~/projects/my-awesome-tool
+codex
+> github-audit
 
 # Wrong - running from a random directory
 cd ~/Desktop
@@ -205,7 +242,7 @@ Empire assumes each repo is already in good shape. Always finish Phase 1 on all 
 | Existing community files | Legal, Community | Checks what already exists before generating |
 | DataForSEO (if configured) | SEO, README, Meta | Live keyword volume, difficulty, SERP rankings |
 
-## How Claude Code Skills Communicate
+## How Skills Communicate
 
 Every skill follows the **GARE pattern**: Gather, Analyze, Recommend, Execute.
 
@@ -223,6 +260,24 @@ Skills share data through a `.github-audit/` cache directory. When you run `/git
 | `audit-data.json` | `/github audit` | All downstream skills |
 | `legal-data.json` | `/github legal` | `/github readme` (badge selection) |
 
+## Headless Runtime
+
+Codex GitHub includes a deterministic runner for non-interactive audits and automation:
+
+```bash
+python3 github/scripts/run_headless.py verify --mode both --path /path/to/repo
+python3 github/scripts/run_headless.py audit --path /path/to/repo
+python3 github/scripts/run_headless.py seo --path /path/to/repo
+python3 github/scripts/run_headless.py legal --path /path/to/repo --write-files
+python3 github/scripts/run_headless.py community --path /path/to/repo --write-files
+python3 github/scripts/run_headless.py meta --path /path/to/repo
+python3 github/scripts/run_headless.py readme --path /path/to/repo --generate-assets
+python3 github/scripts/run_headless.py release --path /path/to/repo
+python3 github/scripts/run_headless.py empire --path /path/to/repo
+```
+
+The runner writes machine-readable cache files under `.github-audit/` plus reports under `.github-audit/output/`. Conversational skills still provide the richer subagent or multi-agent flow; headless mode is for repeatable local checks, API jobs, and automation.
+
 ## Architecture
 
 ```
@@ -230,6 +285,8 @@ claude-github/
 ├── github/                    # Orchestrator skill
 │   ├── SKILL.md               # Routing, intent capture, SEO data pass
 │   └── references/            # 9 reference guides (loaded on-demand)
+│   ├── scripts/               # Deterministic Codex/headless runtime
+│   └── requirements.txt       # Python deps for headless image/TOML support
 ├── skills/                    # 8 sub-skills
 │   ├── github-audit/          # 0-100 health scoring with 6 parallel agents
 │   ├── github-legal/          # License selection, SECURITY.md, fork compliance
@@ -242,17 +299,19 @@ claude-github/
 ├── agents/                    # 6 scoring agents (parallel audit)
 ├── extensions/
 │   └── dataforseo/            # DataForSEO MCP server setup
-├── install.sh                 # macOS/Linux installer
-└── install.ps1                # Windows installer
+├── install.sh                 # Claude Code macOS/Linux installer
+├── install.ps1                # Claude Code Windows installer
+├── install-codex.sh           # Codex macOS/Linux installer
+└── install-codex.ps1          # Codex Windows installer
 ```
 
-1 orchestrator, 8 sub-skills, 6 scoring agents, 9 reference files. The orchestrator detects your repo type (library, CLI tool, API, application, framework, documentation, or skill/plugin) and adjusts recommendations for each.
+1 orchestrator, 8 sub-skills, 6 scoring reviewers, 9 reference files, and 1 deterministic runtime. The orchestrator detects your repo type (library, CLI tool, API, application, framework, documentation, or skill/plugin) and adjusts recommendations for each.
 
 ## Best Practices
 
 Getting the most out of the skill suite comes down to running from the right place, in the right order, with the right services configured.
 
-**Always run from your project folder.** The skills analyze your actual codebase, git history, and GitHub remote. Running from an empty or unrelated directory gives Claude nothing real to work with. Open Claude Code in the root of the repo you want to optimize.
+**Always run from your project folder.** The skills analyze your actual codebase, git history, and GitHub remote. Running from an empty or unrelated directory gives the agent nothing real to work with. Open Claude Code or Codex in the root of the repo you want to optimize.
 
 **Set up DataForSEO and KIE.ai during installation.** Both are technically optional, but without DataForSEO every keyword recommendation is guesswork, and without KIE.ai you skip banner and avatar generation entirely. Five minutes of setup unlocks the most powerful features in the suite.
 
@@ -274,9 +333,13 @@ Claude Code skills are markdown instruction files that extend Claude Code with s
 
 Run the installer (`bash install.sh` or `.\install.ps1`). It copies all skill files to `~/.claude/skills/github/` and configures the DataForSEO MCP server. After installation, restart Claude Code and the skills are available immediately. Type `/github` to see available commands.
 
-### What is the difference between agents and skills in Claude Code?
+### How do I add skills to Codex?
 
-Skills are instruction files (SKILL.md) that Claude loads based on triggers in your message. They define what to do and how. Agents are sub-processes that skills can spawn to run tasks in parallel. In this suite, the `/github audit` skill spawns 6 scoring agents simultaneously, one per category, so a full audit completes in a single pass instead of running checks sequentially.
+Run the Codex installer (`bash install-codex.sh` or `.\install-codex.ps1`). It copies the orchestrator to `~/.codex/skills/github/`, specialized skills to `~/.codex/skills/github-*`, and the headless runtime to `~/.codex/skills/github/scripts/`. Restart Codex, then use commands like `github-audit`, `github-readme`, and `github-meta`.
+
+### How does the parallel audit work in Claude Code and Codex?
+
+Skills are instruction files (SKILL.md) that the host loads based on triggers in your message. Claude Code uses subagents. Codex uses multi-agent delegation. In this suite, the audit flow launches 6 category reviewers at once, one per scoring category, then aggregates only after all six results return.
 
 ### Do I need DataForSEO to use this?
 

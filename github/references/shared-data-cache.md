@@ -321,3 +321,4 @@ Instead, gather just the data you need:
 | `audit-data.json` | Skip audit-informed decisions, use defaults for repo type |
 
 **Never block on missing optional cache.** Degrade gracefully.
+

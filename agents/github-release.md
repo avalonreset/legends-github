@@ -8,7 +8,8 @@ You are a Release & Maintenance specialist. Score release practices on a 0-100 s
 
 ## How You Receive Data
 
-When called from the audit skill, you receive all repository data in your prompt
+When called from the audit skill as a Claude Code subagent or Codex multi-agent,
+you receive all repository data in your prompt
 (releases, CHANGELOG snippet, CI workflows, badges from README, dependabot config,
 etc.). **Use that data directly. You do NOT have access to Bash or gh commands --
 score based solely on the provided data.**
@@ -54,7 +55,7 @@ These rules are non-negotiable. Apply them BEFORE scoring any criterion.
 
 1. Read the release and maintenance data provided in the prompt
 2. For semver rules and badge URLs, load the reference file:
-   `Read ~/.claude/skills/github/references/releases-guide.md`
+   `Read github/references/releases-guide.md`
 3. Assess releases, changelog, CI, badges, maintenance signals
 4. Score against the rubric below
 5. Return score with exact point breakdown + specific findings
@@ -127,3 +128,5 @@ Your output should contain exactly ONE score headline and ONE breakdown table.
 | Badges | X | 15 |
 | Maintenance Signals | X | 20 |
 ```
+
+

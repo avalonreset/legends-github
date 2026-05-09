@@ -31,7 +31,7 @@ main() {
     echo '   ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝'
     echo '    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ '
     echo -e "${R}"
-    echo -e "   ${M}░▒▓${R}${G}${B} v1.2 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
+    echo -e "   ${M}░▒▓${R}${G}${B} v1.3 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
     echo ""
 
     # Check prerequisites
@@ -48,6 +48,7 @@ main() {
 
     # Create directories
     mkdir -p "${SKILLS_DIR}/github/references"
+    mkdir -p "${SKILLS_DIR}/github/scripts"
     mkdir -p "${SKILLS_DIR}/github-audit"
     mkdir -p "${SKILLS_DIR}/github-readme"
     mkdir -p "${SKILLS_DIR}/github-legal"
@@ -69,6 +70,10 @@ main() {
 
     cp "${SCRIPT_DIR}/github/references/"*.md "${SKILLS_DIR}/github/references/"
     echo -e "   ${G}${B}[+]${R} 9 Reference Files   ${D}SEO, legal, readme, community guides${R}"
+
+    cp "${SCRIPT_DIR}/github/requirements.txt" "${SKILLS_DIR}/github/requirements.txt"
+    cp "${SCRIPT_DIR}/github/scripts/"*.py "${SKILLS_DIR}/github/scripts/"
+    echo -e "   ${G}${B}[+]${R} Headless Runtime    ${D}deterministic audit and release helpers${R}"
 
     for skill in github-audit github-legal github-community github-release github-seo github-meta github-readme github-empire; do
         cp "${SCRIPT_DIR}/skills/${skill}/SKILL.md" "${SKILLS_DIR}/${skill}/SKILL.md"
