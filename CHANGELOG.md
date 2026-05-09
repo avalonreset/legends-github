@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Simplified Claude GitHub marketing copy so the public package presents as a Claude Code product while keeping Codex compatibility documented separately.
 - Replaced the square mascot with a GPT Image 2 full-wolf variation.
 - Expanded the install experience image to the full README content width.
-- Replaced the terminal-style install screenshot with versionless GPT Image 2 setup artwork.
+- Replaced the terminal-style install screenshot with esoteric low-poly wolf system artwork.
 
 ## [1.2.0] - 2026-03-16
 
