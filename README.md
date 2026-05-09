@@ -172,7 +172,7 @@ Both installers can help set up:
 
 Both services are technically optional, but without them you lose the two most differentiated features of the suite: data-backed keyword optimization and professional AI-generated visuals. **Set them up during installation.** It takes 5 minutes and makes every other skill dramatically more useful.
 
-<img src="docs/images/install-experience.webp" alt="Claude GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="600">
+<img src="docs/images/install-experience.webp" alt="Claude GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="100%">
 
 Restart Claude Code after installing. Skills register on startup.
 

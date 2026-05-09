@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-## [1.3.1] - 2026-05-09
-
-### Changed
-
-- Simplified Claude GitHub marketing copy so the public package presents as a Claude Code product while keeping Codex compatibility documented separately.
-
 ## [1.3.0] - 2026-05-09
 
 ### Added
@@ -27,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Claude installers now also copy the headless runtime into `~/.claude/skills/github/scripts/`.
 - Image generation standard moved to GPT Image 2 via KIE.ai.
 - Skill docs now use Codex-native command names where appropriate while preserving Claude slash-command compatibility.
+- Simplified Claude GitHub marketing copy so the public package presents as a Claude Code product while keeping Codex compatibility documented separately.
+- Replaced the square mascot with a GPT Image 2 full-wolf variation.
+- Expanded the install experience image to the full README content width.
 
 ## [1.2.0] - 2026-03-16
 
@@ -107,8 +104,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.3.1...HEAD
-[1.3.1]: https://github.com/avalonreset/claude-github/compare/v1.3.0...v1.3.1
+[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.3.0...HEAD
 [1.3.0]: https://github.com/avalonreset/claude-github/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/avalonreset/claude-github/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/avalonreset/claude-github/compare/v1.0.0...v1.1.0
