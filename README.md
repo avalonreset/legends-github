@@ -1,27 +1,22 @@
 <p align="center">
-  <img src="assets/banner.webp" alt="Claude GitHub - GitHub repository optimization skills for Claude Code and Codex" width="100%">
+  <img src="assets/banner.webp" alt="Claude GitHub - Claude Code skills for GitHub repository optimization" width="100%">
 </p>
 
-# Claude GitHub - GitHub Skills for Claude Code and Codex
+# Claude GitHub - Claude Code Skills for Repository Optimization
 
 [![Version](https://img.shields.io/github/v/release/avalonreset/claude-github)](https://github.com/avalonreset/claude-github/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/avalonreset/claude-github/ci.yml?label=CI)](https://github.com/avalonreset/claude-github/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills)
 [![Claude Code](https://img.shields.io/badge/works%20with-Claude%20Code-blueviolet)](https://claude.com/claude-code)
-[![Codex](https://img.shields.io/badge/works%20with-Codex-111111)](https://openai.com/codex)
 
-Claude GitHub is a GitHub repository optimization suite for Claude Code and Codex. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
+Claude GitHub is a Claude Code skill suite for GitHub repository optimization. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
 
-The same skill suite now installs into either runtime:
-
-- **Claude Code:** slash-command workflow such as `/github audit`, installed under `~/.claude/skills/`
-- **Codex:** native skill workflow such as `github-audit`, installed under `~/.codex/skills/`
-- **Headless/API:** deterministic runner at `github/scripts/run_headless.py` for audits, metadata plans, legal files, community files, README previews, releases, and portfolio reports
+Claude GitHub installs into Claude Code as slash-command skills such as `/github audit`, `/github readme`, and `/github meta`. It also ships a deterministic runner at `github/scripts/run_headless.py` for repeatable local checks, API jobs, and automation.
 
 Most GitHub repos are invisible - no keywords in the description, no structured README, missing license files, zero community health signals. Search engines skip them. Developers scroll past them.
 
-> Built with portable `SKILL.md` instructions for Claude Code and Codex.
+> Built with Claude Code `SKILL.md` instructions.
 > Scaffolded with [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
 > SEO methodology adapted from [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
 
@@ -103,7 +98,7 @@ Run `/github audit` and it generates a numbered Standard Operating Procedure wit
 
 ## How the Audit Works
 
-Run `/github audit` in Claude Code or `github-audit` in Codex and 6 specialized reviewers score your repo in parallel:
+Run `/github audit` and 6 specialized reviewers score your repo in parallel:
 
 | Category | Weight | What It Checks |
 |----------|--------|----------------|
@@ -114,7 +109,7 @@ Run `/github audit` in Claude Code or `github-audit` in Codex and 6 specialized 
 | Release and Maintenance | 15% | Releases, CHANGELOG, CI badges, dependabot, recency |
 | SEO and Discoverability | 10% | Keyword placement, GitHub Explore signals, AI citability |
 
-Each reviewer uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Claude Code uses subagents; Codex uses multi-agent delegation. All six reviewers launch before aggregation, so a full audit completes quickly instead of walking categories one by one.
+Each reviewer uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Claude Code uses subagents. All six reviewers launch before aggregation, so a full audit completes quickly instead of walking categories one by one.
 
 ### Portfolio Mode
 
@@ -128,7 +123,7 @@ This quick-scans all public repos, selects the top candidates for deep analysis,
 
 ## How to Add Skills
 
-**Prerequisites:** [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated. Install either [Claude Code](https://claude.com/claude-code), Codex, or both depending on where you want to run the skills.
+**Prerequisites:** [Claude Code](https://claude.com/claude-code) and [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated.
 
 ### Claude Code Install
 
@@ -150,7 +145,7 @@ cd claude-github
 
 The Claude installer copies all skills, agents, and reference files to `~/.claude/skills/github/`, then walks you through setting up two services:
 
-### Codex Install
+### Codex Compatibility Install
 
 **macOS / Linux:**
 
@@ -168,7 +163,7 @@ cd claude-github
 .\install-codex.ps1
 ```
 
-The Codex installer copies the orchestrator to `~/.codex/skills/github/`, the specialized skills to `~/.codex/skills/github-*`, the scoring-agent references to `~/.codex/agents/`, and the deterministic runtime to `~/.codex/skills/github/scripts/`.
+Codex compatibility is included for teams that use Codex alongside Claude Code. The Codex installer copies the same skill suite to `~/.codex/skills/`.
 
 Both installers can help set up:
 
@@ -179,7 +174,7 @@ Both services are technically optional, but without them you lose the two most d
 
 <img src="docs/images/install-experience.webp" alt="Claude GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="600">
 
-Restart Claude Code or Codex after installing. Skills register on startup.
+Restart Claude Code after installing. Skills register on startup.
 
 ## Getting Started
 
@@ -192,11 +187,6 @@ The skills read your actual source code, configuration files, git history, and G
 cd ~/projects/my-awesome-tool
 claude
 > /github audit
-
-# Codex
-cd ~/projects/my-awesome-tool
-codex
-> github-audit
 
 # Wrong - running from a random directory
 cd ~/Desktop
@@ -337,9 +327,9 @@ Run the installer (`bash install.sh` or `.\install.ps1`). It copies all skill fi
 
 Run the Codex installer (`bash install-codex.sh` or `.\install-codex.ps1`). It copies the orchestrator to `~/.codex/skills/github/`, specialized skills to `~/.codex/skills/github-*`, and the headless runtime to `~/.codex/skills/github/scripts/`. Restart Codex, then use commands like `github-audit`, `github-readme`, and `github-meta`.
 
-### How does the parallel audit work in Claude Code and Codex?
+### How does the parallel audit work in Claude Code?
 
-Skills are instruction files (SKILL.md) that the host loads based on triggers in your message. Claude Code uses subagents. Codex uses multi-agent delegation. In this suite, the audit flow launches 6 category reviewers at once, one per scoring category, then aggregates only after all six results return.
+Skills are instruction files (SKILL.md) that Claude Code loads based on triggers in your message. Claude Code uses subagents. In this suite, the audit flow launches 6 category reviewers at once, one per scoring category, then aggregates only after all six results return.
 
 ### Do I need DataForSEO to use this?
 

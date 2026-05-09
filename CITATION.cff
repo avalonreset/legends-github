@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "Claude GitHub"
-version: "1.3.0"
+version: "1.3.1"
 date-released: "2026-05-09"
 authors:
   - name: "Avalon Reset"
@@ -16,8 +16,8 @@ keywords:
   - github-seo
   - repository-audit
 abstract: >
-  A portable GitHub repository optimization skill suite for Claude Code and
-  Codex. Includes 8 specialized sub-skills covering README generation, legal
+  A Claude Code skill suite for GitHub repository optimization. Includes 8
+  specialized sub-skills covering README generation, legal
   compliance, metadata optimization, SEO keyword research, community health,
   release management, and portfolio strategy. Powered by DataForSEO for live
   keyword data and KIE.ai GPT Image 2 for generated visuals.
