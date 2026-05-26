@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic README planning for Codex GitHub."""
+"""Deterministic README planning for Legends GitHub."""
 
 from __future__ import annotations
 

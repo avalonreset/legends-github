@@ -1,31 +1,18 @@
-# Claude GitHub - Installation Script (Windows PowerShell)
+# Legends GitHub - Installation Script (Windows PowerShell)
 # Installs the GitHub optimization skill suite for Claude Code
 
 $ErrorActionPreference = "Stop"
 
 Clear-Host
 Write-Host ""
-Write-Host @"
-    ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
-   ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝
-   ██║     ██║     ███████║██║   ██║██║  ██║█████╗
-   ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝
-   ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
-    ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
-
-    ██████╗ ██╗████████╗██╗  ██╗██╗   ██╗██████╗
-   ██╔════╝ ██║╚══██╔══╝██║  ██║██║   ██║██╔══██╗
-   ██║  ███╗██║   ██║   ███████║██║   ██║██████╔╝
-   ██║   ██║██║   ██║   ██╔══██║██║   ██║██╔══██╗
-   ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝
-    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝
-"@ -ForegroundColor Cyan
+Write-Host "    LEGENDS GITHUB" -ForegroundColor Cyan
+Write-Host "    Repository Optimization Skills for Claude Code" -ForegroundColor DarkGray
 
 Write-Host "   " -NoNewline
 Write-Host "░▒▓" -NoNewline -ForegroundColor Magenta
 Write-Host " v1.3 " -NoNewline -ForegroundColor Green
 Write-Host "▓▒░" -NoNewline -ForegroundColor Magenta
-Write-Host "  Repository Optimization Skills for Claude Code" -ForegroundColor DarkGray
+Write-Host "  Claude Code installer" -ForegroundColor DarkGray
 Write-Host ""
 
 # Check prerequisites
@@ -259,7 +246,7 @@ if ($setupKie -match "^[Yy]") {
 # Create .env template if it doesn't exist yet (user skipped both)
 if (-not (Test-Path $EnvFile)) {
     @"
-# Claude GitHub - API Credentials
+# Legends GitHub - API Credentials
 #
 # KIE.ai -- AI-generated banner images for READMEs
 # Get your API key: https://kie.ai/api-key

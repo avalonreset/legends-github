@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Claude GitHub - Installation Script
+# Legends GitHub - Installation Script
 # Installs the GitHub optimization skill suite for Claude Code
 
 C='\033[36m'    # cyan
@@ -16,22 +16,9 @@ R='\033[0m'     # reset
 main() {
     clear 2>/dev/null || true
     echo ""
-    echo -e "${C}${B}"
-    echo '    ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗'
-    echo '   ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝'
-    echo '   ██║     ██║     ███████║██║   ██║██║  ██║█████╗  '
-    echo '   ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝  '
-    echo '   ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗'
-    echo '    ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝'
-    echo ''
-    echo '    ██████╗ ██╗████████╗██╗  ██╗██╗   ██╗██████╗ '
-    echo '   ██╔════╝ ██║╚══██╔══╝██║  ██║██║   ██║██╔══██╗'
-    echo '   ██║  ███╗██║   ██║   ███████║██║   ██║██████╔╝'
-    echo '   ██║   ██║██║   ██║   ██╔══██║██║   ██║██╔══██╗'
-    echo '   ╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝'
-    echo '    ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ '
-    echo -e "${R}"
-    echo -e "   ${M}░▒▓${R}${G}${B} v1.3 ${R}${M}▓▒░${R}  ${D}Repository Optimization Skills for Claude Code${R}"
+    echo -e "${C}${B}    LEGENDS GITHUB${R}"
+    echo -e "    ${D}Repository Optimization Skills for Claude Code${R}"
+    echo -e "   ${M}░▒▓${R}${G}${B} v1.3 ${R}${M}▓▒░${R}  ${D}Claude Code installer${R}"
     echo ""
 
     # Check prerequisites
@@ -230,7 +217,7 @@ with open(settings_file, 'w') as f:
     # Create .env template if it doesn't exist yet (user skipped both)
     if [ ! -f "${ENV_FILE}" ]; then
         cat > "${ENV_FILE}" << 'ENVEOF'
-# Claude GitHub - API Credentials
+# Legends GitHub - API Credentials
 #
 # KIE.ai -- AI-generated banner images for READMEs
 # Get your API key: https://kie.ai/api-key

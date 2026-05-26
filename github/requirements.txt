@@ -1,4 +1,4 @@
-# Codex GitHub headless runtime dependencies.
+# Legends GitHub headless runtime dependencies.
 Pillow>=10,<12
 tomli>=2,<3; python_version < "3.11"
 #

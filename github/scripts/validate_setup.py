@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate that Codex GitHub is ready for CLI, API, or both."""
+"""Validate that Legends GitHub is ready for CLI, API, or both."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ def _check(label: str, passed: bool, detail: str = "") -> dict:
 
 
 def validate_setup(repo_root: Path, mode: str = "both", allow_missing_gh_auth: bool = False) -> dict:
-    """Validate Codex GitHub runtime readiness."""
+    """Validate Legends GitHub runtime readiness."""
     checks = []
     repo_slug = repo_slug_from_git(repo_root) or ""
     cache_dir, cache_writable = probe_repo_cache(repo_root)
@@ -117,14 +117,14 @@ def validate_setup(repo_root: Path, mode: str = "both", allow_missing_gh_auth: b
     )
     append_run_cache(
         operation="setup-validate",
-        summary=f"Validated Codex GitHub setup for {mode}",
+        summary=f"Validated Legends GitHub setup for {mode}",
         metadata={"passed": ready, "checks": len(checks), "repo_root": str(repo_root)},
     )
     return payload
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate Codex GitHub for CLI or API execution")
+    parser = argparse.ArgumentParser(description="Validate Legends GitHub for CLI or API execution")
     parser.add_argument("--mode", default="both", choices=["cli", "api", "both"])
     parser.add_argument("--path", default=".", help="Repo root or a path inside the repo")
     parser.add_argument("--allow-missing-gh-auth", action="store_true")
@@ -136,7 +136,7 @@ def main() -> int:
     if args.json:
         print(json.dumps(payload, indent=2))
     else:
-        print("Codex GitHub Setup Validation")
+        print("Legends GitHub Setup Validation")
         print("=" * 40)
         for check in payload["checks"]:
             status = "PASS" if check["passed"] else "FAIL"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic community-health planning for Codex GitHub."""
+"""Deterministic community-health planning for Legends GitHub."""
 
 from __future__ import annotations
 
@@ -623,7 +623,7 @@ def fetch_contributor_covenant() -> str:
             return result.stdout.strip()
     request = urllib.request.Request(
         "https://api.github.com/codes_of_conduct/contributor_covenant",
-        headers={"Accept": "application/vnd.github+json", "User-Agent": "codex-github-community-runner"},
+        headers={"Accept": "application/vnd.github+json", "User-Agent": "legends-github-community-runner"},
     )
     try:
         with urllib.request.urlopen(request, timeout=10) as response:

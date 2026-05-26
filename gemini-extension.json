@@ -1,0 +1,6 @@
+{
+  "name": "legends-github",
+  "version": "1.3.0",
+  "description": "GitHub repository optimization skills for Claude Code, Codex, and Gemini CLI.",
+  "contextFileName": "GEMINI.md"
+}

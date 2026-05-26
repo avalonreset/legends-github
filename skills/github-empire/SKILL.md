@@ -239,7 +239,7 @@ clear tags showing what happens:
 4. [TOPICS] Sync topics across all repos:
    - codex-seo: +seo-tools, +ai-cli, +developer-tools
    - codex-seo: +seo-tools, +ai-cli, +developer-tools
-   - codex-github: +ai-cli, +developer-tools
+   - legends-github: +ai-cli, +developer-tools
 5. [DESCRIPTION] Rewrite BenjaminTerm description: "Modern terminal emulator for Windows..."
 6. [CROSS-LINK] Add "See Also" sections to codex-seo and codex-seo READMEs
 
