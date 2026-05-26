@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Configure the DataForSEO MCP server for Codex GitHub."""
+"""Configure the DataForSEO MCP server for Legends GitHub."""
 
 from __future__ import annotations
 
@@ -131,7 +131,7 @@ def remove() -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Configure DataForSEO MCP for Codex GitHub")
+    parser = argparse.ArgumentParser(description="Configure DataForSEO MCP for Legends GitHub")
     parser.add_argument("--login")
     parser.add_argument("--password")
     parser.add_argument("--check", action="store_true")

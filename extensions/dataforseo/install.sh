@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Claude GitHub -- DataForSEO Extension Installer
+# Legends GitHub -- DataForSEO Extension Installer
 
 main() {
-    echo "=== Claude GitHub -- DataForSEO Extension ==="
+    echo "=== Legends GitHub -- DataForSEO Extension ==="
     echo ""
 
     # Check that base skill is installed
@@ -13,7 +13,7 @@ main() {
     AGENTS_DIR="${CLAUDE_DIR}/agents"
 
     if [ ! -f "${SKILLS_DIR}/github/SKILL.md" ]; then
-        echo "ERROR: Claude GitHub base skill not found."
+        echo "ERROR: Legends GitHub base skill not found."
         echo "Please install the base skill first: ./install.sh"
         exit 1
     fi

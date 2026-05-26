@@ -1,18 +1,20 @@
 <p align="center">
-  <img src="assets/banner.webp" alt="Claude GitHub - Claude Code skills for GitHub repository optimization" width="100%">
+  <img src="assets/banner.webp" alt="Legends GitHub - multi-agent skills for GitHub repository optimization" width="100%">
 </p>
 
-# Claude GitHub - Claude Code Skills for Repository Optimization
+# Legends GitHub - Multi-Agent Skills for Repository Optimization
 
-[![Version](https://img.shields.io/github/v/release/avalonreset/claude-github)](https://github.com/avalonreset/claude-github/releases)
-[![CI](https://img.shields.io/github/actions/workflow/status/avalonreset/claude-github/ci.yml?label=CI)](https://github.com/avalonreset/claude-github/actions)
+[![Version](https://img.shields.io/github/v/release/avalonreset/legends-github)](https://github.com/avalonreset/legends-github/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/avalonreset/legends-github/ci.yml?label=CI)](https://github.com/avalonreset/legends-github/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills)
 [![Claude Code](https://img.shields.io/badge/works%20with-Claude%20Code-blueviolet)](https://claude.com/claude-code)
+[![Codex](https://img.shields.io/badge/works%20with-Codex-111827)](https://openai.com/codex/)
+[![Gemini CLI](https://img.shields.io/badge/works%20with-Gemini%20CLI-4285F4)](https://google-gemini.github.io/gemini-cli/)
 
-Claude GitHub is a Claude Code skill suite for GitHub repository optimization. One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate the files, rewrite the README, select the right license, and configure your metadata, all using live keyword data from DataForSEO so every recommendation is specific and measurable.
+Legends GitHub is a cross-runtime skill suite for GitHub repository optimization. It works with Claude Code, Codex, and Gemini CLI so the same audit, README, metadata, legal, release, community, SEO, and portfolio workflows can run wherever your agent work happens.
 
-Claude GitHub installs into Claude Code as slash-command skills such as `/github audit`, `/github readme`, and `/github meta`. It also ships a deterministic runner at `github/scripts/run_headless.py` for repeatable local checks, API jobs, and automation.
+One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate files, rewrite the README, select the right license, configure metadata, and use live keyword data from DataForSEO so every recommendation is specific and measurable.
 
 Most GitHub repos are invisible - no keywords in the description, no structured README, missing license files, zero community health signals. Search engines skip them. Developers scroll past them.
 
@@ -20,7 +22,7 @@ Most GitHub repos are invisible - no keywords in the description, no structured 
 > Scaffolded with [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
 > SEO methodology adapted from [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
 
-<img src="assets/mascot.webp" alt="Claude GitHub mascot" width="256">
+<img src="assets/mascot.webp" alt="Legends GitHub mascot" width="256">
 
 ## Table of Contents
 
@@ -45,14 +47,14 @@ Most GitHub repos are invisible - no keywords in the description, no structured 
 
 | Command | What It Does |
 |---------|-------------|
-| `/github audit` | Score any repo 0-100 across 6 categories with prioritized fixes |
-| `/github legal` | Select a license, generate SECURITY.md, CITATION.cff by default, handle fork compliance |
-| `/github community` | Generate issue templates, CONTRIBUTING.md, CODE_OF_CONDUCT.md, .gitattributes, CI workflow, devcontainer |
-| `/github release` | Plan release strategy, CHANGELOG, badges, versioning, and package distribution |
-| `/github seo` | Run keyword research with real search volume and difficulty data |
-| `/github meta` | Optimize description, topics, homepage URL, feature toggles, and social preview |
-| `/github readme` | Generate or rewrite your README with SEO-optimized headings and banner images |
-| `/github empire` | Portfolio strategy, profile README, AI avatar generation, profile completeness, cross-linking |
+| `/github audit` / `github-audit` | Score any repo 0-100 across 6 categories with prioritized fixes |
+| `/github legal` / `github-legal` | Select a license, generate SECURITY.md, CITATION.cff by default, handle fork compliance |
+| `/github community` / `github-community` | Generate issue templates, CONTRIBUTING.md, CODE_OF_CONDUCT.md, .gitattributes, CI workflow, devcontainer |
+| `/github release` / `github-release` | Plan release strategy, CHANGELOG, badges, versioning, and package distribution |
+| `/github seo` / `github-seo` | Run keyword research with real search volume and difficulty data |
+| `/github meta` / `github-meta` | Optimize description, topics, homepage URL, feature toggles, and social preview |
+| `/github readme` / `github-readme` | Generate or rewrite your README with SEO-optimized headings and banner images |
+| `/github empire` / `github-empire` | Portfolio strategy, profile README, AI avatar generation, profile completeness, cross-linking |
 
 Every recommendation cites its source: DataForSEO keyword volume, GitHub API metadata, codebase analysis, or reference guides. Nothing is guesswork.
 
@@ -81,15 +83,15 @@ Top 3 Actions (by impact):
 ### SEO Keyword Discovery
 
 ```
-Primary Keyword: "claude code skills" (5,400/mo, difficulty 34, Sweet Spot)
+Primary Keyword: "github repository optimization" (example keyword opportunity)
 GitHub ranks #2 for this query. Recommended for H1, description, first paragraph.
 
 Secondary Keywords:
-- "claude code skills marketplace" (320/mo, difficulty 17, +171% quarterly)
-- "best claude code skills" (110/mo, difficulty 1, +321% quarterly)
-- "how to add skills to claude code" (70/mo, difficulty 32, +586% quarterly)
+- "github repo audit"
+- "github seo tools"
+- "readme generator"
 
-Topics recommended: claude-code, claude-code-skills, github-optimization...
+Topics recommended: github-optimization, repository-audit, developer-tools...
 ```
 
 ### Workflow
@@ -109,7 +111,7 @@ Run `/github audit` and 6 specialized reviewers score your repo in parallel:
 | Release and Maintenance | 15% | Releases, CHANGELOG, CI badges, dependabot, recency |
 | SEO and Discoverability | 10% | Keyword placement, GitHub Explore signals, AI citability |
 
-Each reviewer uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Claude Code uses subagents. All six reviewers launch before aggregation, so a full audit completes quickly instead of walking categories one by one.
+Each reviewer uses a detailed rubric with specific point values per checkpoint, not subjective impressions. The final score is a weighted sum. Claude Code uses subagents, Codex uses multi-agent workers, and Gemini CLI can load the bundled skills through the extension manifest. All six reviewers launch before aggregation where the runtime supports parallel delegation, so a full audit completes quickly instead of walking categories one by one.
 
 ### Portfolio Mode
 
@@ -123,23 +125,23 @@ This quick-scans all public repos, selects the top candidates for deep analysis,
 
 ## How to Add Skills
 
-**Prerequisites:** [Claude Code](https://claude.com/claude-code) and [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated.
+**Prerequisites:** one supported agent runtime and [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated.
 
 ### Claude Code Install
 
 **macOS / Linux:**
 
 ```bash
-git clone https://github.com/avalonreset/claude-github.git
-cd claude-github
+git clone https://github.com/avalonreset/legends-github.git
+cd legends-github
 bash install.sh
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-git clone https://github.com/avalonreset/claude-github.git
-cd claude-github
+git clone https://github.com/avalonreset/legends-github.git
+cd legends-github
 .\install.ps1
 ```
 
@@ -150,37 +152,45 @@ The Claude installer copies all skills, agents, and reference files to `~/.claud
 **macOS / Linux:**
 
 ```bash
-git clone https://github.com/avalonreset/claude-github.git
-cd claude-github
+git clone https://github.com/avalonreset/legends-github.git
+cd legends-github
 bash install-codex.sh
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-git clone https://github.com/avalonreset/claude-github.git
-cd claude-github
+git clone https://github.com/avalonreset/legends-github.git
+cd legends-github
 .\install-codex.ps1
 ```
 
-Codex compatibility is included for teams that use Codex alongside Claude Code. The Codex installer copies the same skill suite to `~/.codex/skills/`.
+The Codex installer copies the same skill suite to `~/.codex/skills/`.
 
-Both installers can help set up:
+### Gemini CLI Extension Install
+
+```bash
+gemini extensions install https://github.com/avalonreset/legends-github
+```
+
+Restart Gemini CLI after installation. The extension exposes the bundled skills from `skills/`, including `github-audit`, `github-readme`, `github-meta`, `github-seo`, `github-legal`, `github-community`, `github-release`, and `github-empire`.
+
+The Claude and Codex installers can help set up:
 
 - **[DataForSEO](https://dataforseo.com)** (strongly recommended) - powers live keyword research, SERP rankings, and AI visibility tracking. The installer configures the MCP server with your credentials automatically. Without it, SEO-dependent skills fall back to codebase-only analysis and all keyword recommendations are marked "unverified." A free account includes enough credits for hundreds of analyses. A single repo analysis costs about 15-30 cents.
 - **[KIE.ai](https://kie.ai/api-key)** (strongly recommended) - generates AI banner images for READMEs and AI profile avatars for your GitHub profile. The installer saves your API key to `.env`. Without it, image generation is skipped entirely. Each image costs about 4 cents.
 
 Both services are technically optional, but without them you lose the two most differentiated features of the suite: data-backed keyword optimization and professional AI-generated visuals. **Set them up during installation.** It takes 5 minutes and makes every other skill dramatically more useful.
 
-<img src="docs/images/install-experience.webp" alt="Claude GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="100%">
+<img src="docs/images/install-experience.webp" alt="Legends GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="100%">
 
-Restart Claude Code after installing. Skills register on startup.
+Restart your agent runtime after installing. Skills and extensions register on startup.
 
 ## Getting Started
 
 **Run these skills from inside the project you want to optimize.** This is the single most important thing to get right.
 
-The skills read your actual source code, configuration files, git history, and GitHub remote to understand what your project is and how to improve it. If you run them from an empty folder or from the wrong directory, Claude has no real data to work with and recommendations will be generic at best.
+The skills read your actual source code, configuration files, git history, and GitHub remote to understand what your project is and how to improve it. If you run them from an empty folder or from the wrong directory, the agent has no real data to work with and recommendations will be generic at best.
 
 ```bash
 # Right - run from inside your project
@@ -252,7 +262,7 @@ Skills share data through a `.github-audit/` cache directory. When you run `/git
 
 ## Headless Runtime
 
-Codex GitHub includes a deterministic runner for non-interactive audits and automation:
+Legends GitHub includes a deterministic runner for non-interactive audits and automation:
 
 ```bash
 python3 github/scripts/run_headless.py verify --mode both --path /path/to/repo
@@ -271,7 +281,7 @@ The runner writes machine-readable cache files under `.github-audit/` plus repor
 ## Architecture
 
 ```
-claude-github/
+legends-github/
 ├── github/                    # Orchestrator skill
 │   ├── SKILL.md               # Routing, intent capture, SEO data pass
 │   └── references/            # 9 reference guides (loaded on-demand)
@@ -301,7 +311,7 @@ claude-github/
 
 Getting the most out of the skill suite comes down to running from the right place, in the right order, with the right services configured.
 
-**Always run from your project folder.** The skills analyze your actual codebase, git history, and GitHub remote. Running from an empty or unrelated directory gives the agent nothing real to work with. Open Claude Code or Codex in the root of the repo you want to optimize.
+**Always run from your project folder.** The skills analyze your actual codebase, git history, and GitHub remote. Running from an empty or unrelated directory gives the agent nothing real to work with. Open Claude Code, Codex, or Gemini CLI in the root of the repo you want to optimize.
 
 **Set up DataForSEO and KIE.ai during installation.** Both are technically optional, but without DataForSEO every keyword recommendation is guesswork, and without KIE.ai you skip banner and avatar generation entirely. Five minutes of setup unlocks the most powerful features in the suite.
 
@@ -327,17 +337,21 @@ Run the installer (`bash install.sh` or `.\install.ps1`). It copies all skill fi
 
 Run the Codex installer (`bash install-codex.sh` or `.\install-codex.ps1`). It copies the orchestrator to `~/.codex/skills/github/`, specialized skills to `~/.codex/skills/github-*`, and the headless runtime to `~/.codex/skills/github/scripts/`. Restart Codex, then use commands like `github-audit`, `github-readme`, and `github-meta`.
 
-### How does the parallel audit work in Claude Code?
+### How do I add skills to Gemini CLI?
 
-Skills are instruction files (SKILL.md) that Claude Code loads based on triggers in your message. Claude Code uses subagents. In this suite, the audit flow launches 6 category reviewers at once, one per scoring category, then aggregates only after all six results return.
+Run `gemini extensions install https://github.com/avalonreset/legends-github`, then restart Gemini CLI. The extension manifest points Gemini CLI at the bundled `skills/` directory and `GEMINI.md` context file.
+
+### How does the parallel audit work?
+
+Skills are instruction files (`SKILL.md`) loaded by the active agent runtime. In this suite, the audit flow assigns 6 category reviewers, one per scoring category, then aggregates only after the reviewer results return.
 
 ### Do I need DataForSEO to use this?
 
 No. Every skill works without DataForSEO by falling back to codebase analysis, GitHub API data, and built-in reference guides. However, keyword recommendations will be marked "unverified" without live search data. DataForSEO adds real volume numbers, difficulty scores, and SERP verification for about 15-30 cents per repo analysis.
 
-### What makes Claude GitHub one of the best Claude Code skills for GitHub?
+### What makes Legends GitHub different?
 
-It is the only skill suite that combines live keyword research (via DataForSEO), AI image generation (via KIE.ai), and a structured audit across 6 categories into a single workflow. Most Claude Code skills handle one task. Claude GitHub handles eight, and they share data through a cache so each step builds on the last. The audit-to-readme pipeline takes a repo from zero community health signals to a fully optimized public project in under an hour.
+It combines live keyword research via DataForSEO, AI image generation via KIE.ai, and a structured audit across 6 categories into one workflow. Most repo helpers handle one task. Legends GitHub handles eight, and they share data through a cache so each step builds on the last. The audit-to-readme pipeline takes a repo from zero community health signals to a fully optimized public project in under an hour.
 
 ## Contributing and Security
 

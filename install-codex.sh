@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Codex GitHub - Installation Script
+# Legends GitHub - Installation Script
 # Installs the GitHub optimization skill suite for Codex.
 
 SKIP_PYTHON_DEPS=false
@@ -27,7 +27,7 @@ python_cmd() {
 }
 
 echo ""
-echo "    CODEX GITHUB"
+echo "    LEGENDS GITHUB"
 echo "    GitHub repository optimization skills for Codex"
 echo ""
 
@@ -74,7 +74,7 @@ fi
 ENV_FILE="${GITHUB_SKILL_DIR}/.env"
 if [ ! -f "${ENV_FILE}" ]; then
   cat > "${ENV_FILE}" <<'ENVEOF'
-# Codex GitHub - API Credentials
+# Legends GitHub - API Credentials
 #
 # KIE.ai -- AI-generated banner images for READMEs
 # Get your API key: https://kie.ai/api-key

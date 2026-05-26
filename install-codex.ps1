@@ -1,4 +1,4 @@
-# Codex GitHub - Installation Script (Windows PowerShell)
+# Legends GitHub - Installation Script (Windows PowerShell)
 # Installs the GitHub optimization skill suite for Codex.
 
 param(
@@ -25,7 +25,7 @@ function Invoke-CodexPython {
 
 Clear-Host
 Write-Host ""
-Write-Host "    CODEX GITHUB" -ForegroundColor Cyan
+Write-Host "    LEGENDS GITHUB" -ForegroundColor Cyan
 Write-Host "    GitHub repository optimization skills for Codex" -ForegroundColor DarkGray
 Write-Host ""
 
@@ -92,7 +92,7 @@ if (-not $SkipPythonDeps) {
 $EnvFile = Join-Path $GithubSkillDir ".env"
 if (-not (Test-Path $EnvFile)) {
     @"
-# Codex GitHub - API Credentials
+# Legends GitHub - API Credentials
 #
 # KIE.ai -- AI-generated banner images for READMEs
 # Get your API key: https://kie.ai/api-key

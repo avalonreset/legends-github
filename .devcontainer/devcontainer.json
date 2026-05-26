@@ -1,5 +1,5 @@
 {
-  "name": "Claude GitHub Dev",
+  "name": "Legends GitHub Dev",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},

@@ -46,7 +46,7 @@ def _kie_request(api_key: str, method: str, url: str, payload: dict[str, Any] | 
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "codex-github/1.0",
+            "User-Agent": "legends-github/1.0",
         },
     )
     try:
@@ -122,7 +122,7 @@ def result_url(record: dict[str, Any]) -> str:
 
 def download_binary(url: str, destination: Path) -> Path:
     """Download one binary asset to disk."""
-    request = Request(url, headers={"User-Agent": "codex-github/1.0"})
+    request = Request(url, headers={"User-Agent": "legends-github/1.0"})
     try:
         with urlopen(request, timeout=120) as response:
             destination.parent.mkdir(parents=True, exist_ok=True)

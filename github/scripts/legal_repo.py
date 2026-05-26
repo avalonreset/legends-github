@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic legal planning for Codex GitHub."""
+"""Deterministic legal planning for Legends GitHub."""
 
 from __future__ import annotations
 
@@ -652,7 +652,7 @@ def fetch_remote_license_template(spdx_id: str, year: str, holder: str) -> tuple
     if not api_key:
         return "", f"No bundled or remote template is available for {spdx_id}."
     url = f"https://api.github.com/licenses/{api_key}"
-    request = urllib.request.Request(url, headers={"User-Agent": "codex-github-qa"})
+    request = urllib.request.Request(url, headers={"User-Agent": "legends-github-qa"})
     try:
         with urllib.request.urlopen(request, timeout=20) as response:
             payload = json.loads(response.read().decode("utf-8"))

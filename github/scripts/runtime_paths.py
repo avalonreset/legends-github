@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared runtime path resolution for Codex GitHub."""
+"""Shared runtime path resolution for Legends GitHub."""
 
 from __future__ import annotations
 
@@ -38,8 +38,11 @@ def codex_agents_dir() -> Path:
 
 
 def github_home() -> Path:
-    """Return the global Codex GitHub runtime directory."""
-    return _env_path("CODEX_GITHUB_HOME", home_dir() / ".codex-github")
+    """Return the global Legends GitHub runtime directory."""
+    return _env_path(
+        "LEGENDS_GITHUB_HOME",
+        _env_path("CODEX_GITHUB_HOME", home_dir() / ".legends-github"),
+    )
 
 
 def github_runs_cache() -> Path:

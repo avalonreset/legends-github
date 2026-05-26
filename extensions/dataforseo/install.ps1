@@ -1,8 +1,8 @@
-# Claude GitHub -- DataForSEO Extension Installer (Windows PowerShell)
+# Legends GitHub -- DataForSEO Extension Installer (Windows PowerShell)
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "=== Claude GitHub -- DataForSEO Extension ===" -ForegroundColor Cyan
+Write-Host "=== Legends GitHub -- DataForSEO Extension ===" -ForegroundColor Cyan
 Write-Host ""
 
 # Check that base skill is installed
@@ -11,7 +11,7 @@ $SkillsDir = Join-Path $ClaudeDir "skills"
 $AgentsDir = Join-Path $ClaudeDir "agents"
 
 if (-not (Test-Path (Join-Path $SkillsDir "github\SKILL.md"))) {
-    Write-Host "ERROR: Claude GitHub base skill not found." -ForegroundColor Red
+    Write-Host "ERROR: Legends GitHub base skill not found." -ForegroundColor Red
     Write-Host "Please install the base skill first: .\install.ps1"
     exit 1
 }

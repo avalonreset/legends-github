@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Gemini CLI extension manifest and `GEMINI.md` context file so the skill suite can install through `gemini extensions install`.
+- Legends GitHub social preview image.
+
+### Changed
+
+- Renamed public project branding from provider-specific GitHub variants to Legends GitHub.
+- Updated README, citation metadata, support links, installer splash text, and generated artwork for the Legends GitHub name.
+
 ## [1.3.0] - 2026-05-09
 
 ### Added
@@ -21,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Claude installers now also copy the headless runtime into `~/.claude/skills/github/scripts/`.
 - Image generation standard moved to GPT Image 2 via KIE.ai.
 - Skill docs now use Codex-native command names where appropriate while preserving Claude slash-command compatibility.
-- Simplified Claude GitHub marketing copy so the public package presents as a Claude Code product while keeping Codex compatibility documented separately.
+- Simplified provider-specific marketing copy so the public package presented as a Claude Code product while keeping Codex compatibility documented separately.
 - Replaced the square mascot with a GPT Image 2 full-wolf variation.
 - Expanded the install experience image to the full README content width.
 - Replaced the terminal-style install screenshot with branded low-poly wolf system artwork.
@@ -40,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - License changed from proprietary to MIT for open source release
-- Repository published at avalonreset/claude-github (public)
+- Repository published publicly under the original provider-specific repo name
 - All internal URLs and badge references updated to public repository
 - CONTRIBUTING.md rewritten with open source contribution guidelines
 - CITATION.cff updated with MIT license and public repository URLs
@@ -105,8 +115,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset/claude-github/compare/v1.3.0...HEAD
-[1.3.0]: https://github.com/avalonreset/claude-github/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/avalonreset/claude-github/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/avalonreset/claude-github/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/avalonreset/claude-github/releases/tag/v1.0.0
+[Unreleased]: https://github.com/avalonreset/legends-github/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/avalonreset/legends-github/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/avalonreset/legends-github/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/avalonreset/legends-github/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/avalonreset/legends-github/releases/tag/v1.0.0

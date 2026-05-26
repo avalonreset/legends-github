@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic repository audit helpers for Codex GitHub."""
+"""Deterministic repository audit helpers for Legends GitHub."""
 
 from __future__ import annotations
 

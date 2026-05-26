@@ -1,23 +1,25 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
-title: "Claude GitHub"
+title: "Legends GitHub"
 version: "1.3.0"
 date-released: "2026-05-09"
 authors:
   - name: "Avalon Reset"
-url: "https://github.com/avalonreset/claude-github"
-repository-code: "https://github.com/avalonreset/claude-github"
+url: "https://github.com/avalonreset/legends-github"
+repository-code: "https://github.com/avalonreset/legends-github"
 license: "MIT"
 keywords:
+  - agent-skills
   - claude-code
-  - claude-code-skills
+  - codex
+  - gemini-cli
   - github-optimization
   - github-seo
   - repository-audit
 abstract: >
-  A Claude Code skill suite for GitHub repository optimization. Includes 8
-  specialized sub-skills covering README generation, legal
-  compliance, metadata optimization, SEO keyword research, community health,
-  release management, and portfolio strategy. Powered by DataForSEO for live
-  keyword data and KIE.ai GPT Image 2 for generated visuals.
+  A cross-runtime skill suite for GitHub repository optimization across Claude
+  Code, Codex, and Gemini CLI. Includes 8 specialized sub-skills covering README
+  generation, legal compliance, metadata optimization, SEO keyword research,
+  community health, release management, and portfolio strategy. Powered by
+  DataForSEO for live keyword data and KIE.ai GPT Image 2 for generated visuals.

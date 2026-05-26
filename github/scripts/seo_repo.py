@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic SEO cache generation for Codex GitHub."""
+"""Deterministic SEO cache generation for Legends GitHub."""
 
 from __future__ import annotations
 

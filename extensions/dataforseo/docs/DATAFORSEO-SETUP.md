@@ -2,7 +2,7 @@
 
 ## What is DataForSEO?
 
-DataForSEO provides live SEO data via API: keyword research, SERP analysis, AI visibility tracking, and more. The Claude GitHub extension uses it to provide real data for optimization decisions instead of guessing.
+DataForSEO provides live SEO data via API: keyword research, SERP analysis, AI visibility tracking, and more. The Legends GitHub extension uses it to provide real data for optimization decisions instead of guessing.
 
 ## Getting API Credentials
 

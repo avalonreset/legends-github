@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic headless entrypoint for Codex GitHub."""
+"""Deterministic headless entrypoint for Legends GitHub."""
 
 from __future__ import annotations
 
@@ -342,7 +342,7 @@ def run_empire_command(args: argparse.Namespace) -> dict:
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the CLI parser."""
-    parser = argparse.ArgumentParser(description="Run Codex GitHub workflows non-interactively")
+    parser = argparse.ArgumentParser(description="Run Legends GitHub workflows non-interactively")
     sub = parser.add_subparsers(dest="command", required=True)
 
     verify = sub.add_parser("verify", help="Validate CLI/API readiness")

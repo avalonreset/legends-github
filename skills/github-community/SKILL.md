@@ -80,7 +80,7 @@ Reference: Read `github/references/community-templates.md` for YAML templates an
 
 **Branding consistency check:** For every existing file, verify it references the
 correct project name. Forks, ports, and copied templates often contain the upstream
-or source project's name (e.g., "codex-github" in a codex-seo repo, "wezterm" in a
+or source project's name (e.g., "legends-github" in a codex-seo repo, "wezterm" in a
 BenjaminTerm repo). Flag any file where the project name, repo URL, or owner doesn't
 match the current repo. These need updating even if the file is otherwise good quality.
 

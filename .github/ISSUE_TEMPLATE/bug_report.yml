@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug or unexpected behavior in a Claude GitHub skill
+description: Report a bug or unexpected behavior in a Legends GitHub skill
 title: "[Bug]: "
 labels: ["bug"]
 body:
