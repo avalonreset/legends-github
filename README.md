@@ -1,8 +1,8 @@
-<p align="center">
-  <img src="assets/banner.webp" alt="Legends GitHub - multi-agent skills for GitHub repository optimization" width="100%">
+<p align="left" id="banner">
+  <a href="https://cto-legends.com"><img src="assets/banner.webp" alt="legends-github — agentic github workflows" width="100%"></a>
 </p>
 
-# Legends GitHub - Multi-Agent Skills for Repository Optimization
+# legends-github
 
 [![Version](https://img.shields.io/github/v/release/avalonreset/legends-github)](https://github.com/avalonreset/legends-github/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/avalonreset/legends-github/ci.yml?label=CI)](https://github.com/avalonreset/legends-github/actions)
@@ -12,7 +12,7 @@
 [![Codex](https://img.shields.io/badge/works%20with-Codex-111827)](https://openai.com/codex/)
 [![Gemini CLI](https://img.shields.io/badge/works%20with-Gemini%20CLI-4285F4)](https://google-gemini.github.io/gemini-cli/)
 
-Legends GitHub is a cross-runtime skill suite for GitHub repository optimization. It works with Claude Code, Codex, and Gemini CLI so the same audit, README, metadata, legal, release, community, SEO, and portfolio workflows can run wherever your agent work happens.
+legends-github is a cross-runtime skill suite for GitHub repository optimization. It works with Claude Code, Codex, and Gemini CLI so the same audit, README, metadata, legal, release, community, SEO, and portfolio workflows can run wherever your agent work happens.
 
 One command gives you a 0-100 health score with prioritized fixes. Follow-up commands generate files, rewrite the README, select the right license, configure metadata, and use live keyword data from DataForSEO so every recommendation is specific and measurable.
 
@@ -22,7 +22,7 @@ Most GitHub repos are invisible - no keywords in the description, no structured 
 > Scaffolded with [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
 > SEO methodology adapted from [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
 
-<img src="assets/mascot.webp" alt="Legends GitHub mascot" width="256">
+<img src="assets/mascot.webp" alt="legends-github mascot" width="256">
 
 ## Table of Contents
 
@@ -182,7 +182,7 @@ The Claude and Codex installers can help set up:
 
 Both services are technically optional, but without them you lose the two most differentiated features of the suite: data-backed keyword optimization and professional AI-generated visuals. **Set them up during installation.** It takes 5 minutes and makes every other skill dramatically more useful.
 
-<img src="docs/images/install-experience.webp" alt="Legends GitHub installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="100%">
+<img src="docs/images/install-experience.webp" alt="legends-github installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="100%">
 
 Restart your agent runtime after installing. Skills and extensions register on startup.
 
@@ -262,7 +262,7 @@ Skills share data through a `.github-audit/` cache directory. When you run `/git
 
 ## Headless Runtime
 
-Legends GitHub includes a deterministic runner for non-interactive audits and automation:
+legends-github includes a deterministic runner for non-interactive audits and automation:
 
 ```bash
 python3 github/scripts/run_headless.py verify --mode both --path /path/to/repo
@@ -349,9 +349,9 @@ Skills are instruction files (`SKILL.md`) loaded by the active agent runtime. In
 
 No. Every skill works without DataForSEO by falling back to codebase analysis, GitHub API data, and built-in reference guides. However, keyword recommendations will be marked "unverified" without live search data. DataForSEO adds real volume numbers, difficulty scores, and SERP verification for about 15-30 cents per repo analysis.
 
-### What makes Legends GitHub different?
+### What makes legends-github different?
 
-It combines live keyword research via DataForSEO, AI image generation via KIE.ai, and a structured audit across 6 categories into one workflow. Most repo helpers handle one task. Legends GitHub handles eight, and they share data through a cache so each step builds on the last. The audit-to-readme pipeline takes a repo from zero community health signals to a fully optimized public project in under an hour.
+It combines live keyword research via DataForSEO, AI image generation via KIE.ai, and a structured audit across 6 categories into one workflow. Most repo helpers handle one task. legends-github handles eight, and they share data through a cache so each step builds on the last. The audit-to-readme pipeline takes a repo from zero community health signals to a fully optimized public project in under an hour.
 
 ## Contributing and Security
 
