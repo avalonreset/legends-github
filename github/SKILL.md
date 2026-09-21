@@ -5,6 +5,16 @@ description: GitHub repository optimization suite. Orchestrates sub-skills to au
 
 # GitHub -- Repository Optimization Suite
 
+## Portable workflow
+
+For a source checkout, begin with the repository's `AGENTS.md` and
+`python legends_github.py <workflow> --help`. The command runtime works without
+an agent-specific skill installation. Use `verify --mode api` to check that path.
+Skills and parallel reviewers are optional adapters. The legacy host-specific
+setup below is retained during migration; it must not block an unrelated local
+workflow on missing image-generation or keyword-provider credentials.
+
+
 Comprehensive GitHub optimization across SEO, legal, community, and discoverability.
 Orchestrates 8 specialized sub-skills and 6 scoring workers: Claude Code
 subagents or Codex multi-agents. Data-first: every recommendation
