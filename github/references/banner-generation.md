@@ -2,9 +2,9 @@
 
 The old KIE.ai generation and 16:9 crop workflow is retired.
 
-For Legends README banners, follow [the house style](../../docs/LEGENDS-README-STYLE.md).
-For social previews, follow [the canonical SOP](../../docs/SOCIAL-PREVIEW-SOP.md)
-and use `scripts/render_social_preview.py` with the approved font and copy.
+For Legends README banners, follow [the house style](legends-readme-style.md).
+For social previews, follow [the canonical SOP](social-preview-sop.md)
+and use `<GITHUB_HOME>/scripts/render_social_preview.py` with the approved font and copy.
 The social canvas is 1280x640, with fixed 64 px title and 36 px subtitle sizes.
 Render text directly; never stretch, crop, or regenerate the lettering with AI.
 

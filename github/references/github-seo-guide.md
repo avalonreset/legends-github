@@ -1,158 +1,50 @@
-<!-- Updated: 2026-03-08 -->
-# GitHub SEO Guide -- Ranking Factors, Indexing Rules, and Keyword Strategy
+# GitHub discovery guide
 
-## Overview
+Reviewed: September 2026. Use this alongside the portable evidence contract.
 
-GitHub repos rank in Google search results. Optimizing for both Google and GitHub's
-internal search/Explore increases organic discovery. This guide covers what Google
-indexes, what it ignores, and how to maximize visibility.
+## Help the right person find and use the project
 
-## What Google Indexes on GitHub
+Describe the problem, intended user, concrete output, prerequisites, and limitations. Put a working example close to the introduction. Preserve a distinctive project name; do not rename a project merely to insert keywords. Use terms the audience recognizes, with research when needed, rather than repeating phrases to meet a density target.
 
-| Content | Indexed? | SEO Priority |
-|---------|----------|-------------|
-| README.md content | Yes -- PRIMARY target | Critical |
-| Repo landing page (name + description) | Yes | Critical |
-| GitHub Pages sites | Yes -- fully indexed | High |
-| Discussions | Yes (2-3 week delay) | Medium |
-| Releases / release notes | Yes | Medium |
-| Wiki pages | Only if 500+ stars AND editing restricted | Low |
-| Source code files | No (blocked by robots.txt `/*/*/tree/`) | None |
-| Issues | Mostly blocked | None |
-| Forks page | Blocked (`/*/*/forks`) | None |
-| Projects / Milestones | Blocked | None |
-| Pulse / Insights | Blocked | None |
+Google recommends helpful, reliable content written for people. Treat a comparison, tutorial, or benchmark as an opportunity to answer a real question with original evidence, not a way to mass-produce near-identical landing pages. [Google guidance](https://developers.google.com/search/docs/fundamentals/creating-helpful-content).
 
-**Key insight:** README is your homepage. Treat it like a landing page.
+## What GitHub search supports
 
-## GitHub's robots.txt Key Rules
+GitHub repository search normally searches names, descriptions, and topics. Add `in:readme` to search README content. Topics and language can narrow a query; stars and dates are available filters. These documented filters do not establish secret relevance weights or prove that changing a field improves Google rankings. [Repository search documentation](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories).
 
-```
-Disallow: /*/*/tree/       # Blocks source code browsing
-Disallow: /*/*/pulse       # Blocks activity insights
-Disallow: /*/*/issues/new  # Blocks issue creation
-Disallow: /*/*/forks       # Blocks forks page
-Disallow: /*/*/projects    # Blocks project boards
-Disallow: /*/*/milestones  # Blocks milestones
-```
+Practical discovery checks:
 
-## Google Ranking Factors for GitHub Repos
+- Does the description explain the purpose in a readable sentence?
+- Do the topics accurately describe the implementation and use case?
+- Can an unfamiliar user find a relevant example and reach a useful result?
+- Do docs, releases, and comparison material point to the correct current entry point?
+- Is public promotion appropriate for this repository and audience?
 
-### On-Page Factors (you control these)
-1. **Repository name** -- Keywords in repo name (hyphenated) rank strongly
-2. **Description** -- 350-char limit, keyword-rich, appears in search snippets
-3. **README content** -- H1, first paragraph, heading hierarchy, keyword density
-4. **Topics/tags** -- Feed GitHub Explore and search filters (5-20 recommended)
-5. **Homepage URL** -- Links to docs site boost authority
+Do not tag a repository as open source without evidence of its licensing. A public repository and an open-source license are different facts.
 
-### Social/Authority Signals (earned)
-1. **Stars** -- Primary popularity signal (83% of developers consider it most useful)
-2. **Forks** -- Indicates active development/contribution
-3. **Watchers** -- Engaged audience signal
-4. **"Used by" count** -- Strong social proof for published packages
-5. **Recent activity** -- Signals active maintenance
+## Search-engine indexing
 
-### Technical Factors
-1. **Canonical URLs** -- GitHub handles these automatically
-2. **OG tags** -- GitHub auto-generates from name + description + language
-3. **Page speed** -- GitHub's infrastructure handles this
+Do not use a fixed table promising that a GitHub surface is indexed or excluded. Crawl permissions, rendering, canonical URLs, and actual indexing are distinct questions. Check the current URL and applicable documentation for a specific diagnosis. Never promise a fixed indexing delay, a star threshold for visibility, or a ranking increase from badges, stars, activity, or a homepage link.
 
-## GitHub-Internal Discovery
+For an owned documentation site, inspect the actual deployed pages and available webmaster evidence. For a GitHub repository, state what can be observed and what remains unknown. A search result snapshot is dated evidence, not a complete index inventory.
 
-### Topics / GitHub Explore
-- Up to 20 topics per repo
-- Always lowercase, hyphenated: `machine-learning` not `Machine Learning`
-- Use both specific (`react-hooks`) and general (`javascript`) topics
-- Curated topics appear at github.com/topics/{topic}
-- Topics feed "Suggested repositories" on the homepage
+## Build a useful discovery experiment
 
-### GitHub Search
-- Searches repo name, description, README content, and topics
-- Filter by language, stars, forks, license, and more
-- Recently updated repos rank higher in relevance sorting
+1. Define one audience and problem. Generate phrase candidates from repository evidence; label them hypotheses until researched.
+2. Select one useful artifact: a reproducible example, migration guide, measured benchmark, or factual comparison.
+3. Establish proof. Cite versions, dates, assumptions, runnable commands, and output. Competitor prices and capabilities need current primary sources.
+4. Improve the route from discovery to use: clear description, relevant topics, example, prerequisites, and expected result.
+5. Share only through channels authorized by the owner. Draft community posts in the tone and rules of each community; do not automate unsolicited messages.
+6. Compare equal observation windows using available traffic, downloads, and task-completion evidence. Record releases and other promotions that complicate attribution.
 
-## Keyword Strategy for GitHub
+Use `discover` for the local inventory, comparison brief, and measurement template. Its outputs are plans, not completed research or proof of increased reach. See the [discovery guide](../../docs/DISCOVERY.md) in a source checkout.
 
-### Step 1: Identify Seed Keywords
-- What problem does the project solve?
-- What technology does it use?
-- What would someone Google to find this?
-- Examples: "react state management", "python web scraper", "cli tool for X"
+## Comparisons and cost claims
 
-### Step 2: Expand with Variations
-- Synonyms: "state management" / "state container" / "store"
-- Long-tail: "best react state management library 2026"
-- Problem-based: "how to manage react state without redux"
-- Comparison: "zustand vs redux vs jotai"
+Use user-selected competitors and research their actual offerings. Compare equivalent workload, freshness, depth, geography, limits, and operational responsibilities. Separate variable data charges from hosting, maintenance, support, and the cost of a managed service. Show the arithmetic and date the prices. Report uncertainty instead of filling empty comparison cells with guesses.
 
-### Step 3: Place Keywords
-| Location | What to Put |
-|----------|-------------|
-| Repo name | Primary keyword (hyphenated) |
-| Description | Primary + secondary keywords, natural sentence |
-| Topics | Mix of specific and general terms (5-20) |
-| README H1 | Project name + primary keyword |
-| README first paragraph | Primary keyword in first sentence |
-| README H2 headings | Secondary keywords where natural |
-| README body | Natural density (1-3%), semantic variations |
+Keep comparisons relevant to the project. A local-search tool may justify a scan-cost walkthrough; a library may need a benchmark or migration example; an internal service may need onboarding and no public promotion at all.
 
-### Step 4: Validate with Data (if DataForSEO MCP available)
+## Optional research
 
-Use the **Keyword Opportunity Framework** from the github-seo skill to validate
-keyword choices with real data. The framework categorizes keywords as:
-
-| Category | Criteria | Action |
-|----------|----------|--------|
-| **Sweet Spot** | Volume 100-5K, difficulty <40, GitHub in SERP | Target first -- H1, description, first paragraph |
-| **Worth It** | Volume 1K-10K, difficulty 40-60, GitHub in SERP | Target in H2 headings and body |
-| **Long Shot** | Volume 10K+, difficulty 60+ | Use variations; may rank with stars |
-| **Skip** | No GitHub repos in SERP | Don't target -- Google won't serve repos |
-| **Low Value** | Volume <50/mo | Not enough traffic to matter |
-
-**Key MCP tool calls (in order):**
-1. `dataforseo_labs_google_keyword_suggestions` -- expand seed keywords (~50 candidates)
-2. `kw_data_google_ads_search_volume` -- validate monthly search volume
-3. `dataforseo_labs_bulk_keyword_difficulty` -- find low-competition opportunities
-4. `serp_organic_live_advanced` -- **MOST IMPORTANT**: check if github.com appears in results
-5. `ai_optimization_chat_gpt_scraper` -- check AI citation visibility
-
-The SERP viability check (step 4) is critical: if no github.com URLs appear in
-the top 20 results for a keyword, a GitHub repo cannot realistically rank for it.
-
-See the github-seo skill for the full Opportunity Score formula and detailed workflow.
-
-## GEO Optimization (AI Citability)
-
-### Why This Matters
-AI systems (ChatGPT, Perplexity, Google AI Overviews) increasingly recommend tools
-and libraries. Brand mentions correlate 3x more with AI visibility than backlinks.
-
-### How to Optimize
-- **Clear, quotable descriptions** -- "X is a Y that does Z" (extractable by AI)
-- **Structured comparisons** -- Tables comparing your tool to alternatives
-- **Statistics and facts** -- Specific numbers AI systems can cite
-- **Answer-first formatting** -- Lead with the answer, then explain
-- **Schema markup** -- SoftwareSourceCode JSON-LD in GitHub Pages
-
-### Monitoring AI Visibility
-If DataForSEO MCP server is available:
-- `ai_optimization_chat_gpt_scraper` -- Check if ChatGPT mentions your project
-- `ai_opt_llm_ment_search` -- Track LLM mentions across platforms (ChatGPT, Perplexity, Claude, Gemini)
-
-## GitHub Pages as SEO Multiplier
-
-GitHub Pages sites are fully indexed by Google. A documentation site dramatically
-expands your SEO footprint beyond just the README.
-
-**When to recommend Pages:**
-- Project has more than basic usage docs
-- User intent is Business/Brand or Open Source Community
-- Competing projects have docs sites
-- README is getting too long (500+ lines)
-
-**SEO benefits:**
-- Multiple indexed pages (each can rank for different keywords)
-- Custom meta tags and schema markup
-- Sitemap.xml for better crawling
-- Full control over content structure
-
+An existing browser or authorized research provider can validate demand and competitive context. No specific provider is required. Retain source URLs, collection date, geography, language, and method. Missing keyword volume stays unknown. Search-volume estimates do not prove conversions or achievable rankings.

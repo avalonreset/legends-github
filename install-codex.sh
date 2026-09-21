@@ -71,55 +71,11 @@ if [ "${SKIP_PYTHON_DEPS}" = false ]; then
   }
 fi
 
-ENV_FILE="${GITHUB_SKILL_DIR}/.env"
-if [ ! -f "${ENV_FILE}" ]; then
-  cat > "${ENV_FILE}" <<'ENVEOF'
-# Legends GitHub - API Credentials
-#
-# KIE.ai -- AI-generated banner images for READMEs
-# Get your API key: https://kie.ai/api-key
-KIE_API_KEY=
-ENVEOF
-fi
+echo "   Optional artwork uses supplied local files; no image service is configured."
 
 echo ""
-read -rp "   Set up KIE.ai now for banner/social images? (y/n): " setup_kie
-if [[ "${setup_kie}" =~ ^[Yy] ]]; then
-  read -rp "   KIE.ai API Key: " kie_key
-  if [ -n "${kie_key}" ]; then
-    if grep -q '^KIE_API_KEY=' "${ENV_FILE}" 2>/dev/null; then
-      python_cmd - "${ENV_FILE}" "${kie_key}" <<'PY'
-from pathlib import Path
-import sys
-path = Path(sys.argv[1])
-key = sys.argv[2]
-lines = path.read_text(encoding="utf-8").splitlines()
-path.write_text("\n".join(("KIE_API_KEY=" + key) if line.startswith("KIE_API_KEY=") else line for line in lines) + "\n", encoding="utf-8")
-PY
-    else
-      echo "KIE_API_KEY=${kie_key}" >> "${ENV_FILE}"
-    fi
-    say_step "Saved KIE.ai key to ${ENV_FILE}"
-  fi
-fi
+echo "   Optional live research: see docs/SEO-RESEARCH.md for legends-dataforseo-kit."
 
-echo ""
-read -rp "   Configure DataForSEO MCP for Codex now? (y/n): " setup_dfs
-if [[ "${setup_dfs}" =~ ^[Yy] ]]; then
-  if ! command -v node >/dev/null 2>&1; then
-    echo "   [!] Node.js is required for the DataForSEO MCP server."
-  else
-    read -rp "   DataForSEO Login: " dfs_login
-    read -rsp "   DataForSEO Password: " dfs_password
-    echo ""
-    if [ -n "${dfs_login}" ] && [ -n "${dfs_password}" ]; then
-      python_cmd "${GITHUB_SKILL_DIR}/scripts/setup_dataforseo.py" --login "${dfs_login}" --password "${dfs_password}"
-      say_step "Configured DataForSEO in ${CODEX_HOME}/config.toml"
-    fi
-  fi
-fi
-
-echo ""
 echo "   Setup complete."
 echo "   Restart Codex, then use: github-audit, github-readme, github-meta, github-seo, github-legal, github-community, github-release, github-empire"
 echo "   Headless check: python3 \"${GITHUB_SKILL_DIR}/scripts/run_headless.py\" verify --mode cli --path . --allow-missing-gh-auth"

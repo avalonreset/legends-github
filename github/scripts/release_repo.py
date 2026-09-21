@@ -17,7 +17,7 @@ from runtime_paths import repo_output_dir
 
 
 SEMVER_RE = re.compile(r"^v?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<pre>[0-9A-Za-z.-]+))?$")
-CHANGELOG_VERSION_RE = re.compile(r"^## \[(?!Unreleased)(?P<version>[^\]]+)\](?: - (?P<date>\d{4}-\d{2}-\d{2}))?$", re.MULTILINE)
+CHANGELOG_VERSION_RE = re.compile(r"^## \[?(?P<version>v?\d+\.\d+\.\d+(?:[-+][\w.-]+)?)\]?(?: - (?P<date>\d{4}-\d{2}-\d{2}))?\s*$", re.MULTILINE)
 VERSION_BADGE_RE = re.compile(r"img\.shields\.io/github/v/release", re.IGNORECASE)
 CI_BADGE_RE = re.compile(r"(actions/workflow/status|badge\.svg)", re.IGNORECASE)
 LICENSE_BADGE_RE = re.compile(r"license", re.IGNORECASE)

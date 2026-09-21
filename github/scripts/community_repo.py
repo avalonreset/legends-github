@@ -14,7 +14,7 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_auth_ok, gh_repo_view, have_command, repo_slug_from_git, run_command
+from github_runtime import offline_mode, gh_auth_ok, gh_repo_view, have_command, repo_slug_from_git, run_command
 from release_repo import CANONICAL_RELEASE_YML
 from runtime_paths import repo_output_dir
 
@@ -448,9 +448,24 @@ def quality_ci(paths: list[Path], repo_root: Path) -> tuple[str, str]:
         return "missing", "Create a basic CI workflow."
     ci_path = next((path for path in paths if path.name.lower() == "ci.yml"), paths[0])
     text = safe_read_text(ci_path).lower()
-    if any(token in text for token in ("markdownlint", "ruff", "eslint", "cargo clippy", "go vet", "yamllint", "unittest")):
+    # Inspect referenced package scripts, never execute target commands.
+    try:
+        scripts = json.loads(safe_read_text(repo_root / "package.json")).get("scripts", {})
+    except (ValueError, AttributeError):
+        scripts = {}
+    visited = set()
+    for _ in range(len(scripts) + 1):
+        names = re.findall(r"\b(?:npm run|pnpm(?: run)?|yarn(?: run)?)\s+([\w:-]+)", text)
+        fresh = [name for name in names if name in scripts and name not in visited]
+        if not fresh:
+            break
+        for name in fresh:
+            visited.add(name)
+            text += "\n" + str(scripts[name]).lower()
+
+    if any(token in text for token in ("markdownlint", "ruff", "eslint", "cargo clippy", "go vet", "yamllint", "unittest", "pytest", "vitest", "node --test")):
         return "good", "Keep the current CI workflow."
-    return "basic", "Add at least one lint or test step to CI."
+    return "good", "Existing CI requires manual coverage review; preserve it rather than replace it with a generic template."
 
 
 def inferred_description(metadata: dict[str, Any], cached_context: dict[str, Any]) -> str:
@@ -617,6 +632,8 @@ def gh_discussion_categories(repo_slug: str) -> list[dict[str, str]]:
 
 def fetch_contributor_covenant() -> str:
     """Fetch Contributor Covenant text with a local fallback."""
+    if offline_mode():
+        return CONTRIBUTOR_COVENANT_FALLBACK.strip()
     if have_command("gh"):
         result = run_command(["gh", "api", "codes_of_conduct/contributor_covenant", "--jq", ".body"], check=False)
         if result.returncode == 0 and result.stdout.strip():

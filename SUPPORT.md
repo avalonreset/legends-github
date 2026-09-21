@@ -33,13 +33,13 @@ Found a security vulnerability? **Do not open a public issue.** Email benjamin@r
 ## Common Issues
 
 **Skills not appearing after installation:**
-Restart Claude Code. Skills register on startup, not dynamically.
+Check the host's current discovery rules, or bypass native discovery by asking it to read `AGENTS.md`. The portable command interface works without a native skill installer.
 
-**DataForSEO returning errors:**
-Check your MCP configuration in `~/.claude/settings.json`. Verify your credentials are correct and your account has credits.
+**Optional research provider errors:**
+Check the selected integration's credentials and account status. Continue local analysis with unverified search metrics clearly labeled.
 
-**Banner generation failing:**
-Ensure `KIE_API_KEY` is set in `~/.claude/skills/github/.env`. Check your KIE.ai account balance at https://kie.ai.
+**Artwork:**
+Reuse an existing local image or create one with an available host tool. No paid image service is required or called by this toolkit.
 
-**Audit scores seem inconsistent:**
-Run the audit again. Scores should be within 2-3 points across runs. If variance is larger, open a bug report with both outputs.
+**Audit results changed:**
+Compare the evidence timestamp, repository revision, availability, and scoring/schema versions. Report unexpected changes with redacted outputs; do not share credentials or private repository material.

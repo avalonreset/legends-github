@@ -5,16 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.4.0] - 2026-09-20
 
 ### Added
 
-- Fixed 1280x640 Legends social-preview renderer and agent-first upload protocol, distributed as a presentation-protocol supplement to v1.3.0; original source tag unchanged.
+- Fixed-size social-preview renderer and agent-first upload protocol, included in source and installed skill packages.
+- Banner-only title, release/checks/license badge formula, and verified six-project artwork.
+- Release acceptance fixes for CI script recognition, provenance wording, changelog headings, and unavailable remote metadata.
+
+- Agent-neutral command launcher, capability discovery, offline execution, and per-target artifact isolation.
+- Versioned evidence findings, repository profiles, coverage, and practical priorities alongside the legacy score.
+- Organic discovery plans with sourced local evidence, comparison briefs, experiments, and measurement templates.
+- Regression coverage and Windows/Linux Python CI; read-only GeoGrid validation example.
 
 - Gemini CLI extension manifest and `GEMINI.md` context file so the skill suite can install through `gemini extensions install`.
 - Legends GitHub social preview image.
 
 ### Changed
+
+- Removed the paid image-provider runtime and credential setup. Artwork is optional and prepared from supplied local files.
+- Reworked skills and specialist reviewers around portable execution, evidence, and user outcomes.
+- Simplified the README, removed mascot artwork, and replaced unsupported SEO claims.
+- Fixed audit cache side effects, atomic JSON writes, and metadata topic preservation.
 
 - Renamed public project branding from provider-specific GitHub variants to Legends GitHub.
 - Updated README, citation metadata, support links, installer splash text, and generated artwork for the Legends GitHub name.
@@ -117,7 +129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Full community health suite: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS, issue templates (YAML forms), PR template, devcontainer, dependabot
 - Member invitation scripts for GitHub organization management
 
-[Unreleased]: https://github.com/avalonreset/legends-github/compare/v1.3.0...HEAD
+[1.4.0]: https://github.com/avalonreset/legends-github/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/avalonreset/legends-github/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/avalonreset/legends-github/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/avalonreset/legends-github/compare/v1.0.0...v1.1.0

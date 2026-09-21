@@ -193,8 +193,10 @@ If that also fails, the skill proceeds with best-effort guesses marked "unverifi
   "timestamp": "2026-03-08T12:00:00Z",
   "score_before": 43,
   "score_after": 94,
-  "banner_generated": true,
-  "banner_path": "assets/banner.jpg",
+  "asset_mode": "local-only",
+  "banner_generated": false,
+  "banner_prepared": true,
+  "banner_path": "assets/banner.webp",
   "keywords_integrated": {
     "primary_in_h1": true,
     "primary_in_first_paragraph": true,

@@ -26,8 +26,13 @@ def pillow_available() -> bool:
     return importlib.util.find_spec("PIL") is not None
 
 
-def run_command(args: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run_command(args: list[str], cwd: Path | None = None, check: bool = True, timeout: float = 60) -> subprocess.CompletedProcess[str]:
     """Run a subprocess and return the completed process."""
+    if offline_mode() and Path(args[0]).stem.lower() == "gh":
+        result = subprocess.CompletedProcess(args, 125, "", "GitHub access disabled by --offline")
+        if check:
+            raise RuntimeError(result.stderr)
+        return result
     completed = subprocess.run(
         args,
         cwd=str(cwd) if cwd else None,
@@ -36,15 +41,21 @@ def run_command(args: list[str], cwd: Path | None = None, check: bool = True) ->
         encoding="utf-8",
         errors="replace",
         check=False,
+        timeout=timeout,
     )
     if check and completed.returncode != 0:
         raise RuntimeError(completed.stderr.strip() or completed.stdout.strip() or f"Command failed: {' '.join(args)}")
     return completed
 
 
+def offline_mode() -> bool:
+    """Whether optional external requests are disabled for this process."""
+    return os.environ.get("LEGENDS_GITHUB_OFFLINE", "").strip().lower() in {"1", "true", "yes"}
+
+
 def gh_auth_ok() -> bool:
     """Return whether GitHub CLI appears authenticated."""
-    if not have_command("gh"):
+    if offline_mode() or not have_command("gh"):
         return False
     result = run_command(["gh", "auth", "status"], check=False)
     return result.returncode == 0
@@ -103,28 +114,6 @@ def load_env_file(path: Path) -> dict[str, str]:
         key, value = stripped.split("=", 1)
         values[key.strip()] = value.strip().strip('"').strip("'")
     return values
-
-
-def resolve_kie_api_key(repo_root: Path) -> tuple[str, str]:
-    """Resolve KIE API key from env or standard dotenv locations."""
-    if os.environ.get("KIE_API_KEY", "").strip():
-        return os.environ["KIE_API_KEY"].strip(), "env:KIE_API_KEY"
-
-    skill_root = Path(__file__).resolve().parents[1]
-    search_paths = [
-        repo_root / ".env.local",
-        repo_root / ".env",
-        skill_root / ".env.local",
-        skill_root / ".env",
-        Path.home() / ".env.local",
-        Path.home() / ".env",
-    ]
-    for path in search_paths:
-        values = load_env_file(path)
-        key = values.get("KIE_API_KEY", "").strip()
-        if key:
-            return key, str(path)
-    return "", ""
 
 
 def gh_repo_view(repo_slug: str) -> dict[str, Any] | None:
