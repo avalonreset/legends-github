@@ -58,6 +58,7 @@ main() {
     cp "${SCRIPT_DIR}/github/references/"*.md "${SKILLS_DIR}/github/references/"
     echo -e "   ${G}${B}[+]${R} 9 Reference Files   ${D}SEO, legal, readme, community guides${R}"
 
+    cp "${SCRIPT_DIR}/requirements-dataforseo.txt" "${SKILLS_DIR}/github/requirements-dataforseo.txt"
     cp "${SCRIPT_DIR}/github/requirements.txt" "${SKILLS_DIR}/github/requirements.txt"
     cp "${SCRIPT_DIR}/github/scripts/"*.py "${SKILLS_DIR}/github/scripts/"
     echo -e "   ${G}${B}[+]${R} Headless Runtime    ${D}deterministic audit and release helpers${R}"
@@ -87,87 +88,17 @@ main() {
     echo "   Local repository workflows do not require a paid service."
     echo ""
 
-    echo -e "   ${M}─── Optional ───${R} ${W}${B}DataForSEO${R} ${D}(live keyword data, SERP rankings, AI visibility)${R}"
+    echo -e "   ${M}─── Optional ───${R} ${W}${B}DataForSEO${R} ${D}(live keyword data and SERP evidence)${R}"
     echo ""
     echo -e "   This powers real keyword research with actual search volume and"
     echo -e "   difficulty data. Without it, SEO recommendations are best-guess only."
     echo ""
 
     DATAFORSEO_DONE=false
-    read -rp "   Set up DataForSEO now? (y/n): " setup_dfs
-    echo ""
-
-    if [[ "${setup_dfs}" =~ ^[Yy] ]]; then
-        # Check Node.js
-        if ! command -v node &>/dev/null; then
-            echo -e "   ${Y}[!] Node.js is required for the DataForSEO MCP server.${R}"
-            echo -e "   ${D}    Install it from https://nodejs.org/ and re-run this installer.${R}"
-            echo -e "   ${D}    Skipping DataForSEO for now.${R}"
-            echo ""
-        else
-            NODE_VERSION=$(node -v | sed 's/v//' | cut -d. -f1)
-            if [ "$NODE_VERSION" -lt 20 ]; then
-                echo -e "   ${Y}[!] Node.js 20+ required. You have $(node -v).${R}"
-                echo -e "   ${D}    Update Node.js and re-run this installer.${R}"
-                echo -e "   ${D}    Skipping DataForSEO for now.${R}"
-                echo ""
-            else
-                echo -e "   ${D}If you don't have an account yet:${R}"
-                echo -e "   ${D}  1. Sign up free at ${C}https://dataforseo.com${R}"
-                echo -e "   ${D}  2. Find your login + password at ${C}https://app.dataforseo.com/api-access${R}"
-                echo ""
-                read -rp "   DataForSEO Login (email): " DFORSEO_LOGIN
-                read -rsp "   DataForSEO Password: " DFORSEO_PASSWORD
-                echo ""
-                echo ""
-
-                if [ -n "${DFORSEO_LOGIN}" ] && [ -n "${DFORSEO_PASSWORD}" ]; then
-                    # Install DataForSEO skill and agent
-                    mkdir -p "${SKILLS_DIR}/github-dataforseo"
-                    cp "${SCRIPT_DIR}/extensions/dataforseo/skills/github-dataforseo/SKILL.md" "${SKILLS_DIR}/github-dataforseo/SKILL.md"
-                    cp "${SCRIPT_DIR}/extensions/dataforseo/agents/github-dataforseo.md" "${AGENTS_DIR}/github-dataforseo.md"
-
-                    # Pre-download MCP server
-                    echo -e "   ${D}Downloading DataForSEO MCP server...${R}"
-                    npx -y @anthropic/data-for-seo-mcp --version 2>/dev/null || true
-
-                    # Configure MCP server
-                    SETTINGS_FILE="${CLAUDE_DIR}/settings.json"
-                    python3 -c "
-import json, os
-settings_file = '${SETTINGS_FILE}'
-if os.path.exists(settings_file):
-    with open(settings_file) as f:
-        settings = json.load(f)
-else:
-    settings = {}
-if 'mcpServers' not in settings:
-    settings['mcpServers'] = {}
-settings['mcpServers']['dataforseo'] = {
-    'command': 'npx',
-    'args': ['-y', '@anthropic/data-for-seo-mcp'],
-    'env': {
-        'DATAFORSEO_LOGIN': '${DFORSEO_LOGIN}',
-        'DATAFORSEO_PASSWORD': '${DFORSEO_PASSWORD}'
-    }
-}
-with open(settings_file, 'w') as f:
-    json.dump(settings, f, indent=2)
-" 2>/dev/null && {
-                        echo -e "   ${G}${B}[+]${R} DataForSEO          ${D}MCP server configured${R}"
-                        DATAFORSEO_DONE=true
-                    } || {
-                        echo -e "   ${Y}[!] Could not auto-configure. You can set it up manually later:${R}"
-                        echo -e "   ${D}    claude mcp add dataforseo-mcp-server${R}"
-                    }
-                else
-                    echo -e "   ${D}No credentials entered. Skipping DataForSEO.${R}"
-                fi
-            fi
-        fi
-    else
-        echo -e "   ${D}Skipped. You can set it up later:${R}"
-        echo -e "   ${D}  bash extensions/dataforseo/install.sh${R}"
+    read -rp "   Install legends-dataforseo-kit for live research? (y/n): " setup_dfs
+    if [[ "$setup_dfs" =~ ^[Yy] ]]; then
+        bash "$SCRIPT_DIR/extensions/dataforseo/install.sh"
+        DATAFORSEO_DONE=true
     fi
 
     echo "   Optional artwork uses supplied local files; no image service is configured."

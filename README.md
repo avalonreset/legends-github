@@ -112,3 +112,7 @@ This tool provides automated recommendations for GitHub repository optimization,
 ## License
 
 [MIT](LICENSE). Free and open source. See LICENSE for full terms.
+
+### Measured search research
+
+Use [DataForSEO research imports](docs/SEO-RESEARCH.md) to ground keyword decisions in actual evidence. See the [GeoGrid research pilot](docs/GEOGRID-SEARCH-STRATEGY.md) for demand, search intent, costs, and proposed changes. Local-only SEO runs remain explicitly labeled hypotheses.

@@ -21,3 +21,7 @@ Use configured providers only for requested capabilities. Never print credential
 ## Contributing to this toolkit
 
 Keep executable behavior in `github/scripts/`, with `legends_github.py` as the public launcher. Add regression tests for behavior changes. Keep host adapters thin and document their tested status. Do not remove legacy installers or change cache formats without a migration plan. Follow `docs/MODERNIZATION.md` for reconciliation scope.
+
+## DataForSEO research dependency
+
+For measured demand and SERP research, install `requirements-dataforseo.txt` and use `research` to estimate before explicit execution. This uses the public legends-dataforseo-kit; no MCP installation is required. Follow `docs/SEO-RESEARCH.md`, preserve locale and observation dates, and import collected exports through `seo`. Offline audits remain independent of provider credentials.

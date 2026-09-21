@@ -67,6 +67,7 @@ Write-Host "[+]" -NoNewline -ForegroundColor Green
 Write-Host " 9 Reference Files   " -NoNewline
 Write-Host "SEO, legal, readme, community guides" -ForegroundColor DarkGray
 
+Copy-Item (Join-Path $ScriptDir "requirements-dataforseo.txt") (Join-Path $SkillsDir "github\requirements-dataforseo.txt") -Force
 Copy-Item (Join-Path $ScriptDir "github\requirements.txt") (Join-Path $SkillsDir "github\requirements.txt") -Force
 Copy-Item (Join-Path $ScriptDir "github\scripts\*.py") (Join-Path $SkillsDir "github\scripts\") -Force
 Write-Host "   " -NoNewline
@@ -111,85 +112,17 @@ Write-Host "   " -NoNewline
 Write-Host "--- Optional ---" -NoNewline -ForegroundColor Magenta
 Write-Host " " -NoNewline
 Write-Host "DataForSEO" -NoNewline -ForegroundColor White
-Write-Host " (live keyword data, SERP rankings, AI visibility)" -ForegroundColor DarkGray
+Write-Host " (live keyword data and SERP evidence)" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "   This powers real keyword research with actual search volume and"
 Write-Host "   difficulty data. Without it, SEO recommendations are best-guess only."
 Write-Host ""
 
 $DataForSeoDone = $false
-$setupDfs = Read-Host "   Set up DataForSEO now? (y/n)"
-Write-Host ""
-
+$setupDfs = Read-Host "   Install legends-dataforseo-kit for live research? (y/n)"
 if ($setupDfs -match "^[Yy]") {
-    $nodeCmd = Get-Command node -ErrorAction SilentlyContinue
-    if (-not $nodeCmd) {
-        Write-Host "   [!] Node.js is required for the DataForSEO MCP server." -ForegroundColor Yellow
-        Write-Host "       Install it from https://nodejs.org/ and re-run this installer." -ForegroundColor DarkGray
-        Write-Host "       Skipping DataForSEO for now." -ForegroundColor DarkGray
-    } else {
-        $nodeVer = [int](node -v).TrimStart('v').Split('.')[0]
-        if ($nodeVer -lt 20) {
-            Write-Host "   [!] Node.js 20+ required. You have $(node -v)." -ForegroundColor Yellow
-            Write-Host "       Update Node.js and re-run this installer." -ForegroundColor DarkGray
-        } else {
-            Write-Host "   If you don't have an account yet:" -ForegroundColor DarkGray
-            Write-Host "     1. Sign up free at " -NoNewline -ForegroundColor DarkGray
-            Write-Host "https://dataforseo.com" -ForegroundColor Cyan
-            Write-Host "     2. Find your login + password at " -NoNewline -ForegroundColor DarkGray
-            Write-Host "https://app.dataforseo.com/api-access" -ForegroundColor Cyan
-            Write-Host ""
-            $DfLogin = Read-Host "   DataForSEO Login (email)"
-            $DfPassword = Read-Host "   DataForSEO Password" -AsSecureString
-            $DfPasswordPlain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($DfPassword))
-            Write-Host ""
-
-            if ($DfLogin -and $DfPasswordPlain) {
-                # Install DataForSEO skill and agent
-                $dfSkillDir = Join-Path $SkillsDir "github-dataforseo"
-                if (-not (Test-Path $dfSkillDir)) { New-Item -ItemType Directory -Path $dfSkillDir -Force | Out-Null }
-                Copy-Item (Join-Path $ScriptDir "extensions\dataforseo\skills\github-dataforseo\SKILL.md") (Join-Path $dfSkillDir "SKILL.md") -Force
-                Copy-Item (Join-Path $ScriptDir "extensions\dataforseo\agents\github-dataforseo.md") (Join-Path $AgentsDir "github-dataforseo.md") -Force
-
-                # Pre-download MCP server
-                Write-Host "   Downloading DataForSEO MCP server..." -ForegroundColor DarkGray
-                npx -y @anthropic/data-for-seo-mcp --version 2>$null | Out-Null
-
-                # Configure MCP server
-                $SettingsFile = Join-Path $ClaudeDir "settings.json"
-                try {
-                    if (Test-Path $SettingsFile) {
-                        $settings = Get-Content $SettingsFile -Raw | ConvertFrom-Json -AsHashtable
-                    } else {
-                        $settings = @{}
-                    }
-                    if (-not $settings.ContainsKey('mcpServers')) { $settings['mcpServers'] = @{} }
-                    $settings['mcpServers']['dataforseo'] = @{
-                        command = 'npx'
-                        args = @('-y', '@anthropic/data-for-seo-mcp')
-                        env = @{
-                            DATAFORSEO_LOGIN = $DfLogin
-                            DATAFORSEO_PASSWORD = $DfPasswordPlain
-                        }
-                    }
-                    $settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsFile -Encoding UTF8
-                    Write-Host "   " -NoNewline
-                    Write-Host "[+]" -NoNewline -ForegroundColor Green
-                    Write-Host " DataForSEO          " -NoNewline
-                    Write-Host "MCP server configured" -ForegroundColor DarkGray
-                    $DataForSeoDone = $true
-                } catch {
-                    Write-Host "   [!] Could not auto-configure. You can set it up manually later:" -ForegroundColor Yellow
-                    Write-Host "       claude mcp add dataforseo-mcp-server" -ForegroundColor DarkGray
-                }
-            } else {
-                Write-Host "   No credentials entered. Skipping DataForSEO." -ForegroundColor DarkGray
-            }
-        }
-    }
-} else {
-    Write-Host "   Skipped. You can set it up later:" -ForegroundColor DarkGray
-    Write-Host "     powershell -File extensions\dataforseo\install.ps1" -ForegroundColor DarkGray
+    & (Join-Path $ScriptDir "extensions\dataforseo\install.ps1")
+    $DataForSeoDone = ($LASTEXITCODE -eq 0)
 }
 
 Write-Host "   Optional artwork uses supplied local files; no image service is configured." -ForegroundColor DarkGray

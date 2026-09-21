@@ -1,0 +1,2 @@
+# Required shared provider engine for live research; offline audits do not use it.
+legends-dataforseo-kit @ git+https://github.com/avalonreset/legends-dataforseo-kit.git@v0.3.0

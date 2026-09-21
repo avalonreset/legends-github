@@ -23,6 +23,7 @@ from meta_repo import run_meta, write_meta_artifacts
 from readme_repo import run_readme, write_readme_artifacts
 from release_repo import run_release, write_release_artifacts
 from runtime_paths import runtime_paths_payload
+from research_dataforseo import collect_research
 from seo_repo import run_seo, write_seo_artifacts
 from validate_setup import validate_setup
 
@@ -93,7 +94,7 @@ def run_cache_status(args: argparse.Namespace) -> dict:
 def run_seo_command(args: argparse.Namespace) -> dict:
     """Run deterministic SEO analysis and write cache artifacts."""
     repo_root = resolve_repo_root(args.path)
-    bundle = run_seo(repo_root, mode=args.mode)
+    bundle = run_seo(repo_root, mode=args.mode, keyword_data=args.keyword_data, primary_keyword_choice=args.primary_keyword, serp_data=args.serp_data)
     artifacts = write_seo_artifacts(repo_root, bundle)
     payload = {
         "operation": "seo",
@@ -360,6 +361,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run Legends GitHub workflows non-interactively")
     sub = parser.add_subparsers(dest="command", required=True)
 
+    research = sub.add_parser("research", help="Estimate or collect keyword/SERP evidence using legends-dataforseo-kit")
+    research.add_argument("--path", default=".")
+    research.add_argument("--keyword", action="append", required=True)
+    research.add_argument("--serp", action="append", default=[])
+    research.add_argument("--location-code", type=int, default=2840)
+    research.add_argument("--language", default="en")
+    research.add_argument("--execute", action="store_true")
+    research.add_argument("--confirm-cost-usd", type=float, default=0)
+
     verify = sub.add_parser("verify", help="Validate CLI/API readiness")
     verify.add_argument("--mode", default="portable", choices=["portable", "cli", "api", "both"])
     verify.add_argument("--path", default=".", help="Repo root or a path inside the repo")
@@ -370,6 +380,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     seo = sub.add_parser("seo", help="Generate deterministic SEO cache data for a local repo")
     seo.add_argument("--path", default=".", help="Repo root or a path inside the repo")
+    seo.add_argument("--keyword-data", type=Path, help="Official DataForSEO keyword overview JSON export")
+    seo.add_argument("--primary-keyword", help="Explicit product-fit selection from imported keywords")
+    seo.add_argument("--serp-data", type=Path, action="append", default=[], help="Matching-locale Google organic advanced JSON export; repeatable")
     seo.add_argument("--mode", default="quick", choices=["quick", "full"])
 
     meta = sub.add_parser("meta", help="Plan deterministic metadata updates for a local repo")
@@ -425,6 +438,9 @@ def main() -> int:
         return 2
 
     handlers = {
+        "research": lambda a: collect_research(resolve_repo_root(a.path), keywords=a.keyword,
+            serp_keywords=a.serp, location_code=a.location_code, language=a.language,
+            execute=a.execute, ceiling=a.confirm_cost_usd),
         "discover": run_discover_command,
         "verify": run_verify,
         "audit": run_audit_command,
