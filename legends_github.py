@@ -10,6 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = {
+    "research": {"purpose": "Estimate or collect DataForSEO search evidence", "effects": ["local_artifacts", "explicit_paid_api_calls"], "mutation_flags": ["--execute"]},
     "discover": {"purpose": "Plan evidence-backed organic discovery experiments", "effects": ["local_artifacts"]},
     "verify": {"purpose": "Check local readiness and optional capabilities", "effects": ["local_artifacts"]},
     "audit": {"purpose": "Collect repository evidence and prioritize findings", "effects": ["local_artifacts", "optional_github_reads"]},

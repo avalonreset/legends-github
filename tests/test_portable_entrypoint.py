@@ -14,7 +14,7 @@ class PortableEntrypointTests(unittest.TestCase):
         self.assertIn("cache-status", result.stdout)
 
     def test_workflow_help_routes_to_existing_contract(self):
-        for command in ("verify", "audit", "discover", "seo", "meta", "community", "legal", "readme", "release", "empire", "cache-status"):
+        for command in ("verify", "audit", "research", "discover", "seo", "meta", "community", "legal", "readme", "release", "empire", "cache-status"):
             with self.subTest(command=command):
                 result = subprocess.run([sys.executable, str(ROOT / "legends_github.py"), command, "--help"], capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
