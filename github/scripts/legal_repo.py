@@ -18,7 +18,7 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_repo_view, repo_slug_from_git, run_command
+from github_runtime import offline_mode, gh_repo_view, repo_slug_from_git, run_command
 from runtime_paths import repo_output_dir
 
 
@@ -648,6 +648,8 @@ def compatibility_conflicts(project_license: str, vendored: list[dict[str, str]]
 
 def fetch_remote_license_template(spdx_id: str, year: str, holder: str) -> tuple[str, str]:
     """Fetch a license template body from GitHub's license API when needed."""
+    if offline_mode():
+        return "", "Remote license template unavailable in offline mode."
     api_key = REMOTE_LICENSE_KEYS.get(spdx_id)
     if not api_key:
         return "", f"No bundled or remote template is available for {spdx_id}."

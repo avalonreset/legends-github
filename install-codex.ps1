@@ -89,30 +89,7 @@ if (-not $SkipPythonDeps) {
     }
 }
 
-$EnvFile = Join-Path $GithubSkillDir ".env"
-if (-not (Test-Path $EnvFile)) {
-    @"
-# Legends GitHub - API Credentials
-#
-# KIE.ai -- AI-generated banner images for READMEs
-# Get your API key: https://kie.ai/api-key
-KIE_API_KEY=
-"@ | Out-File -FilePath $EnvFile -Encoding UTF8
-}
-
-Write-Host ""
-$setupKie = Read-Host "   Set up KIE.ai now for banner/social images? (y/n)"
-if ($setupKie -match "^[Yy]") {
-    $KieKey = Read-Host "   KIE.ai API Key"
-    if ($KieKey) {
-        if ((Test-Path $EnvFile) -and (Select-String -Path $EnvFile -Pattern "^KIE_API_KEY=" -Quiet)) {
-            (Get-Content $EnvFile) -replace "^KIE_API_KEY=.*", "KIE_API_KEY=$KieKey" | Set-Content $EnvFile -Encoding UTF8
-        } else {
-            "KIE_API_KEY=$KieKey" | Add-Content $EnvFile -Encoding UTF8
-        }
-        Write-Step "Saved KIE.ai key to $EnvFile"
-    }
-}
+Write-Host "   Optional artwork uses supplied local files; no image service is configured." -ForegroundColor DarkGray
 
 Write-Host ""
 $setupDfs = Read-Host "   Configure DataForSEO MCP for Codex now? (y/n)"

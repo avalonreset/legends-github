@@ -13,16 +13,8 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_auth_ok, gh_repo_view, repo_slug_from_git, resolve_kie_api_key, run_command
-from kie_assets import (
-    AssetGenerationError,
-    convert_png_to_jpeg,
-    create_kie_task,
-    download_binary,
-    pillow_available,
-    poll_kie_task,
-    result_url,
-)
+from github_runtime import gh_auth_ok, gh_repo_view, repo_slug_from_git, run_command
+from local_assets import AssetPreparationError, convert_to_jpeg
 from runtime_paths import repo_output_dir
 from seo_repo import normalize_topic, topic_names
 
@@ -641,46 +633,41 @@ def repo_description_commands(owner: str, repos: list[dict[str, Any]]) -> list[d
     return commands[:4]
 
 
-def build_avatar_prompt(owner: str, repos: list[dict[str, Any]]) -> str:
-    """Build a concise KIE avatar prompt."""
-    topics = dominant_topics(repos)
-    subject = topics[0].replace("-", " ") if topics else "developer tooling"
-    initial = owner[:1].upper() if owner else "C"
-    return (
-        "Square 1:1 profile avatar. "
-        f"A bold geometric letter \"{initial}\" fused with a minimal {subject} icon. "
-        "Flat geometric style, deep navy background, cyan and teal highlights, high contrast. "
-        "Simple and iconic, reads well at small sizes."
-    )
-
-
 def generate_avatar_asset(repo_root: Path, repo_slug: str, owner: str, repos: list[dict[str, Any]]) -> dict[str, Any]:
-    """Generate an avatar asset when runtime capabilities are available."""
-    key, source = resolve_kie_api_key(repo_root)
-    if not key:
-        raise AssetGenerationError("KIE_API_KEY is not configured for avatar generation.")
-    if not pillow_available():
-        raise AssetGenerationError("Pillow is required for avatar generation.")
+    """Compatibility entry point: reuse a supplied avatar or prepare it locally."""
     assets_dir = repo_root / "assets"
-    originals_dir = assets_dir / "originals"
-    prompt = build_avatar_prompt(owner, repos)
-    task_id = create_kie_task(key, prompt, aspect_ratio="1:1")
-    record = poll_kie_task(key, task_id)
-    source_path = download_binary(result_url(record), originals_dir / "avatar.png")
-    avatar_path = convert_png_to_jpeg(source_path, assets_dir / "avatar.jpg")
-    relative = str(avatar_path.relative_to(repo_root)).replace("\\", "/")
+    avatar_path = next(
+        (assets_dir / f"avatar.{suffix}" for suffix in ("jpg", "jpeg", "png", "webp")
+         if (assets_dir / f"avatar.{suffix}").is_file()),
+        None,
+    )
+    source_path = avatar_path
+    prepared = False
+    if avatar_path is None:
+        source_path = next(
+            (assets_dir / "originals" / f"avatar.{suffix}" for suffix in ("png", "jpg", "jpeg", "webp")
+             if (assets_dir / "originals" / f"avatar.{suffix}").is_file()),
+            None,
+        )
+        if source_path:
+            avatar_path = convert_to_jpeg(source_path, assets_dir / "avatar.jpg")
+            prepared = True
+    relative = avatar_path.relative_to(repo_root).as_posix() if avatar_path else ""
     return {
         "requested": True,
-        "generated": True,
-        "prompt": prompt,
+        "generated": False,
+        "prepared": prepared,
+        "status": "prepared" if prepared else "existing" if avatar_path else "not_supplied",
+        "mode": "local-only",
+        "prompt": "",
         "path": relative,
-        "source_path": str(source_path.relative_to(repo_root)).replace("\\", "/"),
+        "source_path": source_path.relative_to(repo_root).as_posix() if source_path else "",
         "links": {
-            "local": file_uri(avatar_path),
-            "raw": github_raw_url(repo_slug, relative) if "/" in repo_slug else "",
+            "local": file_uri(avatar_path) if avatar_path else "",
+            "raw": github_raw_url(repo_slug, relative) if avatar_path and "/" in repo_slug else "",
             "settings": "https://github.com/settings/profile",
         },
-        "key_source": source,
+        "notes": [] if avatar_path else ["No local avatar supplied. Artwork is optional; no image service was contacted."],
     }
 
 
@@ -696,8 +683,9 @@ def build_blueprint(payload: dict[str, Any], draft_markdown: str) -> str:
         automated_lines = ["1. [AUTO] No safe live gh commands are ready in this run."]
     manual_lines = [
         f"{len(automated_lines) + 1}. [PIN] Pin these repos in order: {pin_list}",
-        f"{len(automated_lines) + 2}. [PHOTO] Upload the generated avatar if you want a new profile photo: https://github.com/settings/profile",
     ]
+    if payload["avatar"].get("path"):
+        manual_lines.append(f"{len(automated_lines) + 2}. [PHOTO] Optionally upload the supplied avatar: https://github.com/settings/profile")
     tl_dr = (
         f"**TL;DR:** {payload['identity']} "
         f"The biggest portfolio gap is {payload['biggest_gap']}. "
@@ -901,16 +889,18 @@ def build_empire_payload(repo_root: Path, username: str) -> tuple[dict[str, Any]
         "avatar": {
             "requested": False,
             "generated": False,
+            "prepared": False,
+            "status": "not_requested",
+            "mode": "local-only",
             "prompt": "",
             "path": "",
             "source_path": "",
             "links": {"local": "", "raw": "", "settings": "https://github.com/settings/profile"},
-            "key_source": "",
+            "notes": [],
         },
         "warnings": [],
         "blocked": [
             f"Pin repo order remains a GitHub web UI step: https://github.com/{owner}?tab=repositories" if owner else "Pin repo order remains a GitHub web UI step.",
-            "Profile photo upload remains a GitHub web UI step even when the avatar asset is generated.",
         ],
     }
     if not gh_auth_ok():
@@ -937,7 +927,7 @@ class EmpireBundle:
 
 
 def run_empire(repo_root: Path, username: str = "", generate_avatar: bool = False) -> EmpireBundle:
-    """Build the deterministic empire plan and optionally generate an avatar asset."""
+    """Build the deterministic empire plan and optionally prepare a local avatar."""
     empire_data, profile_readme = build_empire_payload(repo_root, username)
     if generate_avatar:
         try:
@@ -949,9 +939,10 @@ def run_empire(repo_root: Path, username: str = "", generate_avatar: bool = Fals
             )
             empire_data["mode"] = "assets"
             empire_data["avatar"] = avatar
-        except AssetGenerationError as exc:
+            empire_data["warnings"].extend(avatar["notes"])
+        except AssetPreparationError as exc:
+            empire_data["avatar"].update({"requested": True, "status": "unavailable"})
             empire_data["warnings"].append(str(exc))
-            empire_data["blocked"].append("Avatar generation could not complete, so profile photo work remains manual.")
     blueprint_markdown = build_blueprint(empire_data, profile_readme)
     report_markdown = build_report(empire_data)
     return EmpireBundle(
@@ -988,6 +979,8 @@ def write_empire_artifacts(repo_root: Path, bundle: EmpireBundle) -> dict[str, s
                 "health_delta": bundle.empire_data["health_delta"],
                 "pinned_repos_recommended": bundle.empire_data["pinned_repos_recommended"],
                 "avatar_generated": bundle.empire_data["avatar"]["generated"],
+                "avatar_prepared": bundle.empire_data["avatar"]["prepared"],
+                "avatar_path": bundle.empire_data["avatar"]["path"],
             },
             indent=2,
         ),

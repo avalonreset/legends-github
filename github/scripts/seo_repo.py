@@ -352,7 +352,7 @@ def choose_primary_keyword(candidates: list[str], repo_name: str, language: str,
     if language_term and type_terms:
         return f"{language_term} {type_terms[0].replace('-', ' ')}"
     normalized_name = repo_name.replace("-", " ").replace("_", " ").strip()
-    return normalized_name or "open source project"
+    return normalized_name or "software project"
 
 
 def choose_secondary_keywords(candidates: list[str], primary_keyword: str) -> list[dict[str, Any]]:
@@ -400,7 +400,6 @@ def build_topics(
         add(language)
     for topic in repo_type_topics(repo_type):
         add(topic)
-    add("open-source")
 
     def concise_phrase_topic(value: str) -> bool:
         tokens = tokenize(value)
@@ -433,7 +432,7 @@ def build_recommended_description(project_name: str, summary: str, primary_keywo
     elif cleaned_summary:
         description = cleaned_summary if cleaned_summary.lower().startswith(pretty_name.lower()) else f"{pretty_name}: {cleaned_summary}"
     else:
-        description = f"{pretty_name} is an open source project for {primary_keyword}."
+        description = f"{pretty_name} is a project for {primary_keyword}."
     return description[:347].rstrip(" .,;:") + ("..." if len(description) > 347 else "")
 
 

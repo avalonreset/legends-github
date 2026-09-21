@@ -103,14 +103,12 @@ Write-Host "   ━━━━━━━━━━━━━━━━━━━━━�
 Write-Host "    SERVICE SETUP" -ForegroundColor Yellow
 Write-Host "   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Magenta
 Write-Host ""
-Write-Host "   Two services are " -NoNewline
-Write-Host "strongly recommended" -NoNewline -ForegroundColor White
-Write-Host " to unlock the full suite."
-Write-Host "   Setting them up takes about 5 minutes and is well worth it."
+Write-Host "   DataForSEO is optional and only needed for requested live keyword research."
+Write-Host "   Local repository workflows do not require a paid service."
 Write-Host ""
 
 Write-Host "   " -NoNewline
-Write-Host "--- 1/2 ---" -NoNewline -ForegroundColor Magenta
+Write-Host "--- Optional ---" -NoNewline -ForegroundColor Magenta
 Write-Host " " -NoNewline
 Write-Host "DataForSEO" -NoNewline -ForegroundColor White
 Write-Host " (live keyword data, SERP rankings, AI visibility)" -ForegroundColor DarkGray
@@ -194,70 +192,7 @@ if ($setupDfs -match "^[Yy]") {
     Write-Host "     powershell -File extensions\dataforseo\install.ps1" -ForegroundColor DarkGray
 }
 
-# ─────────────────────────────────────────────────
-# GUIDED SETUP: KIE.ai
-# ─────────────────────────────────────────────────
-Write-Host ""
-Write-Host "   " -NoNewline
-Write-Host "--- 2/2 ---" -NoNewline -ForegroundColor Magenta
-Write-Host " " -NoNewline
-Write-Host "KIE.ai" -NoNewline -ForegroundColor White
-Write-Host " (AI-generated banners and profile avatars)" -ForegroundColor DarkGray
-Write-Host ""
-Write-Host "   This generates professional banner images for READMEs and"
-Write-Host "   AI profile avatars for your GitHub account. About 4 cents per image."
-Write-Host "   Without it, image generation is skipped entirely."
-Write-Host ""
-
-$EnvFile = Join-Path $SkillsDir "github\.env"
-$KieDone = $false
-$setupKie = Read-Host "   Set up KIE.ai now? (y/n)"
-Write-Host ""
-
-if ($setupKie -match "^[Yy]") {
-    Write-Host "   If you don't have an account yet:" -ForegroundColor DarkGray
-    Write-Host "     1. Go to " -NoNewline -ForegroundColor DarkGray
-    Write-Host "https://kie.ai/api-key" -ForegroundColor Cyan
-    Write-Host "     2. Create an account and copy your API key" -ForegroundColor DarkGray
-    Write-Host ""
-    $KieKey = Read-Host "   KIE.ai API Key"
-    Write-Host ""
-
-    if ($KieKey) {
-        # Write or update .env
-        if ((Test-Path $EnvFile) -and (Select-String -Path $EnvFile -Pattern "^KIE_API_KEY=" -Quiet)) {
-            (Get-Content $EnvFile) -replace "^KIE_API_KEY=.*", "KIE_API_KEY=$KieKey" | Set-Content $EnvFile -Encoding UTF8
-        } else {
-            "KIE_API_KEY=$KieKey" | Add-Content $EnvFile -Encoding UTF8
-        }
-        Write-Host "   " -NoNewline
-        Write-Host "[+]" -NoNewline -ForegroundColor Green
-        Write-Host " KIE.ai              " -NoNewline
-        Write-Host "API key saved to .env" -ForegroundColor DarkGray
-        $KieDone = $true
-    } else {
-        Write-Host "   No key entered. Skipping KIE.ai." -ForegroundColor DarkGray
-    }
-} else {
-    Write-Host "   Skipped. You can add your key later to:" -ForegroundColor DarkGray
-    Write-Host "     ~\.claude\skills\github\.env" -ForegroundColor DarkGray
-}
-
-# Create .env template if it doesn't exist yet (user skipped both)
-if (-not (Test-Path $EnvFile)) {
-    @"
-# Legends GitHub - API Credentials
-#
-# KIE.ai -- AI-generated banner images for READMEs
-# Get your API key: https://kie.ai/api-key
-KIE_API_KEY=
-#
-# DataForSEO credentials are NOT stored here.
-# They are configured via the MCP server installer:
-#   powershell -File extensions\dataforseo\install.ps1
-# See: https://dataforseo.com (free tier available)
-"@ | Out-File -FilePath $EnvFile -Encoding UTF8
-}
+Write-Host "   Optional artwork uses supplied local files; no image service is configured." -ForegroundColor DarkGray
 
 # ─────────────────────────────────────────────────
 # SUMMARY
@@ -270,12 +205,8 @@ Write-Host ""
 
 $dfsStatus = if ($DataForSeoDone) { "active" } else { "not configured" }
 $dfsColor = if ($DataForSeoDone) { "Green" } else { "Yellow" }
-$kieStatus = if ($KieDone) { "active" } else { "not configured" }
-$kieColor = if ($KieDone) { "Green" } else { "Yellow" }
 Write-Host "   DataForSEO [" -NoNewline
 Write-Host $dfsStatus -NoNewline -ForegroundColor $dfsColor
-Write-Host "]  |  KIE.ai [" -NoNewline
-Write-Host $kieStatus -NoNewline -ForegroundColor $kieColor
 Write-Host "]"
 Write-Host ""
 

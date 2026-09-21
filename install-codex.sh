@@ -71,37 +71,7 @@ if [ "${SKIP_PYTHON_DEPS}" = false ]; then
   }
 fi
 
-ENV_FILE="${GITHUB_SKILL_DIR}/.env"
-if [ ! -f "${ENV_FILE}" ]; then
-  cat > "${ENV_FILE}" <<'ENVEOF'
-# Legends GitHub - API Credentials
-#
-# KIE.ai -- AI-generated banner images for READMEs
-# Get your API key: https://kie.ai/api-key
-KIE_API_KEY=
-ENVEOF
-fi
-
-echo ""
-read -rp "   Set up KIE.ai now for banner/social images? (y/n): " setup_kie
-if [[ "${setup_kie}" =~ ^[Yy] ]]; then
-  read -rp "   KIE.ai API Key: " kie_key
-  if [ -n "${kie_key}" ]; then
-    if grep -q '^KIE_API_KEY=' "${ENV_FILE}" 2>/dev/null; then
-      python_cmd - "${ENV_FILE}" "${kie_key}" <<'PY'
-from pathlib import Path
-import sys
-path = Path(sys.argv[1])
-key = sys.argv[2]
-lines = path.read_text(encoding="utf-8").splitlines()
-path.write_text("\n".join(("KIE_API_KEY=" + key) if line.startswith("KIE_API_KEY=") else line for line in lines) + "\n", encoding="utf-8")
-PY
-    else
-      echo "KIE_API_KEY=${kie_key}" >> "${ENV_FILE}"
-    fi
-    say_step "Saved KIE.ai key to ${ENV_FILE}"
-  fi
-fi
+echo "   Optional artwork uses supplied local files; no image service is configured."
 
 echo ""
 read -rp "   Configure DataForSEO MCP for Codex now? (y/n): " setup_dfs

@@ -14,11 +14,12 @@ Clone this toolkit beside the repository you want to improve. Python 3.10+ and G
 git clone https://github.com/avalonreset/legends-github.git
 cd legends-github
 python -m pip install -r github/requirements.txt
-python legends_github.py verify --mode api --path /path/to/your/repo
-python legends_github.py audit --path /path/to/your/repo
+python legends_github.py capabilities
+python legends_github.py --offline --artifacts-dir ./review-output verify --path /path/to/your/repo
+python legends_github.py --offline --artifacts-dir ./review-output audit --path /path/to/your/repo
 ```
 
-On systems where Python is named `python3`, use that instead. Audit commands write local reports and cache files. They do not apply repository fixes. Missing GitHub access limits live evidence; it must not be interpreted as proof that a feature is absent.
+On systems where Python is named `python3`, use that instead. Audit commands write local reports and cache files. With `--artifacts-dir`, these are isolated by target repository outside the target itself. They do not apply repository fixes or edit its `.gitignore`. Omit `--offline` when you want live GitHub evidence. Missing GitHub access limits live evidence; it must not be interpreted as proof that a feature is absent.
 
 For agent-driven work, ask your agent to read this toolkit's `AGENTS.md`, then give it the target repository and your objective. The agent needs file access and a command runner. A chat-only service needs a tool bridge or an operator to execute commands.
 
@@ -26,7 +27,8 @@ For agent-driven work, ask your agent to read this toolkit's `AGENTS.md`, then g
 
 | Workflow | Useful outcome |
 | --- | --- |
-| `audit` | Inventory repository signals and identify candidate improvements. |
+| `audit` | Collect versioned findings, distinguish missing from unavailable evidence, and prioritize applicable fixes. |
+| `discover` | Build an organic discovery plan: audience, comparison briefs, proof, distribution, and measurement. |
 | `readme` | Preview a clearer explanation, setup instructions, and usage examples. |
 | `meta` | Propose descriptions, topics, and repository settings. |
 | `community` | Plan contributor documentation and issue workflows. |
@@ -46,7 +48,7 @@ The portable interface is files plus commands and JSON output. That is the inten
 | --- | --- |
 | Python command interface | Included; independent of agent-specific installation paths. |
 | File-based instructions | Read `AGENTS.md` explicitly when the host does not discover it automatically. |
-| Skills | Included under `github/`, `skills/`, and `extensions/`; some legacy instructions still need migration. |
+| Skills | Included under `github/`, `skills/`, and `extensions/`; specialized instructions share the portable evidence and execution contract. |
 | Existing native adapters | Claude and Codex installers and a Gemini extension manifest are retained. Their presence is not an end-to-end compatibility certificate. |
 | Other hosts | Use the command interface where file and shell tools exist. Native adapter verification is planned. |
 
@@ -54,11 +56,25 @@ No new provider API key is needed for the local audit. Keyword research and imag
 
 ## How to use the findings
 
-The current audit score is a weighted checklist across six categories. It is useful for finding missing signals, but it is **not a validated measure of software quality, security, search ranking, or business value**.
+Audits now lead with evidence-backed findings, repository profiles, coverage, and practical next actions. Each finding carries a source, confidence, applicability, and verification. Offline or failed collection is labeled unavailable rather than a missing repository feature.
+
+The retained legacy audit score is a weighted checklist across six categories. It is useful for finding missing signals, but it is **not a validated measure of software quality, security, search ranking, or business value**.
 
 Start with the repository's purpose and audience. Check whether users can install it, understand it, trust its claims, and complete the main workflow. Prioritize broken instructions and missing evidence ahead of decorative badges. Do not add a citation file, community policy, generated artwork, or a release ceremony merely to increase a score.
 
 For each proposed change, record the evidence, expected benefit, effort, and how to verify it. Keep observed facts separate from hypotheses. Parallel reviewers are optional; a single agent can perform the same work sequentially.
+
+## Organic discovery without guesswork
+
+```sh
+python legends_github.py --offline --artifacts-dir ./review-output discover --path /path/to/your/repo --audience "intended users" --category "problem this solves" --competitor "a relevant alternative"
+```
+
+The plan turns repository evidence into candidate comparison pages, useful examples, metadata, and distribution experiments. Competitor claims, demand, and prices remain unverified until researched. It does not invent keyword volume or publish messages. The same workflow applies to a package, CLI, service, skill, or documentation project. [Discovery guide](docs/DISCOVERY.md) · [GeoGrid validation](docs/GEOGRID-VALIDATION.md).
+
+## Optional artwork
+
+A strong repository does not require a mascot or banner. Keep an existing image if it helps, supply your own local asset, or use the image tool already available in your agent. The toolkit has no paid image-generation integration and asks for no image-provider key. Legacy image flags now reuse or convert local assets only. [Artwork guide](github/references/banner-generation.md).
 
 ## Existing skill installers
 

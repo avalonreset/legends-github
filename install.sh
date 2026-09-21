@@ -83,11 +83,11 @@ main() {
     echo -e "   ${Y}${B} SERVICE SETUP${R}"
     echo -e "   ${M}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
     echo ""
-    echo -e "   Two services are ${W}${B}strongly recommended${R} to unlock the full suite."
-    echo -e "   Setting them up takes about 5 minutes and is well worth it."
+    echo "   DataForSEO is optional and only needed for requested live keyword research."
+    echo "   Local repository workflows do not require a paid service."
     echo ""
 
-    echo -e "   ${M}─── 1/2 ───${R} ${W}${B}DataForSEO${R} ${D}(live keyword data, SERP rankings, AI visibility)${R}"
+    echo -e "   ${M}─── Optional ───${R} ${W}${B}DataForSEO${R} ${D}(live keyword data, SERP rankings, AI visibility)${R}"
     echo ""
     echo -e "   This powers real keyword research with actual search volume and"
     echo -e "   difficulty data. Without it, SEO recommendations are best-guess only."
@@ -170,65 +170,7 @@ with open(settings_file, 'w') as f:
         echo -e "   ${D}  bash extensions/dataforseo/install.sh${R}"
     fi
 
-    # ─────────────────────────────────────────────────
-    # GUIDED SETUP: KIE.ai
-    # ─────────────────────────────────────────────────
-    echo ""
-    echo -e "   ${M}─── 2/2 ───${R} ${W}${B}KIE.ai${R} ${D}(AI-generated banners and profile avatars)${R}"
-    echo ""
-    echo -e "   This generates professional banner images for READMEs and"
-    echo -e "   AI profile avatars for your GitHub account. About 4 cents per image."
-    echo -e "   Without it, image generation is skipped entirely."
-    echo ""
-
-    ENV_FILE="${SKILLS_DIR}/github/.env"
-    KIE_DONE=false
-    read -rp "   Set up KIE.ai now? (y/n): " setup_kie
-    echo ""
-
-    if [[ "${setup_kie}" =~ ^[Yy] ]]; then
-        echo -e "   ${D}If you don't have an account yet:${R}"
-        echo -e "   ${D}  1. Go to ${C}https://kie.ai/api-key${R}"
-        echo -e "   ${D}  2. Create an account and copy your API key${R}"
-        echo ""
-        read -rp "   KIE.ai API Key: " KIE_KEY
-        echo ""
-
-        if [ -n "${KIE_KEY}" ]; then
-            # Write or update .env
-            if [ -f "${ENV_FILE}" ] && grep -q 'KIE_API_KEY=' "${ENV_FILE}" 2>/dev/null; then
-                # Update existing key
-                sed -i.bak "s|^KIE_API_KEY=.*|KIE_API_KEY=${KIE_KEY}|" "${ENV_FILE}"
-                rm -f "${ENV_FILE}.bak"
-            else
-                # Create or append
-                echo "KIE_API_KEY=${KIE_KEY}" >> "${ENV_FILE}"
-            fi
-            echo -e "   ${G}${B}[+]${R} KIE.ai              ${D}API key saved to .env${R}"
-            KIE_DONE=true
-        else
-            echo -e "   ${D}No key entered. Skipping KIE.ai.${R}"
-        fi
-    else
-        echo -e "   ${D}Skipped. You can add your key later to:${R}"
-        echo -e "   ${D}  ~/.claude/skills/github/.env${R}"
-    fi
-
-    # Create .env template if it doesn't exist yet (user skipped both)
-    if [ ! -f "${ENV_FILE}" ]; then
-        cat > "${ENV_FILE}" << 'ENVEOF'
-# Legends GitHub - API Credentials
-#
-# KIE.ai -- AI-generated banner images for READMEs
-# Get your API key: https://kie.ai/api-key
-KIE_API_KEY=
-#
-# DataForSEO credentials are NOT stored here.
-# They are configured via the MCP server installer:
-#   bash extensions/dataforseo/install.sh
-# See: https://dataforseo.com (free tier available)
-ENVEOF
-    fi
+    echo "   Optional artwork uses supplied local files; no image service is configured."
 
     # ─────────────────────────────────────────────────
     # SUMMARY
@@ -245,12 +187,7 @@ ENVEOF
     else
         DFS_STATUS="${Y}not configured${R}"
     fi
-    if $KIE_DONE; then
-        KIE_STATUS="${G}${B}active${R}"
-    else
-        KIE_STATUS="${Y}not configured${R}"
-    fi
-    echo -e "   DataForSEO [${DFS_STATUS}]  |  KIE.ai [${KIE_STATUS}]"
+    echo -e "   DataForSEO [${DFS_STATUS}]"
     echo ""
 
     echo -e "   ${W}${B}Next step: restart Claude Code so the new skills load.${R}"

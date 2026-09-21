@@ -16,15 +16,11 @@ from typing import Any
 
 from audit_repo import load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_repo_view, pillow_available, resolve_kie_api_key
-from kie_assets import (
-    AssetGenerationError,
-    convert_png_to_webp,
-    create_kie_task,
-    download_binary,
-    poll_kie_task,
+from github_runtime import gh_repo_view
+from local_assets import (
+    AssetPreparationError,
+    convert_to_webp,
     render_social_preview_from_banner,
-    result_url,
 )
 from meta_repo import social_preview_asset
 from runtime_paths import repo_output_dir
@@ -121,7 +117,7 @@ def banner_asset(repo_root: Path) -> str | None:
         repo_root / "assets" / "banner.jpeg",
     ]
     for path in candidates:
-        if path.exists():
+        if path.is_file():
             return str(path.relative_to(repo_root)).replace("\\", "/")
     return None
 
@@ -146,77 +142,50 @@ def raw_github_url(repo_slug: str, branch: str, relative_path: str) -> str:
     return f"https://raw.githubusercontent.com/{repo_slug}/{branch}/{relative_path}"
 
 
-def banner_prompt(snapshot: dict[str, Any], tagline: str) -> str:
-    """Build a deterministic KIE banner prompt."""
-    project_name = snapshot["repo_name"]
-    repo_type = snapshot["repo_type"]
-    primary_keyword = snapshot["seo_data"]["primary_keyword"]["keyword"]
-    visual = {
-        "Skill/Plugin": "abstract modular command blocks, glowing panels, and subtle code patterns",
-        "CLI Tool": "sleek terminal interface with luminous command lines and geometric hardware accents",
-        "Library/Package": "interlocking components, clean technical diagrams, and polished glass reflections",
-        "Framework": "layered architectural structures and connected luminous pathways",
-        "API/Service": "data streams, service nodes, and routed signals in a modern control-plane scene",
-        "Application": "product interface panels and cinematic UI surfaces with depth",
-        "Documentation": "clean knowledge panels, layered cards, and structured information surfaces",
-    }.get(repo_type, "professional technology shapes and cinematic abstract geometry")
-    return (
-        "Wide cinematic 21:9 GitHub repository banner. "
-        f'Left side: large bold clean sans-serif headline "{project_name}", '
-        f'smaller supporting line "{tagline}" below, crisp white text, fully legible. '
-        f"Right side: {visual}. "
-        f"Theme: {primary_keyword}. "
-        "Dark background, subtle light bloom, premium product-banner look, centered composition with safe edge padding."
-    )
-
-
 def ensure_readme_assets(snapshot: dict[str, Any]) -> dict[str, Any]:
-    """Generate missing banner/social assets when explicit asset generation is requested."""
+    """Reuse supplied assets and prepare optional derivatives entirely locally."""
     repo_root = Path(snapshot["repo_root"])
     updates: dict[str, Any] = {
         "banner_generated": False,
+        "banner_prepared": False,
         "social_preview_generated": False,
         "asset_tasks": [],
+        "asset_notes": [],
     }
     branch = default_branch_name(snapshot["metadata"])
 
     banner_path = snapshot.get("banner_path")
     if not banner_path:
-        kie_api_key = snapshot.get("kie_api_key") or ""
-        if not kie_api_key:
-            raise AssetGenerationError("KIE_API_KEY is required to generate a new banner asset.")
-        if not pillow_available():
-            raise AssetGenerationError("Pillow is required to convert generated banner assets.")
-        task_id = create_kie_task(
-            kie_api_key,
-            banner_prompt(snapshot, build_tagline(snapshot, snapshot["seo_data"]["primary_keyword"]["keyword"])),
-            aspect_ratio="21:9",
+        original_path = next(
+            (repo_root / "assets" / "originals" / f"banner.{suffix}"
+             for suffix in ("png", "webp", "jpg", "jpeg")
+             if (repo_root / "assets" / "originals" / f"banner.{suffix}").is_file()),
+            None,
         )
-        record = poll_kie_task(kie_api_key, task_id)
-        source_url = result_url(record)
-        original_path = repo_root / "assets" / "originals" / "banner.png"
-        download_binary(source_url, original_path)
-        banner_path_abs = repo_root / "assets" / "banner.webp"
-        convert_png_to_webp(original_path, banner_path_abs)
-        banner_path = str(banner_path_abs.relative_to(repo_root)).replace("\\", "/")
-        updates.update(
-            {
-                "banner_generated": True,
-                "banner_original_path": str(original_path.relative_to(repo_root)).replace("\\", "/"),
-                "banner_path": banner_path,
-            }
-        )
-        updates["asset_tasks"].append({"type": "banner", "task_id": task_id, "source_url": source_url})
+        if original_path:
+            try:
+                banner_path_abs = convert_to_webp(original_path, repo_root / "assets" / "banner.webp")
+                banner_path = banner_path_abs.relative_to(repo_root).as_posix()
+                updates.update({
+                    "banner_prepared": True,
+                    "banner_original_path": original_path.relative_to(repo_root).as_posix(),
+                    "banner_path": banner_path,
+                })
+            except AssetPreparationError as exc:
+                updates["asset_notes"].append(str(exc))
+        else:
+            updates["asset_notes"].append("No local banner supplied. Artwork is optional; no image service was contacted.")
 
     social_preview_path = snapshot.get("social_preview_path")
-    if not social_preview_path:
-        if not pillow_available():
-            raise AssetGenerationError("Pillow is required to generate a social preview from the banner.")
+    if not social_preview_path and banner_path:
         banner_abs = repo_root / Path(str(banner_path))
         preview_abs = repo_root / "assets" / "social-preview.jpg"
-        render_social_preview_from_banner(banner_abs, preview_abs)
-        social_preview_path = str(preview_abs.relative_to(repo_root)).replace("\\", "/")
-        updates.update({"social_preview_generated": True, "social_preview_path": social_preview_path})
+        try:
+            render_social_preview_from_banner(banner_abs, preview_abs)
+            social_preview_path = preview_abs.relative_to(repo_root).as_posix()
+            updates.update({"social_preview_generated": True, "social_preview_path": social_preview_path})
+        except AssetPreparationError as exc:
+            updates["asset_notes"].append(str(exc))
 
     updates["banner_links"] = {
         "local": (repo_root / banner_path).resolve().as_uri() if banner_path else "",
@@ -243,7 +212,7 @@ def license_type(repo_root: Path, metadata: dict[str, Any], legal_data: dict[str
         if path.exists():
             first_line = path.read_text(encoding="utf-8", errors="replace").splitlines()
             return first_line[0].strip() if first_line else "License file present"
-    return "See LICENSE"
+    return "Not established"
 
 
 def docs_url(readme: str, metadata: dict[str, Any]) -> str:
@@ -288,87 +257,25 @@ def load_pyproject(repo_root: Path) -> dict[str, Any]:
 
 
 def install_snippet(repo_root: Path, repo_type: str, project_name: str) -> str:
-    """Return a best-effort installation block."""
-    package_json = load_package_json(repo_root)
-    if package_json.get("name"):
-        return f"```bash\nnpm install {package_json['name']}\n```"
-
-    pyproject = load_pyproject(repo_root)
-    project = pyproject.get("project", {})
-    if project.get("name"):
-        return f"```bash\npip install {project['name']}\n```"
-
-    if (repo_root / "Cargo.toml").exists():
-        cargo_name = ""
-        try:
-            cargo = tomllib.loads((repo_root / "Cargo.toml").read_text(encoding="utf-8"))
-            cargo_name = str((cargo.get("package") or {}).get("name") or "").strip()
-        except (OSError, tomllib.TOMLDecodeError):
-            cargo_name = ""
-        if cargo_name:
-            if repo_type == "CLI Tool":
-                return f"```bash\ncargo install {cargo_name}\n```"
-            return f"```bash\ncargo add {cargo_name}\n```"
-
-    if repo_type == "Skill/Plugin":
-        return (
-            "```bash\n"
-            "git clone https://github.com/OWNER/REPO.git\n"
-            "cd REPO\n"
-            "bash install.sh\n"
-            "```"
-        )
-
-    return (
-        "```bash\n"
-        f"git clone https://github.com/OWNER/{slugify(project_name)}.git\n"
-        f"cd {slugify(project_name)}\n"
-        "```"
-    )
+    """Request verified setup instructions without assuming registry publication."""
+    manifests = [name for name in ("package.json", "pyproject.toml", "Cargo.toml") if (repo_root / name).is_file()]
+    evidence = " Available manifests: " + ", ".join(f"[{name}]({name})" for name in manifests) + "." if manifests else ""
+    return "**Draft requirement:** Document the supported installation method and prerequisites, then verify the commands in a clean environment." + evidence
 
 
 def quick_start_snippet(repo_root: Path, repo_type: str, project_name: str) -> str:
-    """Return a best-effort quick-start block."""
-    package_json = load_package_json(repo_root)
-    scripts = package_json.get("scripts") or {}
-    if isinstance(scripts, dict):
-        for name in ("start", "dev", "test"):
-            if name in scripts:
-                return f"```bash\nnpm run {name}\n```"
-
-    if repo_type == "Skill/Plugin":
-        return (
-            "```bash\n"
-            "python3 ~/.codex/skills/github/scripts/run_headless.py verify --mode both --path /path/to/repo\n"
-            "```"
-        )
-    if repo_type == "CLI Tool":
-        return f"```bash\n{slugify(project_name)} --help\n```"
-    if repo_type == "Library/Package":
-        module_name = re.sub(r"[^a-zA-Z0-9_]+", "_", project_name).strip("_") or "project_name"
-        return (
-            "```python\n"
-            f"import {module_name}\n\n"
-            f'print("{project_name} is ready")\n'
-            "```"
-        )
-    if (repo_root / "Dockerfile").exists():
-        return "```bash\ndocker compose up --build\n```"
-    return "```bash\npython main.py\n```"
+    """Request a tested usage example without guessing an entry point."""
+    return "**Draft requirement:** Add one verified example using the project's actual entry point, required inputs, and expected output."
 
 
 def configuration_snippet(repo_root: Path) -> str:
-    """Return a best-effort configuration block."""
-    if (repo_root / ".env.example").exists():
-        return (
-            "Copy `.env.example` to `.env.local`, then update the variables for your environment.\n\n"
-            "```bash\ncp .env.example .env.local\n```"
-        )
-    if (repo_root / ".env.local").exists() or (repo_root / ".env").exists():
-        return "Configuration is environment-driven. Review the existing `.env` files before running locally."
-    if (repo_root / "config.toml").exists() or (repo_root / "settings.toml").exists():
-        return "Update the TOML configuration file in the repo root before the first real run."
-    return "This project keeps configuration minimal. Review the repository files and command flags for environment-specific settings."
+    """Link observed configuration examples without inventing setup requirements."""
+    if (repo_root / ".env.example").is_file():
+        return "Review [.env.example](.env.example) for configuration examples. Document which variables are required and how the application loads them."
+    for name in ("config.toml", "settings.toml"):
+        if (repo_root / name).is_file():
+            return f"Configuration file: [{name}]({name}). Document supported settings before changing defaults."
+    return ""
 
 
 def repo_snapshot_table(snapshot: dict[str, Any], license_label: str) -> str:
@@ -385,53 +292,16 @@ def repo_snapshot_table(snapshot: dict[str, Any], license_label: str) -> str:
 
 
 def build_tagline(snapshot: dict[str, Any], primary_keyword: str) -> str:
-    """Build a short H1 tagline."""
-    project_name = snapshot["repo_name"]
+    """Use an observed description rather than inferring the project's purpose."""
     description = clean_text(snapshot.get("description") or snapshot.get("manifest_description") or "")
-    if description:
-        short = description.split(".")[0].strip()
-        if len(short) <= 60:
-            return short
-
-    repo_type = snapshot["repo_type"]
-    if repo_type == "Skill/Plugin":
-        return f"{sentence_case(primary_keyword)} for Codex and GitHub workflows"
-    if repo_type == "CLI Tool":
-        return f"{sentence_case(primary_keyword)} for terminal workflows"
-    if repo_type == "Library/Package":
-        return f"{sentence_case(primary_keyword)} for application developers"
-    if repo_type == "Framework":
-        return f"{sentence_case(primary_keyword)} for structured projects"
-    return f"{project_name} for {primary_keyword}"
+    return description.split(".")[0].strip() if description else ""
 
 
 def build_intro(snapshot: dict[str, Any], primary_keyword: str) -> str:
-    """Build the README opening paragraph."""
-    project_name = snapshot["repo_name"]
-    summary = clean_text(snapshot.get("description") or snapshot.get("manifest_description") or snapshot.get("readme_intro") or "")
-    repo_type = {
-        "Skill/Plugin": "skill",
-        "CLI Tool": "CLI tool",
-        "Library/Package": "library",
-        "Framework": "framework",
-        "API/Service": "service",
-        "Application": "application",
-        "Documentation": "documentation project",
-    }.get(snapshot["repo_type"], "project")
-    sentence_one = f"{project_name} is a {primary_keyword} {repo_type} that helps teams ship a cleaner GitHub experience."
-    if summary and primary_keyword.lower() in summary.lower():
-        sentence_two = summary.rstrip(".") + "."
-    elif summary:
-        sentence_two = (
-            f"It focuses on {summary[0].lower() + summary[1:].rstrip('.')}"
-            if len(summary) > 1
-            else summary.rstrip(".")
-        )
-        sentence_two = sentence_two.rstrip(".") + "."
-    else:
-        sentence_two = "It gives new users the context, setup path, and next steps they need without digging through the repository."
-    sentence_three = "Use this README as the landing page for installation, key workflows, and the fastest path to value."
-    return " ".join(part.strip() for part in (sentence_one, sentence_two, sentence_three) if part.strip())
+    """Reuse the existing introduction or an observed project description."""
+    opening = re.split(r"^##\s+", snapshot.get("current_readme", ""), maxsplit=1, flags=re.MULTILINE)[0]
+    summary = first_paragraph(opening) or clean_text(snapshot.get("description") or snapshot.get("manifest_description") or "")
+    return summary or "**Draft requirement:** Describe the project's purpose, intended users, and supported capabilities from the implementation."
 
 
 def existing_links_present(readme: str) -> bool:
@@ -455,10 +325,12 @@ def build_badges(repo_root: Path, repo_slug: str, license_label: str) -> list[st
         f"[![Version](https://img.shields.io/github/v/release/{owner}/{repo})]"
         f"(https://github.com/{owner}/{repo}/releases)"
     )
-    license_slug = re.sub(r"[^a-zA-Z0-9]+", "-", license_label).strip("-").lower() or "license"
-    badges.append(
-        f"[![License](https://img.shields.io/badge/license-{license_slug}-blue)](LICENSE)"
-    )
+    license_file = next((name for name in ("LICENSE", "LICENSE.md") if (repo_root / name).is_file()), None)
+    if license_file:
+        license_slug = re.sub(r"[^a-zA-Z0-9]+", "-", license_label).strip("-").lower() or "license"
+        badges.append(
+            f"[![License](https://img.shields.io/badge/license-{license_slug}-blue)]({license_file})"
+        )
     badges.append(
         f"[![Last Commit](https://img.shields.io/github/last-commit/{owner}/{repo})]"
         f"(https://github.com/{owner}/{repo}/commits/main)"
@@ -521,19 +393,8 @@ def fallback_section_content(
 ) -> str:
     """Return deterministic body content for one generated section."""
     project_name = snapshot["repo_name"]
-    primary_keyword = snapshot["seo_data"]["primary_keyword"]["keyword"]
-    secondary_keywords = [item["keyword"] for item in snapshot["seo_data"].get("secondary_keywords", [])[:2]]
-    questions = snapshot["seo_data"].get("paa_questions", [])[:3]
-
     if key == "what_it_does":
-        bullets = [
-            f"- Centers the repository around the primary keyword `{primary_keyword}` without stuffing the copy.",
-            "- Gives first-time users a clear installation path and a concrete quick start.",
-            "- Surfaces the most important workflows before the reader has to inspect the codebase.",
-        ]
-        if secondary_keywords:
-            bullets.append(f"- Weaves secondary topics such as `{secondary_keywords[0]}` into the structure where they fit naturally.")
-        return "\n".join(bullets)
+        return clean_text(snapshot.get("description") or snapshot.get("manifest_description") or "")
 
     if key == "snapshot":
         return repo_snapshot_table(snapshot, license_label)
@@ -544,52 +405,25 @@ def fallback_section_content(
     if key == "quick_start":
         return quick_start_snippet(Path(snapshot["repo_root"]), snapshot["repo_type"], project_name)
 
-    if key == "commands":
-        if snapshot["repo_type"] == "Skill/Plugin":
-            return (
-                "| Workflow | When to use it |\n"
-                "|----------|----------------|\n"
-                "| Audit | Score the current repository state before making changes. |\n"
-                "| SEO | Seed keyword data for README and metadata work. |\n"
-                "| Meta | Plan repository description, topics, and feature toggles. |\n"
-                "| README | Preview or write a deterministic README refresh. |\n"
-            )
-        return existing_sections.get("commands", "") or existing_sections.get("usage", "") or (
-            "Use the quick-start command first, then inspect the repo-specific scripts or CLI help for the full workflow surface."
-        )
-
-    if key == "usage":
-        return existing_sections.get("usage", "") or (
-            "Start with the quick-start example above, then move into the repository's real workflows once the baseline setup succeeds."
-        )
+    if key in {"commands", "usage", "architecture", "faq"}:
+        return ""
 
     if key == "configuration":
         return configuration_snippet(Path(snapshot["repo_root"]))
 
-    if key == "architecture":
-        manifest_description = clean_text(snapshot.get("manifest_description") or "")
-        if manifest_description:
-            return f"The current implementation centers on {manifest_description.lower()}."
-        return "The repository is organized around a small set of entrypoints and supporting assets so contributors can trace the main workflow quickly."
-
     if key == "documentation":
-        return f"External docs are available at [{docs_link}]({docs_link}). Use the README as the landing page, then follow the docs for deeper reference material."
-
-    if key == "faq":
-        entries: list[str] = []
-        for question in questions:
-            entries.append(f"### {question}\n{project_name} answers this in the sections above so users can find the setup path and main workflow without guessing.")
-        if not entries:
-            entries.append(f"### What problem does {project_name} solve?\nIt gives readers a structured path through the repository with the right level of context for the project type.")
-        return "\n\n".join(entries)
+        return f"See [{docs_link}]({docs_link})." if docs_link else ""
 
     if key == "contributing":
         if (Path(snapshot["repo_root"]) / "CONTRIBUTING.md").exists():
             return "See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines, local setup notes, and review expectations."
-        return "Open an issue or pull request with a clear summary of the change, expected behavior, and any validation you ran."
+        return ""
 
     if key == "license":
-        return f"This project is distributed under the [{license_label}](LICENSE) terms."
+        for name in ("LICENSE", "LICENSE.md"):
+            if (Path(snapshot["repo_root"]) / name).is_file():
+                return f"See [{name}]({name}) for licensing terms."
+        return ""
 
     return ""
 
@@ -603,21 +437,32 @@ def build_readme_content(snapshot: dict[str, Any]) -> tuple[str, list[str], dict
     docs_link = snapshot["docs_link"]
     repo_slug = snapshot["repo"]
     tagline = build_tagline(snapshot, snapshot["seo_data"]["primary_keyword"]["keyword"])
-    title = f"# {snapshot['repo_name']} - {tagline}"
+    original_title = re.search(r"^# [^\n]+", current_readme, flags=re.MULTILINE)
+    title = original_title.group(0) if original_title else f"# {snapshot['repo_name']}" + (f" - {tagline}" if tagline else "")
     badges = build_badges(repo_root, repo_slug, license_label)
     intro = build_intro(snapshot, snapshot["seo_data"]["primary_keyword"]["keyword"])
 
     section_specs = section_order(snapshot["repo_type"], docs_link)
     sections: list[tuple[str, str]] = []
+    consumed: set[str] = set()
+    original_headings = {normalize_heading(heading): heading.strip() for heading in re.findall(r"^## (.+)$", current_readme, flags=re.MULTILINE)}
     for heading, key in section_specs:
-        if key == "snapshot":
-            body = fallback_section_content(key, snapshot, license_label, docs_link, existing_sections)
+        candidates = {normalize_heading(name) for name in SECTION_SYNONYMS.get(key, [])}
+        candidates.add(normalize_heading(heading))
+        matched = next((name for name in existing_sections if name in candidates), None)
+        if matched:
+            if matched in consumed:
+                continue
+            consumed.add(matched)
+            body = existing_sections[matched]
+            heading = original_headings.get(matched, heading)
         else:
-            body = section_body(existing_sections, SECTION_SYNONYMS.get(key, []))
-            if not body:
-                body = fallback_section_content(key, snapshot, license_label, docs_link, existing_sections)
+            body = fallback_section_content(key, snapshot, license_label, docs_link, existing_sections)
         if body:
             sections.append((heading, body.strip()))
+    for name, body in existing_sections.items():
+        if name not in consumed and name != "table of contents":
+            sections.append((original_headings.get(name, name), body))
 
     toc_lines = [f"- [{heading}](#{heading_slug(heading)})" for heading, _ in sections]
     banner_path = snapshot["banner_path"]
@@ -629,8 +474,8 @@ def build_readme_content(snapshot: dict[str, Any]) -> tuple[str, list[str], dict
         )
         banner_status = "existing"
     else:
-        banner_block = "<!-- TODO: Add banner image -->\n"
-        banner_status = "manual"
+        banner_block = ""
+        banner_status = "not_supplied"
 
     parts = [banner_block.rstrip(), "", title]
     if badges:
@@ -851,7 +696,6 @@ def build_snapshot(repo_root: Path) -> dict[str, Any]:
     project_name = manifest_name or snapshot["repo_name"] or repo_root.name
     banner_path = banner_asset(repo_root)
     preview_asset = social_preview_asset(repo_root)
-    kie_api_key, kie_source = resolve_kie_api_key(repo_root)
 
     enriched = dict(snapshot)
     enriched.update(
@@ -871,9 +715,6 @@ def build_snapshot(repo_root: Path) -> dict[str, Any]:
             "manifest_description": manifest_description,
             "banner_path": banner_path,
             "social_preview_path": preview_asset,
-            "kie_api_key": kie_api_key,
-            "kie_available": bool(kie_api_key),
-            "kie_source": kie_source,
         }
     )
     return enriched
@@ -909,18 +750,8 @@ def build_readme_payload(repo_root: Path, generate_assets: bool = False) -> dict
     blocked: list[str] = []
     if snapshot["seo_data"].get("analysis_mode") == "fallback":
         warnings.append("README plan is using fallback SEO cache data without live DataForSEO verification.")
-    if not snapshot["banner_path"]:
-        blocked.append("Banner generation remains manual in deterministic mode. Add assets/banner.webp or use the interactive KIE flow.")
-    if not snapshot["social_preview_path"]:
-        blocked.append("Social preview image is not set. Upload remains manual after banner work is complete.")
     if generate_assets:
-        warnings.append("Deterministic readme asset generation was explicitly enabled for this run.")
-    elif snapshot["kie_available"]:
-        warnings.append(f"KIE_API_KEY is available via {snapshot['kie_source']}, but deterministic readme will only generate assets when --generate-assets is used.")
-    else:
-        warnings.append("KIE_API_KEY not found. Banner and social preview generation are unavailable in deterministic mode.")
-    if not pillow_available():
-        warnings.append("Pillow is not installed. Deterministic banner conversion and social preview generation are unavailable.")
+        warnings.extend(asset_updates.get("asset_notes", []))
     if "/" not in snapshot["repo"]:
         warnings.append("No GitHub remote detected, so badge URLs and raw GitHub asset links may need manual adjustment.")
 
@@ -935,14 +766,16 @@ def build_readme_payload(repo_root: Path, generate_assets: bool = False) -> dict
         "repo_type": snapshot["repo_type"],
         "analysis_mode": "deterministic-preview",
         "assets_requested": generate_assets,
+        "asset_mode": "local-only",
         "current_readme_path": snapshot["current_readme_path"],
         "score_before": score_before["total"],
         "score_after": score_after["total"],
         "score_breakdown_before": score_before["breakdown"],
         "score_breakdown_after": score_after["breakdown"],
         "banner_generated": asset_updates.get("banner_generated", False),
+        "banner_prepared": asset_updates.get("banner_prepared", False),
         "banner_path": snapshot["banner_path"],
-        "banner_status": "generated" if asset_updates.get("banner_generated") else generated_meta["banner_status"],
+        "banner_status": "prepared" if asset_updates.get("banner_prepared") else generated_meta["banner_status"],
         "social_preview_generated": asset_updates.get("social_preview_generated", False),
         "social_preview_path": snapshot["social_preview_path"],
         "banner_links": asset_updates.get("banner_links", {}),
@@ -1016,8 +849,10 @@ def build_readme_report(payload: dict[str, Any]) -> str:
 
 ## Image Assets
 
+- Asset mode: {payload.get('asset_mode', 'local-only')}
 - Banner path: {payload.get('banner_path') or 'None'}
 - Banner generated: {payload.get('banner_generated')}
+- Banner prepared locally: {payload.get('banner_prepared', False)}
 - Banner local link: {banner_links.get('local') or 'None'}
 - Banner raw link: {banner_links.get('raw') or 'None'}
 - Social preview path: {payload.get('social_preview_path') or 'None'}
@@ -1088,6 +923,7 @@ def write_readme_artifacts(repo_root: Path, bundle: ReadmeBundle) -> dict[str, s
                 "sections": bundle.readme_data["sections"],
                 "banner_status": bundle.readme_data["banner_status"],
                 "banner_generated": bundle.readme_data["banner_generated"],
+                "banner_prepared": bundle.readme_data["banner_prepared"],
                 "banner_path": bundle.readme_data["banner_path"],
                 "social_preview_generated": bundle.readme_data["social_preview_generated"],
                 "social_preview_path": bundle.readme_data["social_preview_path"],

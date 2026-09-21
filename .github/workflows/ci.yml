@@ -22,7 +22,14 @@ jobs:
             SUPPORT.md
             CHANGELOG.md
             AGENTS.md
-            docs/MODERNIZATION.md
+            docs/*.md
+            GEMINI.md
+            github/SKILL.md
+            skills/*/SKILL.md
+            agents/*.md
+            github/references/portable-workflows.md
+            github/references/banner-generation.md
+            github/references/github-seo-guide.md
 
   portable-entrypoint:
     strategy:

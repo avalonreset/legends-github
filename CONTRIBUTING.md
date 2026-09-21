@@ -25,7 +25,7 @@ Common questions to check first:
 
 - **DataForSEO not working?** Verify your MCP config in `~/.claude/settings.json`. The installer sets this up, but credentials expire or get misconfigured.
 - **Skills not showing up?** Restart Claude Code after installation. Skills register on startup.
-- **Banner generation failing?** Check that `KIE_API_KEY` is set in `~/.claude/skills/github/.env`.
+- **Artwork missing?** Supply an existing local asset or use your host's image tool; a banner is optional.
 
 ## Contributing Code
 

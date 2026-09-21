@@ -1,589 +1,157 @@
 ---
 name: github
-description: GitHub repository optimization suite. Orchestrates sub-skills to audit and professionalize repos across README, legal, metadata, SEO, community, and releases.
+description: Improve GitHub repositories through evidence-based audits, documentation, discovery, licensing review, community workflows, releases, and portfolio maintenance. Works with local commands and optional agent tools.
 ---
 
-# GitHub -- Repository Optimization Suite
+# GitHub repository workflows
 
-## Portable workflow
+Help the repository's intended users understand, evaluate, install, and maintain
+its project. Choose work from the user's objective and observed problems. A
+checklist score, artwork, or a particular agent host is not the objective.
 
-For a source checkout, begin with the repository's `AGENTS.md` and
-`python legends_github.py <workflow> --help`. The command runtime works without
-an agent-specific skill installation. Use `verify --mode api` to check that path.
-Skills and parallel reviewers are optional adapters. The legacy host-specific
-setup below is retained during migration; it must not block an unrelated local
-workflow on missing image-generation or keyword-provider credentials.
+## Start here
 
+1. Resolve this skill's directory as **GITHUB_HOME**, containing `scripts/` and
+   `references/`. Resolve the target repository separately as **TARGET**.
+2. Read [portable-workflows.md](references/portable-workflows.md) for path
+   resolution, evidence handling, authorization, and credentials. Read the
+   target's instructions and inspect its status before changing files.
+3. Use the stated intent. Infer a reasonable audience and repository type from
+   source when clear; ask only when a missing decision materially changes the work.
+4. Run the smallest relevant workflow. Read its `--help`; check runtime readiness
+   when needed. Missing GitHub access or a research tool does not block independent
+   local analysis.
+5. Apply authorized changes, inspect the diff, and verify the actual outcome.
+   Finish with paths, evidence, unavailable checks, and remaining actions.
 
-Comprehensive GitHub optimization across SEO, legal, community, and discoverability.
-Orchestrates 8 specialized sub-skills and 6 scoring workers: Claude Code
-subagents or Codex multi-agents. Data-first: every recommendation
-traces back to a data source.
+Use an available Python executable (`python`, `python3`, or `py -3`). Replace
+these absolute placeholders before running commands:
 
-## Quick Reference
-
-| Entry point | What it does |
-|---------|-------------|
-| `github-audit` | Full repo health audit with 0-100 scoring |
-| `github-audit` with remote target | Audit a specific remote repo |
-| `github-empire` or portfolio audit flow | Audit an entire portfolio |
-| `github-readme` | Generate or optimize README |
-| `github-legal` | License, SECURITY.md, CITATION.cff, fork compliance |
-| `github-meta` | Description, topics, settings, social preview |
-| `github-seo` | Keyword research and content optimization strategy |
-| `github-community` | Templates, CONTRIBUTING, CODE_OF_CONDUCT, devcontainer |
-| `github-release` | CHANGELOG, badges, versioning, release strategy |
-| `github-empire` | Multi-repo portfolio strategy, profile README |
-| `extensions/dataforseo` | Live keyword/SERP data (requires DataForSEO account) |
-
-## Prerequisites
-
-Before any skill can operate, check these in order:
-
-1. **Git installed?** Run `git --version`. If missing, guide user to install.
-2. **GitHub CLI installed?** Run `gh --version`. If missing: `winget install GitHub.cli` (Windows) or `brew install gh` (macOS).
-3. **Authenticated?** Run `gh auth status`. If not logged in, guide through `gh auth login`.
-4. **In a git repo?** Run `git rev-parse --is-inside-work-tree`. If not, ask if they want to create one or point to an existing repo.
-
-If a user has no GitHub account, direct them to https://github.com/signup and wait for them to complete signup before proceeding with `gh auth login`.
-
-### API Credentials
-
-Two recommended services power SEO research and banner generation. The install
-script walks users through setting both up during installation. If they skipped
-setup, Step 0 below will catch it and guide them before any skill runs.
-
-**1. DataForSEO (MCP server -- NOT .env)**
-DataForSEO provides live keyword and SERP data. It runs as an MCP server
-The install script handles this automatically. When configured, tools like
-`dataforseo_labs_google_keyword_suggestions` are available directly in conversation.
-If the MCP server is not configured, SEO skills fall back to codebase analysis.
-
-**2. KIE.ai (REST API -- uses .env)**
-KIE.ai generates banner images for READMEs. It requires an API key in a `.env` file.
-
-**Standard dotenv locations:** Check these paths in order:
-1. Current working directory: `./.env.local`, then `./.env`
-2. Skill root: `github/.env.local`, then `github/.env`
-3. User home: `~/.env.local`, then `~/.env`
-
-**Loading credentials:** Before banner generation, load the .env:
-```bash
-for envfile in ./.env.local ./.env github/.env.local github/.env ~/.env.local ~/.env; do
-  if [ -f "$envfile" ]; then
-    export $(grep -v '^#' "$envfile" | xargs) 2>/dev/null
-    break
-  fi
-done
+```text
+python "<GITHUB_HOME>/scripts/run_headless.py" verify --mode portable --path "<TARGET>"
+python "<GITHUB_HOME>/scripts/run_headless.py" audit --path "<TARGET>"
+python "<GITHUB_HOME>/scripts/run_headless.py" cache-status --path "<TARGET>"
 ```
 
-| Key | Required By | Purpose |
-|-----|------------|---------|
-| `KIE_API_KEY` | `github-readme` banner generation | KIE.ai image generation |
-| DataForSEO credentials | SEO data pass across `github-seo`, `github-meta`, `github-readme`, `github-empire` | Configured via MCP server, not .env |
-
-## Shared Data Cache
-
-Skills persist their outputs to `.github-audit/` so other skills can reuse data
-without re-gathering. The orchestrator writes `repo-context.json` after baseline
-gathering. Each sub-skill reads cached data before gathering and writes its own
-cache file after executing.
-
-Reference: Read `github/references/shared-data-cache.md` for
-JSON schemas, dependency map, and freshness rules.
-
-**Orchestrator responsibilities:** Cache writes are embedded directly in Step 2
-and Step 3.5 below -- look for the **CACHE:** callouts in each step.
-
-## Headless Contract
-
-For API agents and non-interactive runners, use the deterministic script entrypoint:
-
-```bash
-python3 scripts/run_headless.py verify --mode both --path /path/to/repo
-python3 scripts/run_headless.py audit --path /path/to/repo
-python3 scripts/run_headless.py seo --path /path/to/repo
-python3 scripts/run_headless.py legal --path /path/to/repo
-python3 scripts/run_headless.py legal --path /path/to/repo --write-files
-python3 scripts/run_headless.py meta --path /path/to/repo
-python3 scripts/run_headless.py community --path /path/to/repo
-python3 scripts/run_headless.py community --path /path/to/repo --write-files
-python3 scripts/run_headless.py readme --path /path/to/repo
-python3 scripts/run_headless.py readme --path /path/to/repo --generate-assets
-python3 scripts/run_headless.py release --path /path/to/repo
-python3 scripts/run_headless.py release --path /path/to/repo --write-files
-python3 scripts/run_headless.py empire --path /path/to/repo
-python3 scripts/run_headless.py empire --path /path/to/repo --generate-avatar
-python3 scripts/run_headless.py cache-status --path /path/to/repo
-```
-
-The deterministic commands write:
-
-- `.github-audit/repo-context.json`
-- `.github-audit/audit-data.json`
-- `.github-audit/seo-data.json`
-- `.github-audit/legal-data.json`
-- `.github-audit/community-data.json`
-- `.github-audit/meta-data.json`
-- `.github-audit/readme-data.json`
-- `.github-audit/releases-data.json`
-- `.github-audit/empire-data.json`
-- `.github-audit/output/<repo>-<timestamp>/GITHUB-AUDIT-REPORT.md`
-- `.github-audit/output/<repo>-<timestamp>/ACTION-PLAN.md`
-- `.github-audit/output/<repo>-<timestamp>/SUMMARY.json`
-- `.github-audit/output/<repo>-<timestamp>/SEO-REPORT.md`
-- `.github-audit/output/<repo>-<timestamp>/SEO-SUMMARY.json`
-- `.github-audit/output/<repo>-<timestamp>/LEGAL-REPORT.md`
-- `.github-audit/output/<repo>-<timestamp>/LEGAL-PLAN.md`
-- `.github-audit/output/<repo>-<timestamp>/LEGAL-SUMMARY.json`
-- `.github-audit/output/<repo>-<timestamp>/COMMUNITY-REPORT.md`
-- `.github-audit/output/<repo>-<timestamp>/COMMUNITY-PLAN.md`
-- `.github-audit/output/<repo>-<timestamp>/COMMUNITY-SUMMARY.json`
-- `.github-audit/output/<repo>-<timestamp>/META-REPORT.md`
-- `.github-audit/output/<repo>-<timestamp>/META-SUMMARY.json`
-- `.github-audit/output/<repo>-<timestamp>/README-REPORT.md`
-- `.github-audit/output/<repo>-<timestamp>/README-PREVIEW.md`
-- `.github-audit/output/<repo>-<timestamp>/README-SUMMARY.json`
-- `.github-audit/output/<repo>-<timestamp>/RELEASE-REPORT.md`
-- `.github-audit/output/<repo>-<timestamp>/RELEASE-PROPOSAL.md`
-- `.github-audit/output/<repo>-<timestamp>/RELEASE-SUMMARY.json`
-- `.github-audit/output/<owner>-<timestamp>/EMPIRE-REPORT.md`
-- `.github-audit/output/<owner>-<timestamp>/EMPIRE-BLUEPRINT.md`
-- `.github-audit/output/<owner>-<timestamp>/PROFILE-README-DRAFT.md`
-- `.github-audit/output/<owner>-<timestamp>/EMPIRE-SUMMARY.json`
-
-`run_headless.py seo` is a deterministic fallback cache seeding path. It does
-not call DataForSEO MCP, so live volume, difficulty, intent, AI visibility, and
-SERP checks remain part of the interactive `github seo` skill flow.
-
-`run_headless.py legal` is a deterministic legal planning path. By default it
-emits a compliance report plus `legal-data.json` without mutating the repo. Use
-`--write-files` to create or refresh `LICENSE`, `SECURITY.md`, `CITATION.cff`,
-and `NOTICE` when the plan marks them as missing or weak. Complex legal edge
-cases remain explicitly flagged for human review rather than being guessed.
-
-`run_headless.py meta` is a deterministic metadata planning path. It writes a
-machine-readable metadata plan and only mutates live repo settings when
-explicitly invoked with `--apply`.
-
-`run_headless.py community` is a deterministic community-health planning path.
-By default it scores the current Community Standards surface and emits a file
-plan without mutating the repo. Use `--write-files` to create or refresh
-deterministic community-health files, including YAML issue templates and YAML
-discussion category forms when discussion category slugs are discoverable.
-
-`run_headless.py readme` is a deterministic README planning path. By default it
-builds a scored preview and cache without rewriting `README.md`. Use `--write`
-to save the generated README to disk. Use `--generate-assets` to reuse an
-existing banner, generate a KIE-backed banner when needed, and emit a generated
-`social-preview.jpg` plus file/raw/settings links for the final platform step.
-
-`run_headless.py release` is a deterministic release planning path. By default
-it emits a release dashboard, proposal, and `releases-data.json` cache without
-mutating the repo. Use `--write-files` to prepare `CHANGELOG.md` and
-`.github/release.yml`. Use `--create-release` for explicit draft creation, and
-add `--publish` only when you intentionally want a live release created.
-
-`run_headless.py empire` is a deterministic portfolio planning path. It writes
-`empire-data.json`, an empire blueprint, a profile README draft, and explicit
-`gh` commands for safe follow-up execution. Use `--generate-avatar` when you
-want the headless runner to generate `assets/avatar.jpg`; pin ordering and the
-final profile-photo upload remain explicit GitHub web UI steps.
-
-## Orchestration Logic
-
-### Step 0: Setup Check (runs ONCE per session, before anything else)
-
-Before routing to any sub-skill, check if the user has the recommended services
-configured. This runs the FIRST time any `github` orchestration request is used in a session.
-After showing the setup status once, do not repeat it.
-
-**Check 1 -- DataForSEO MCP:**
-Use ToolSearch to look for `dataforseo_labs_google_keyword_suggestions`.
-
-**Check 2 -- KIE.ai API Key:**
-```bash
-for envfile in ./.env.local ./.env github/.env.local github/.env ~/.env.local ~/.env; do
-  if [ -f "$envfile" ] && grep -q 'KIE_API_KEY=.' "$envfile" 2>/dev/null; then
-    echo "KIE_CONFIGURED=true"; break
-  fi
-done
-```
-(Check that the key is not just present but has a non-empty value after the `=`.)
-
-**If BOTH are configured:** Show a one-liner and move on:
-```
-Services: DataForSEO [active] | KIE.ai [active] -- full power mode.
-```
-
-**If one or both are missing, STOP and show the setup guide:**
-```
-## Setup Check
-
-This suite works best with two recommended services. Here's your status:
-
-DataForSEO  [not configured]  -- powers live keyword research, SERP rankings, and AI visibility
-KIE.ai      [not configured]  -- powers AI-generated banner images for READMEs
-
-### How to set up DataForSEO (5 minutes)
-
-1. Create a free account at https://dataforseo.com
-   (free tier includes enough credits for hundreds of keyword analyses)
-2. Go to https://app.dataforseo.com/api-access to find your login and password
-   - macOS/Linux: bash extensions/dataforseo/install.sh
-   - Windows: powershell -File extensions\dataforseo\install.ps1
-   The installer will prompt for your credentials and configure the MCP server.
-
-### How to set up KIE.ai (2 minutes)
-
-1. Go to https://kie.ai/api-key and create a free account
-2. Copy your API key
-3. Paste it into `./.env.local` (preferred) or `github/.env`:
-   KIE_API_KEY=your_key_here
-
-Want to set these up now, or continue without them?
-(Skills still work without these services, but SEO recommendations will be
-less precise and banner generation won't be available.)
-```
-
-Wait for the user to respond before proceeding. If they say continue/skip/later,
-proceed normally. If they want to set things up, guide them through it.
-
-### Step 1: Capture User Intent
-
-On first interaction, ask conversationally what they want to accomplish. Map to one of:
-
-| Intent | Optimization Priorities |
-|--------|------------------------|
-| **Open Source Community** | README (welcoming), community files (critical), topics (broad), SEO (discovery) |
-| **Professional Portfolio** | README (impressive), badges (social proof), branding (consistent), pinned repos |
-| **Business / Brand** | SEO (aggressive keywords), description (value prop), Pages, cross-linking |
-| **Internal to Public** | Legal (thorough), SECURITY.md (critical), README (docs-heavy), CITATION.cff |
-| **Academic / Research** | CITATION.cff (required), README (methodology), license (permissive), releases |
-| **Hobby / Learning** | README (authentic), legal (simple MIT), community (lightweight), SEO (lower priority) |
-
-If the user skips intent, fall back to repo-type defaults.
-
-### Step 2: Gather Baseline Data
-
-For any repo, collect:
-- `gh repo view --json name,description,url,homepageUrl,repositoryTopics,visibility,defaultBranchRef,licenseInfo,stargazerCount,forkCount,watchers,primaryLanguage,createdAt,updatedAt`
-- File existence: README.md, LICENSE, CONTRIBUTING.md, SECURITY.md, CITATION.cff, CODE_OF_CONDUCT.md, .github/ISSUE_TEMPLATE/, .github/PULL_REQUEST_TEMPLATE.md, .github/FUNDING.yml, .gitattributes, CHANGELOG.md
-- Codebase scan for repo-type detection
-
-**CACHE: After gathering, write `.github-audit/repo-context.json`** with all
-baseline data. Create the directory and gitignore entry first:
-```bash
-mkdir -p .github-audit
-grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .gitignore
-```
-
-### Step 3: Detect Repo Type
-
-| Type | Signals |
-|------|---------|
-| Library/Package | package.json, setup.py, Cargo.toml, go.mod, pyproject.toml |
-| CLI Tool | bin/, "usage:", commander, yargs, clap, argparse |
-| Framework | middleware, routing, plugins, "getting started" |
-| API/Service | /api, swagger, OpenAPI, endpoints |
-| Application | docker-compose, Dockerfile, deployment configs |
-| Skill/Plugin | SKILL.md, AGENTS.md, extension pattern |
-| Documentation | mkdocs.yml, docusaurus.config.js, mostly .md files |
-
-### Step 3.5: SEO Data Pass (DataForSEO Integration)
-
-**This step runs automatically when the DataForSEO MCP server is available.**
-It discovers keyword opportunities that all downstream skills consume. If the
-MCP server is not configured, this step is skipped and skills use fallback methods.
-
-**How to check availability:** Use ToolSearch to look for
-`dataforseo_labs_google_keyword_suggestions`. If it exists, the MCP server is running.
-Do NOT waste an API call just to test availability.
-
-**When to run:** Before routing to ANY content-producing sub-skill (readme, meta,
-seo, empire). Skip for legal, community, releases (they don't need keyword data).
-
-**Important context:** GitHub repos are NOT traditional websites. We don't scan
-a domain -- we discover what keywords people Google where a well-optimized GitHub
-repo could rank, then place those keywords in the README, description, and topics.
-See the github-seo skill for the full Keyword Opportunity Framework.
-
-**Cost and auto-run behavior:**
-- Each `keyword_suggestions` call costs ~3-5 cents
-- Each `serp_organic_live_advanced` call costs ~5-8 cents
-- Typical per-repo cost: 2 keyword calls + 1 SERP = ~10-15 cents
-
-**For single repos and small portfolios (1-5 repos):** Just run it automatically.
-The cost is under 75 cents -- not worth interrupting the flow to ask permission.
-Show a brief note in the output: "Running DataForSEO keyword analysis (~10 cents)..."
-
-**For large portfolios (6+ repos):** Show the cost estimate and ask before proceeding,
-because 10+ repos can cost over a dollar:
-```
-DataForSEO SEO Pass: [N] repo(s) x ~15 cents = ~[estimated total]
-Proceed? [y/n]
-```
-**Actually STOP and wait for a response. Do NOT continue working while waiting.**
-
-**If DataForSEO is NOT configured:** Do not silently skip it. Encourage setup:
-"DataForSEO is not configured. SEO data will use GitHub search fallback only.
-For live keyword research, set it up in 5 minutes: https://dataforseo.com
-Then run the install script in extensions/dataforseo/."
-
----
-
-`keyword_suggestions` returns volume + difficulty + intent INLINE -- no separate
-volume or difficulty calls needed.
-
-```
-1. Generate 2-3 seed phrases from: repo name + description + primary language
-
-   SEED QUALITY RULES (critical -- bad seeds waste API calls):
-   - Keep seeds SHORT: 2-3 words max. "seo audit tool" not "github seo audit tool"
-   - Use CATEGORY-LEVEL terms, not project-specific jargon
-   - Think: "what would a developer Google to find this kind of project?"
-   - Good seeds: "python web framework", "open source seo tools", "terminal emulator"
-   - Bad seeds: "github seo tools", "lightweight WSGI microframework server"
-
-   SEED FALLBACK: If a seed returns zero results, it was too specific.
-   Broaden it by removing words. "github seo" → "seo tools" → "open source seo tools".
-   Budget: max 4 keyword_suggestions calls total. If all 4 return nothing usable,
-   fall back to codebase + GitHub search analysis (no DataForSEO).
-
-2. Call: dataforseo_labs_google_keyword_suggestions (once per seed)
-   Params: { "keyword": "python web framework", "location_name": "United States", "language_code": "en", "limit": 30 }
-   → Returns ~30 candidates each with volume, difficulty, and intent already included
-   → Filter: drop anything under 50/mo volume, flag difficulty under 40 as Sweet Spot
-   → NOTE: parameter is "keyword" (singular string), NOT "seed_keywords" (array)
-   → NOTE: use "location_name": "United States", NOT "location_code": 2840
-
-3. Call: serp_organic_live_advanced (on best Sweet Spot candidate)
-   Params: { "keyword": "python web framework", "location_name": "United States", "language_code": "en", "device": "desktop", "depth": 20 }
-   → THE CRITICAL CHECK: scan for "github.com" in results.
-   → If github.com in top 10: keyword is GOLD (GitHub Viability = 1.0)
-   → If github.com in 11-20: possible (0.5)
-   → If no github.com at all: SKIP this keyword, try next candidate
-```
-
-**Store the results as SEO context.** Format:
-
-```
-## SEO Data (from DataForSEO)
-
-### Keyword Opportunities (by Opportunity Score)
-| Keyword | Volume/mo | Difficulty | GitHub in SERP? | Category |
-|---------|----------|------------|----------------|----------|
-| [term] | X | Y | Yes (#N) | Sweet Spot |
-| [term] | X | Y | Yes (#N) | Worth It |
-
-### Placements
-- Primary keyword: [term] → H1, description, first paragraph
-- Secondary keywords: [terms] → H2 headings
-- Topic keywords: [terms] → GitHub topics
-
-### AI Visibility
-- ChatGPT mentions: [yes/no]
-- Competitors mentioned instead: [list]
-
-Data source: DataForSEO MCP (live, [date])
-```
-
-If DataForSEO is NOT available, note: `SEO Data: fallback mode (codebase + GitHub search analysis)`.
-Skills will then use their own fallback methods (see github-seo skill).
-
-**CACHE: After the SEO pass, write `.github-audit/seo-data.json`** with keyword
-opportunities, placements, and AI visibility findings.
-
-**Cost:** ~10-15 cents per repo (2 keyword calls + 1 SERP check). Warn user
-before portfolio analysis (multiply by repo count).
-
-### Step 4: Route to Sub-Skill
-
-Pass intent + repo type + baseline data + SEO data (if available) to the
-appropriate sub-skill.
-
-**Default behavior for bare `github <owner/repo>` (no sub-command):**
-When the user provides a repo without specifying a sub-skill, run Steps 1-3.5
-(intent, baseline, repo type, SEO data), then present a **Quick Health Summary**:
-
-```
-## Quick Health Summary: owner/repo
-
-**Repo type:** [detected type] | **Intent:** [captured or assumed intent]
-**Stars:** X | **License:** MIT | **Last release:** vX.X.X (date)
-
-### Top 3 Recommended Actions (by impact)
-1. [Highest impact action] → use `github-[sub-skill]`
-2. [Second action] → use `github-[sub-skill]`
-3. [Third action] → use `github-[sub-skill]`
-
-### SEO Snapshot (if DataForSEO available)
-Primary keyword opportunity: "[keyword]" (X/mo, difficulty Y, GitHub at #Z)
-
-Run `github-audit` for a full 0-100 score, or pick a specialized skill above to start.
-```
-
-This gives the user immediate value and a clear next step, instead of just
-showing a menu.
-
-For requests explicitly matching a sub-skill (for example, README optimization), route
-directly to that sub-skill.
-
-## The GARE Pattern
-
-Every skill follows Gather, Analyze, Recommend, Execute:
-1. **Gather** -- Collect data before making decisions
-2. **Analyze** -- Compare current state vs. ideal for repo type + intent
-3. **Recommend** -- Present data-backed recommendations with reasoning
-4. **Execute** -- Apply changes with user approval
-
-Every recommendation must cite its source:
-- "Based on DataForSEO keyword volume..." (live data)
-- "Based on analysis of your codebase..." (repo scan)
-- "Based on your repo type (CLI tool)..." (detection)
-- "Based on GitHub's indexing rules..." (reference file)
-- "Based on audit findings..." (prior audit run)
-- "Based on your stated intent..." (user intent)
-
-## UX Principles (applies to ALL skills)
-
-**Hold the user's hand through manual steps.** Many GitHub actions have no API
-(profile photo upload, social preview, repo settings). When a skill requires manual
-action, provide:
-
-1. **Clickable file links** for generated files: `file:///[absolute-path]/assets/banner.webp`
-2. **Direct URLs** to the exact settings page: `https://github.com/{owner}/{repo}/settings`
-   -- always substitute the actual owner/repo, never leave placeholders when you know the values
-3. **Step-by-step instructions** numbered and specific: "Go to X, click Y, upload Z"
-4. **Verification links** when possible: "Test your social preview at https://www.opengraph.xyz"
-
-The goal is zero guesswork for the user. If they need to upload a file, show them
-exactly where the file is AND exactly where to upload it. If they need to change a
-setting, link them to the exact page. Make the manual parts as close to automated
-as possible.
-
-**Generated image link rule (banners, avatars, social previews):** Whenever ANY
-image is generated or referenced for manual upload, ALWAYS output TWO clickable links:
-1. **Local:** `file:///[absolute-path]/image.webp` (for immediate access)
-2. **Remote:** `https://raw.githubusercontent.com/{owner}/{repo}/main/{path}` (after push)
-Plus the relevant settings/upload URL. Never just mention a relative path like
-`assets/banner.webp` without the clickable link. This applies to:
-- README banners (github-readme skill)
-- Social preview images (github-meta skill)
-- Profile avatars (github-empire skill)
-- Any other generated image that requires manual upload
-
-**Image format pipeline:** All AI-generated images (banners, avatars) follow the
-same flow: request PNG from KIE.ai (lossless source) then convert to WebP (quality
-80) for delivery. WebP is ~30% smaller than JPEG at equivalent quality and GitHub
-renders it natively. See `banner-generation.md` Image Format Pipeline for details.
-
-## Reference Files
-
-Load on-demand as needed -- do NOT load all at startup.
-
-**Path resolution:** Reference files are installed at `github/references/`.
-When a sub-skill says `Read github/references/foo.md`, use the Read tool with the full path:
-`github/references/foo.md`
-
-- `references/license-guide.md` -- License types, compatibility, fork obligations
-- `references/readme-framework.md` -- README structure, SEO patterns, headings
-- `references/github-seo-guide.md` -- GitHub ranking factors, Google indexing rules
-- `references/community-files-guide.md` -- Standard files, best practices, priority by intent
-- `references/community-templates.md` -- YAML issue forms, PR template, devcontainer, dependabot
-- `references/banner-generation.md` -- KIE.ai GPT Image 2 API, prompt engineering, defaults
-- `references/releases-guide.md` -- Semver, changelog format, badge URLs
-- `references/repo-type-templates.md` -- Per-type defaults for all repo types
-- `references/shared-data-cache.md` -- Cross-skill data persistence schemas and rules
-
-## Scoring Methodology
-
-### GitHub Health Score (0-100)
-
-| Category | Weight |
-|----------|--------|
-| README Quality | 25% |
-| Metadata & Discovery | 20% |
-| Legal Compliance | 15% |
-| Community Health | 15% |
-| Release & Maintenance | 15% |
-| SEO & Discoverability | 10% |
-
-### Priority Levels
-- **Critical**: Blocks discoverability or creates legal risk (immediate fix)
-- **High**: Significantly impacts professional appearance (fix within 1 week)
-- **Medium**: Optimization opportunity (fix within 1 month)
-- **Low**: Nice to have (backlog)
-
-## Standard Operating Procedure (SOP)
-
-The skill suite is designed to be run in a specific order. Each skill builds on
-the work of the previous one. **Do not skip skills or run them out of order**
-unless a category already scores 90+ (in which case, skip it).
-
-**The canonical workflow:**
-
-```
-github-audit          Step 0: Diagnose (scores 6 categories, generates SOP)
-    |
-github-legal          Step 1: Foundation (license, compliance, fork obligations)
-    |
-github-community      Step 2: Infrastructure (templates, CoC, devcontainer)
-    |
-github-release        Step 3: Versioning (CHANGELOG, badges, catch-up releases)
-    |
-github-seo            Step 4: Research (keyword data for description + README)
-    |
-github-meta           Step 5: Settings (description, topics, features -- uses SEO data)
-    |
-github-readme         Step 6: Capstone (README optimization -- uses everything above)
-    |
-github-audit          Step 7: Measure (re-audit to verify improvement)
-```
-
-**Why this order:**
-- Legal must come first because every other file references the license
-- Community files must exist before releases reference them
-- SEO keyword research must happen before meta and readme consume those keywords
-- README is last because it references all other files and uses SEO keywords
-- The final audit measures the delta and catches anything that slipped through
-
-**Each skill ends with a handoff** pointing the user to the next step. The user
-should never finish a skill and wonder "what now?" -- the skill tells them.
-
-**Two-phase approach:**
-
-```
-Phase 1: Per-Repo Optimization (repeat for each repo)
-  github-audit -> github-legal -> github-community -> github-release -> github-seo -> github-meta -> github-readme -> audit
-
-Phase 2: Portfolio Optimization (run once, after all repos are done)
-  github-empire -> profile README, cross-linking, topic sync, branding, avatar
-```
-
-Empire operates at the portfolio level and assumes each repo is already in good
-shape. Running it before the individual repos are optimized means it will make
-recommendations based on incomplete data. Always finish Phase 1 on all repos first.
-
-## Sub-Skills
-
-1. **github-audit** -- Full repo health audit with 0-100 scoring (Step 0 + Step 7)
-2. **github-legal** -- License, attribution, SECURITY.md, CITATION.cff (Step 1)
-3. **github-community** -- Community health files and templates (Step 2)
-4. **github-release** -- Release strategy, CHANGELOG, badges (Step 3)
-5. **github-seo** -- Keyword research and content optimization (Step 4)
-6. **github-meta** -- Description, topics, settings, social preview (Step 5)
-7. **github-readme** -- README generation and optimization (Step 6)
-8. **github-empire** -- Portfolio strategy, profile README, org profile (after all repos)
-
-## Parallel Reviewers
-
-For parallel analysis during audits, use Claude Code subagents or Codex
-multi-agents with these category assignments:
-- `github-legal` -- Legal compliance scoring
-- `github-community` -- Community health scoring
-- `github-release` -- Release and maintenance scoring
-- `github-seo` -- SEO and discoverability scoring
-- `github-meta` -- Metadata and discovery scoring
-- `github-readme` -- README quality scoring
-
+In a source checkout, `python "<SOURCE_ROOT>/legends_github.py" <workflow>` is
+also supported. Installed skills need not have that launcher; their
+`GITHUB_HOME/scripts/run_headless.py` is the equivalent entry point. Never resolve
+runtime paths against the target repository's current directory.
+
+The source launcher exposes `capabilities` as machine-readable workflow metadata.
+Its `--offline` option disables external requests; `--artifacts-dir "<OUTPUT>"`
+isolates artifacts from the target. Inspect launcher help before using global
+options: the installed script may expose configuration through environment
+variables instead. `verify --mode api` remains a compatibility alias.
+
+## Route by outcome
+
+| User objective | Skill | Runtime command | Main evidence |
+|---|---|---|---|
+| Find actionable defects and gaps | `github-audit` | `audit` | Source, examples, settings, verification |
+| Explain and demonstrate the project | `github-readme` | `readme` | Implementation, working installation and usage |
+| Review licenses and upstream notices | `github-legal` | `legal` | License text, provenance, distribution context |
+| Correct description, topics, settings | `github-meta` | `meta` | Current settings, project capabilities |
+| Improve relevant organic discovery | `github-seo` | `discover`, `seo` | User questions, comparisons, search observations |
+| Make contribution and support usable | `github-community` | `community` | Existing workflows and maintainer capacity |
+| Prepare a reliable release | `github-release` | `release` | Tags, diff, package contents, tests |
+| Present or maintain related projects | `github-empire` | `empire` | Owner scope, repo purpose, profile, shared users |
+
+Source sub-skills live at `<SOURCE_ROOT>/skills/github-*/SKILL.md`. Installed
+sub-skills live beside this `github` directory under the host's skill root.
+Load only relevant instructions and references.
+
+For a bare repository request, gather a bounded baseline and give the highest
+value findings with supporting evidence. If asked to improve the repository,
+continue through authorized fixes. If asked only for an audit, deliver the audit.
+
+## Establish the baseline
+
+- Inspect source, manifests, examples, docs, existing policies, and release
+  machinery. A manifest identifies an ecosystem, not the entire repo type.
+- Distinguish libraries, CLI tools, services, applications, documentation,
+  skills/plugins, research projects, and monorepos. Private/internal visibility
+  and archived status change applicability.
+- Read local content for a local audit, including uncommitted work. Label the
+  checkout and remote branch separately; local edits are not live changes.
+- Query relevant live metadata with an explicit `--repo OWNER/REPO` or API path.
+  Record errors without exposing authentication.
+- Reuse `.github-audit/` context after checking target identity, timestamp,
+  revision, dirty state, and whether live claims need refreshing.
+
+## Evidence and priority
+
+Distinguish **observed**, **unavailable**, and **not_applicable** evidence.
+Observed absence differs from a failed read. A private-repo API 404 can mean
+missing access; it does not by itself prove a file or repository is absent.
+Record source, collection time, applicability, and separately labeled inferences.
+Never replace unknown measurements with zero.
+
+Prioritize broken installation, misleading capability claims, unusable examples,
+incorrect notices, release defects, and inaccessible support paths according to
+user impact. Evaluate optional presentation work by usefulness. No minimum badge,
+topic, image, section, or community-file count is required.
+
+The runtime preserves compatibility scores and caches. Interpret them alongside
+versioned findings and coverage. A score summarizes checks; it does not establish
+legal compliance, maintenance quality, search rankings, adoption, or revenue.
+Do not recommend work solely to raise a score.
+
+## Compose workflows around actual dependencies
+
+There is no mandatory sequence. A license claim needs verified license text; a
+quickstart needs a working command; release notes need an actual diff; a
+comparison needs current evidence. Research may inform metadata and README copy,
+but paid keyword data is never a prerequisite.
+
+Review sequentially by default. If the task and host explicitly allow delegation
+and independent review would help, assign bounded read-only reviews with source
+paths, scope, and expected evidence. Reconcile conflicts and report unavailable
+reviewers rather than inventing their results. No agent API or model is required.
+
+## Changes and optional capabilities
+
+Planning commands create local reports/caches; inspect returned artifact paths.
+Mutation flags are interfaces, not substitutes for user authorization:
+
+| Command | Local changes when requested | External changes when requested |
+|---|---|---|
+| `readme` | `--write` rewrites README; review its preview first | None by default |
+| `legal` | `--write-files`; `--license` selects an explicit license | None by default |
+| `community` | `--write-files` prepares community files | None by default |
+| `meta` | Plan artifacts | `--apply` applies ready metadata commands |
+| `release` | `--write-files` prepares release files | `--create-release` creates a draft; `--publish` requests publication |
+| `empire` | Blueprint and profile draft | Follow-up commands need scoped authorization |
+
+Use targeted edits when a full-file generator exceeds the requested scope or
+would overwrite curated content. Never push, publish, archive, change visibility,
+or send messages merely because a plan suggests it. Do not ask again for clearly
+authorized actions.
+
+Organic discovery can use source analysis, official docs, GitHub search, and
+configured research tools. Use paid providers for requested capabilities within
+established authorization and budget. Do not request keys or install unrelated
+services to unblock local work. Keep secrets in their configured credential
+store; do not print, source, or broadly import dotenv files.
+
+Artwork is optional. Reuse suitable owner-provided assets or, when generation is
+requested, use the host's configured image tool. No mascot, banner, social
+preview, avatar, or vendor badge is required. Verify current upload constraints
+before preparing an asset for a platform-specific setting.
+
+## References and delivery
+
+`references/portable-workflows.md` is the shared execution and evidence contract.
+Domain examples include `license-guide.md`, `readme-framework.md`,
+`github-seo-guide.md`, `community-files-guide.md`, `community-templates.md`,
+`releases-guide.md`, `repo-type-templates.md`, and `shared-data-cache.md`.
+Legacy examples are not current platform documentation or authorization to
+execute. Verify factual claims and adapt templates to the task.
+
+Preserve license text, upstream acknowledgments, and provenance when rewriting
+content. Do not confuse this suite with similarly named GitHub CLI toolkits or
+import content with incompatible licensing.
+
+Deliver changes and verification results, distinguish local artifacts from live
+state, and identify any necessary manual step with a real file path and settings
+URL. Recommend another workflow only for unresolved parts of the user's objective.

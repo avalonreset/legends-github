@@ -78,3 +78,9 @@ No repository rename, license change, removal of attribution, mandatory image ge
 - Windows/Linux and Python 3.10/3.12 launcher jobs are added to CI; remote execution remains pending publication of the branch.
 
 The legacy audit assigns this revised repository 88/100. That number is recorded only as a smoke-test output, not as validation of the new methodology.
+
+## Implemented refresh
+
+The portable runtime, evidence engine, discovery planner, optional local artwork, shared skill contract, specialist reviewers, and safety fixes are implemented on the refresh branch. See [GeoGrid validation](GEOGRID-VALIDATION.md) for the eleven-workflow real-project check and [discovery](DISCOVERY.md) for the new experiment contract. The original score fields remain available but are explicitly legacy.
+
+Native host certification remains unclaimed. The command interface has been exercised through this agent; other services need file and command access. No published release has been replaced by this refresh.

@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,24 +29,28 @@ def _load_json(path: Path, default: Any) -> Any:
 
 
 def ensure_cache_gitignore(repo_root: Path) -> None:
-    """Ensure .github-audit stays ignored in the target repo."""
-    gitignore_path = repo_root / ".gitignore"
-    entry = ".github-audit/"
-    lines: list[str] = []
-    if gitignore_path.exists():
-        lines = gitignore_path.read_text(encoding="utf-8").splitlines()
-        if entry in {line.strip() for line in lines}:
-            return
+    """Compatibility no-op: cache writes must never edit a target's tracked files."""
+    return None
 
-    lines.append(entry)
-    gitignore_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+
+def _atomic_json(path: Path, payload: Any) -> None:
+    """Replace complete JSON atomically so an interrupted write cannot truncate it."""
+    fd, temporary = tempfile.mkstemp(prefix=".json-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(payload, stream, indent=2)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
 
 
 def ensure_repo_cache(repo_root: Path) -> Path:
     """Create the repo cache directory if needed."""
     cache_dir = repo_cache_dir(repo_root)
     cache_dir.mkdir(parents=True, exist_ok=True)
-    ensure_cache_gitignore(repo_root)
     return cache_dir
 
 
@@ -89,7 +95,7 @@ def write_repo_cache(repo_root: Path, filename: str, payload: dict[str, Any]) ->
     enriched = dict(payload)
     enriched.setdefault("timestamp", now_iso())
     enriched.setdefault("analyzed_at", enriched["timestamp"])
-    path.write_text(json.dumps(enriched, indent=2), encoding="utf-8")
+    _atomic_json(path, enriched)
     return path
 
 
@@ -100,7 +106,7 @@ def write_setup_cache(**payload: Any) -> Path:
     enriched = dict(payload)
     enriched["timestamp"] = now_iso()
     enriched["analyzed_at"] = enriched["timestamp"]
-    path.write_text(json.dumps(enriched, indent=2), encoding="utf-8")
+    _atomic_json(path, enriched)
     return path
 
 
@@ -119,5 +125,5 @@ def append_run_cache(operation: str, summary: str, metadata: dict[str, Any] | No
             "metadata": metadata or {},
         }
     )
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    _atomic_json(path, payload)
     return path

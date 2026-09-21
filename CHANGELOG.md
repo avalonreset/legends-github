@@ -9,10 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Agent-neutral command launcher, capability discovery, offline execution, and per-target artifact isolation.
+- Versioned evidence findings, repository profiles, coverage, and practical priorities alongside the legacy score.
+- Organic discovery plans with sourced local evidence, comparison briefs, experiments, and measurement templates.
+- Regression coverage and Windows/Linux Python CI; read-only GeoGrid validation example.
+
 - Gemini CLI extension manifest and `GEMINI.md` context file so the skill suite can install through `gemini extensions install`.
 - Legends GitHub social preview image.
 
 ### Changed
+
+- Removed the paid image-provider runtime and credential setup. Artwork is optional and prepared from supplied local files.
+- Reworked skills and specialist reviewers around portable execution, evidence, and user outcomes.
+- Simplified the README, removed mascot artwork, and replaced unsupported SEO claims.
+- Fixed audit cache side effects, atomic JSON writes, and metadata topic preservation.
 
 - Renamed public project branding from provider-specific GitHub variants to Legends GitHub.
 - Updated README, citation metadata, support links, installer splash text, and generated artwork for the Legends GitHub name.
