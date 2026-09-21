@@ -1,5 +1,5 @@
 <p align="left" id="banner">
-  <a href="https://cto-legends.com"><img src="assets/banner.webp" alt="legends-github — agentic github workflows" width="100%"></a>
+  <a href="https://cto-legends.com"><img src="assets/banner.webp" alt="legends-github: agent-led repository audits, repairs, and search optimization" width="100%"></a>
 </p>
 
 # legends-github
