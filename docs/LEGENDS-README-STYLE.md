@@ -40,3 +40,5 @@ legends-obs-kit, legends-github and hyperyap. legends-seo-dungeon is explicitly
 excluded for now. Header edits do not update historical release archives.
 
 The wolf mascot and wolf-based illustrations are retired. Do not use them in READMEs, installer artwork, banners, or social previews. Use the approved typography banner.
+
+Social cards follow [the fixed-layout, agent-first upload SOP](SOCIAL-PREVIEW-SOP.md).
