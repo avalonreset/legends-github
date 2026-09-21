@@ -79,7 +79,8 @@ class SeoMetadataSafetyTests(unittest.TestCase):
             for repo in (repo_a, repo_b):
                 (repo / ".git").mkdir(parents=True)
                 (repo / "src").mkdir()
-            artifacts = root / "artifacts"
+            # Windows CI can expose TEMP through an 8.3 alias; compare canonical paths.
+            artifacts = (root / "artifacts").resolve()
             env = dict(os.environ)
             env["GITHUB_AUDIT_DIR"] = str(root / "ambient-cache")
             env["LEGENDS_GITHUB_HOME"] = str(root / "ambient-runtime")
