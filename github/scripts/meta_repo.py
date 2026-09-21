@@ -156,9 +156,10 @@ def recommended_topics(existing: list[str], seo_data: dict[str, Any], primary_la
         if normalized and normalized not in ordered:
             ordered.append(normalized)
 
+    for topic in existing:
+        add(topic)
     if primary_language:
         add(primary_language)
-    add("open-source")
     if repo_type == "Skill/Plugin":
         add("skill")
         add("plugin")
@@ -170,9 +171,7 @@ def recommended_topics(existing: list[str], seo_data: dict[str, Any], primary_la
     for topic in seo_data.get("recommended_topics", []):
         if isinstance(topic, str):
             add(topic)
-    for topic in existing:
-        add(topic)
-    return ordered[:15]
+    return ordered[:20]
 
 
 def current_description(metadata: dict[str, Any], cached_context: dict[str, Any]) -> str:
@@ -247,8 +246,8 @@ def build_meta_payload(repo_root: Path) -> dict[str, Any]:
     visibility = str(metadata.get("visibility") or "unknown").upper()
     social_preview_manual = visibility == "PRIVATE" and not bool(metadata.get("usesCustomOpenGraphImage", False))
     commands: list[dict[str, Any]] = []
-    repo_edit_ready = "/" in repo_slug
-    repo_edit_block = None if repo_edit_ready else "No GitHub remote detected for this local repository."
+    repo_edit_ready = "/" in repo_slug and bool(metadata)
+    repo_edit_block = None if repo_edit_ready else "Current GitHub metadata unavailable; verify remote state before applying edits."
 
     if recommended_desc and recommended_desc != current_desc:
         commands.append(
@@ -327,6 +326,7 @@ def build_meta_payload(repo_root: Path) -> dict[str, Any]:
         "primary_language": primary_language,
         "analysis_mode": "deterministic-plan",
         "current": {
+            "availability": "observed" if metadata else "unavailable",
             "description": current_desc,
             "topics": existing_topics,
             "homepage_url": current_homepage,
@@ -368,6 +368,8 @@ def build_meta_payload(repo_root: Path) -> dict[str, Any]:
 
 def apply_meta_plan(payload: dict[str, Any]) -> tuple[bool, list[str]]:
     """Apply ready gh commands from a metadata plan."""
+    if not payload.get("depends_on", {}).get("gh_metadata_available"):
+        raise RuntimeError("Current GitHub metadata unavailable; refresh before apply.")
     if not gh_auth_ok():
         raise RuntimeError("GitHub CLI is not authenticated; cannot apply metadata changes.")
     executed: list[str] = []
@@ -395,6 +397,7 @@ def build_meta_report(payload: dict[str, Any]) -> str:
 - **Generated at:** {payload['timestamp']}
 - **Mode:** {payload['mode']}
 - **Applied:** {payload['applied']}
+- **Remote evidence:** {payload['current']['availability']} (empty fields are not proof of absence when unavailable)
 
 ## Current vs Recommended
 

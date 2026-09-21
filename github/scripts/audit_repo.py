@@ -11,7 +11,9 @@ from pathlib import Path
 from typing import Any
 
 from cache_state import write_repo_cache
-from github_runtime import gh_release_rows, gh_repo_view, git_recent_commit, git_tags, repo_slug_from_git
+from github_runtime import repo_slug_from_git
+from audit_evidence import LocalEvidence, build_findings, collect_git, collect_remote, infer_profile, observation, PROFILE_LABELS
+from audit_reports import build_evidence_action_plan, build_evidence_report
 from runtime_paths import repo_output_dir
 
 
@@ -51,21 +53,10 @@ def score_rating(score: int) -> str:
 
 
 def detect_repo_type(repo_root: Path) -> str:
-    """Infer repo type from common files."""
-    signals = {
-        "Skill/Plugin": ["SKILL.md", "AGENTS.md"],
-        "Library/Package": ["package.json", "pyproject.toml", "setup.py", "Cargo.toml", "go.mod"],
-        "CLI Tool": ["bin", "cli.py", "main.py"],
-        "Framework": ["middleware", "plugins"],
-        "API/Service": ["openapi.yaml", "openapi.yml", "swagger.json"],
-        "Application": ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"],
-        "Documentation": ["mkdocs.yml", "docusaurus.config.js"],
-    }
-    for repo_type, paths in signals.items():
-        for relative in paths:
-            if (repo_root / relative).exists():
-                return repo_type
-    return "Application"
+    """Use the same bounded profile as evidence findings across all workflows."""
+    stamp = utcnow_iso()
+    profile = infer_profile(LocalEvidence(repo_root, stamp), observation("github:repository", stamp, reason="not_collected"))
+    return PROFILE_LABELS[profile["primary"]]
 
 
 def load_readme(repo_root: Path) -> tuple[str, Path | None]:
@@ -73,7 +64,8 @@ def load_readme(repo_root: Path) -> tuple[str, Path | None]:
     for candidate in README_CANDIDATES:
         path = repo_root / candidate
         if path.exists():
-            return path.read_text(encoding="utf-8", errors="replace"), path
+            observed = LocalEvidence(repo_root, utcnow_iso()).text(candidate)
+            return observed["value"] or "", path
     return "", None
 
 
@@ -342,6 +334,8 @@ def render_sop_table(rows: list[dict[str, str]]) -> str:
 
 def build_markdown_report(repo_context: dict[str, Any], audit_data: dict[str, Any], releases: list[dict[str, str]]) -> str:
     """Create the main markdown report."""
+    if "evidence_schema_version" in audit_data:
+        return build_evidence_report(repo_context, audit_data)
     scores = audit_data["scores"]
     weights = audit_data["weights"]
     rating = score_rating(audit_data["overall_score"])
@@ -386,6 +380,8 @@ def build_markdown_report(repo_context: dict[str, Any], audit_data: dict[str, An
 
 def build_action_plan(repo_context: dict[str, Any], audit_data: dict[str, Any]) -> str:
     """Create a deterministic SOP markdown file."""
+    if "evidence_schema_version" in audit_data:
+        return build_evidence_action_plan(repo_context, audit_data)
     rows = build_sop_rows(audit_data)
     return f"""# Action Plan
 
@@ -400,26 +396,33 @@ def build_action_plan(repo_context: dict[str, Any], audit_data: dict[str, Any]) 
 
 def run_audit(repo_root: Path) -> AuditBundle:
     """Run a deterministic audit for a local git repository."""
-    repo_slug = repo_slug_from_git(repo_root) or repo_root.name
-    metadata_raw = gh_repo_view(repo_slug) if "/" in repo_slug else None
+    repo_root = repo_root.resolve()
+    collected_at = utcnow_iso()
+    remote_slug = repo_slug_from_git(repo_root)
+    repo_slug = remote_slug or repo_root.name
+    remote = collect_remote(remote_slug, collected_at)
+    git = collect_git(repo_root, collected_at)
+    metadata_raw = remote["metadata"]["value"]
     readme, readme_path = load_readme(repo_root)
     file_map = build_file_map(repo_root)
-    releases = gh_release_rows(repo_slug) if "/" in repo_slug else []
-    tags = git_tags(repo_root)
-    recent_commit = git_recent_commit(repo_root)
+    releases = [{"tag": str(row.get("tagName") or ""), "title": str(row.get("name") or ""),
+                 "type": "Draft" if row.get("isDraft") else "Pre-release" if row.get("isPrerelease") else "Latest",
+                 "published": str(row.get("publishedAt") or "")} for row in remote["releases"]["value"] or []]
+    tags = git["tags"]["value"] or []
+    recent_commit = git["recent_commit"]["value"] or ""
     repo_type = detect_repo_type(repo_root)
 
     metadata = {
         "name": metadata_raw.get("name") if metadata_raw else repo_root.name,
         "description": metadata_raw.get("description") if metadata_raw else "",
         "homepage_url": metadata_raw.get("homepageUrl") if metadata_raw else "",
-        "topics": metadata_raw.get("repositoryTopics") if metadata_raw else [],
+        "topics": (metadata_raw.get("repositoryTopics") or []) if metadata_raw else [],
         "visibility": metadata_raw.get("visibility") if metadata_raw else "",
         "default_branch": (metadata_raw.get("defaultBranchRef") or {}).get("name") if metadata_raw else "",
         "license": ((metadata_raw.get("licenseInfo") or {}).get("spdxId") if metadata_raw else "") or "",
         "stars": metadata_raw.get("stargazerCount") if metadata_raw else 0,
         "forks": metadata_raw.get("forkCount") if metadata_raw else 0,
-        "watchers": metadata_raw.get("watchers", {}).get("totalCount") if metadata_raw else 0,
+        "watchers": (metadata_raw.get("watchers") or {}).get("totalCount") if metadata_raw else 0,
         "primary_language": ((metadata_raw.get("primaryLanguage") or {}).get("name") if metadata_raw else "") or "",
         "created_at": metadata_raw.get("createdAt") if metadata_raw else "",
         "updated_at": metadata_raw.get("updatedAt") if metadata_raw else "",
@@ -497,6 +500,10 @@ def run_audit(repo_root: Path) -> AuditBundle:
             "seo": seo_checks,
         },
     }
+    # Additive migration: preserve legacy keys and values for existing workflows.
+    audit_data.update(build_findings(repo_root, collected_at, remote, git))
+    repo_context["repository_profile"] = audit_data["repository_profile"]
+    repo_context["metadata_availability"] = remote["metadata"]["availability"]
 
     report_markdown = build_markdown_report(repo_context, audit_data, releases)
     action_plan_markdown = build_action_plan(repo_context, audit_data)
@@ -506,7 +513,7 @@ def run_audit(repo_root: Path) -> AuditBundle:
 def write_audit_artifacts(repo_root: Path, bundle: AuditBundle) -> dict[str, str]:
     """Write cache and output artifacts for one audit run."""
     slug = slugify(bundle.repo_context["repo"])
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
     out_dir = repo_output_dir(repo_root) / f"{slug}-{timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -518,6 +525,10 @@ def write_audit_artifacts(repo_root: Path, bundle: AuditBundle) -> dict[str, str
     action_plan_path = out_dir / "ACTION-PLAN.md"
     action_plan_path.write_text(bundle.action_plan_markdown, encoding="utf-8")
     summary_path = out_dir / "SUMMARY.json"
+    evidence_path = out_dir / "FINDINGS.json"
+    evidence_path.write_text(json.dumps({key: bundle.audit_data[key] for key in (
+        "evidence_schema_version", "scoring_version", "repository_profile", "findings",
+        "prioritized_actions", "evidence_coverage", "collection", "limitations")}, indent=2), encoding="utf-8")
     summary_path.write_text(
         json.dumps(
             {
@@ -526,6 +537,11 @@ def write_audit_artifacts(repo_root: Path, bundle: AuditBundle) -> dict[str, str
                 "overall_score": bundle.audit_data["overall_score"],
                 "scores": bundle.audit_data["scores"],
                 "action_items": bundle.audit_data["action_items"],
+                "evidence_schema_version": bundle.audit_data["evidence_schema_version"],
+                "scoring_version": bundle.audit_data["scoring_version"],
+                "prioritized_actions": bundle.audit_data["prioritized_actions"],
+                "evidence_coverage": bundle.audit_data["evidence_coverage"],
+                "findings_path": str(evidence_path),
             },
             indent=2,
         ),
@@ -536,6 +552,7 @@ def write_audit_artifacts(repo_root: Path, bundle: AuditBundle) -> dict[str, str
         "report": str(report_path),
         "action_plan": str(action_plan_path),
         "summary_json": str(summary_path),
+        "findings_json": str(evidence_path),
         "repo_context_cache": str(repo_context_path),
         "audit_cache": str(audit_data_path),
     }

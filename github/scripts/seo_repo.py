@@ -18,6 +18,7 @@ from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
 from github_runtime import gh_repo_view, repo_slug_from_git
 from runtime_paths import repo_output_dir
+from seo_research import import_research
 
 
 STOPWORDS = {
@@ -352,7 +353,7 @@ def choose_primary_keyword(candidates: list[str], repo_name: str, language: str,
     if language_term and type_terms:
         return f"{language_term} {type_terms[0].replace('-', ' ')}"
     normalized_name = repo_name.replace("-", " ").replace("_", " ").strip()
-    return normalized_name or "open source project"
+    return normalized_name or "software project"
 
 
 def choose_secondary_keywords(candidates: list[str], primary_keyword: str) -> list[dict[str, Any]]:
@@ -400,7 +401,6 @@ def build_topics(
         add(language)
     for topic in repo_type_topics(repo_type):
         add(topic)
-    add("open-source")
 
     def concise_phrase_topic(value: str) -> bool:
         tokens = tokenize(value)
@@ -433,7 +433,7 @@ def build_recommended_description(project_name: str, summary: str, primary_keywo
     elif cleaned_summary:
         description = cleaned_summary if cleaned_summary.lower().startswith(pretty_name.lower()) else f"{pretty_name}: {cleaned_summary}"
     else:
-        description = f"{pretty_name} is an open source project for {primary_keyword}."
+        description = f"{pretty_name} is a project for {primary_keyword}."
     return description[:347].rstrip(" .,;:") + ("..." if len(description) > 347 else "")
 
 
@@ -505,6 +505,7 @@ def build_seo_report(snapshot: dict[str, Any], seo_data: dict[str, Any]) -> str:
     secondary_lines = "\n".join(f"- {item['keyword']}" for item in secondary) if secondary else "- None"
     topic_lines = "\n".join(f"- `{topic}`" for topic in seo_data["recommended_topics"]) or "- None"
     paa_lines = "\n".join(f"- {question}" for question in seo_data["paa_questions"])
+    warnings = "\n".join(seo_data["warnings"])
     return f"""# GitHub SEO Report
 
 - **Repository:** {snapshot['repo']}
@@ -514,9 +515,7 @@ def build_seo_report(snapshot: dict[str, Any], seo_data: dict[str, Any]) -> str:
 
 ## Warning
 
-This headless SEO run is deterministic fallback analysis. It does not call
-DataForSEO MCP, so search volume, difficulty, intent, and SERP position are
-unverified.
+{warnings}
 
 ## Primary Keyword
 
@@ -541,11 +540,11 @@ unverified.
 ## Next Step
 
 Run `github meta` or `github readme` with `.github-audit/seo-data.json` already
-seeded from this fallback pass.
+seeded from this pass. Review product fit before applying recommendations.
 """
 
 
-def run_seo(repo_root: Path, mode: str = "quick") -> SeoBundle:
+def run_seo(repo_root: Path, mode: str = "quick", keyword_data=None, primary_keyword_choice=None, serp_data=()) -> SeoBundle:
     """Run deterministic fallback SEO analysis for a local git repository."""
     snapshot = build_repo_snapshot(repo_root)
     candidates = build_keyword_candidates(
@@ -622,7 +621,25 @@ def run_seo(repo_root: Path, mode: str = "quick") -> SeoBundle:
             "calls": [],
         },
     }
+    if keyword_data:
+        research = import_research(keyword_data, primary_keyword_choice, serp_data)
+        seo_data.update(research)
+        seo_data["secondary_keywords"] = [k for k in research["keyword_research"] if k != research["primary_keyword"]]
+        seo_data["data_sources"].extend(["dataforseo-keyword-overview-export", "dataforseo-serp-export"] if serp_data else ["dataforseo-keyword-overview-export"])
+        seo_data["warnings"] = ["Provider estimates are locale-specific, not measured traffic or ranking improvements. Keywords require product-fit review; imported research does not automatically rewrite metadata."]
+        seo_data["serp_verified"] = bool(research["serp_observations"])
+        seo_data["github_in_serp"] = None
+        seo_data["ai_visibility"]["cited"] = None
+        seo_data["paa_questions"] = []
+    elif primary_keyword_choice or serp_data:
+        raise ValueError("Research options require --keyword-data")
     report_markdown = build_seo_report(snapshot, seo_data)
+    if keyword_data:
+        report_markdown += "\n## Imported keyword evidence\n\nKeyword | Monthly volume estimate | Difficulty estimate\n--- | ---: | ---:\n"
+        for item in seo_data["keyword_research"]:
+            report_markdown += f"{item['keyword']} | {item['volume']} | {item['difficulty']}\n"
+        report_markdown += "\nLocale: " + json.dumps(seo_data["research_locale"]) + "\n"
+        report_markdown += "\nTopics and description above remain local suggestions, not provider-validated recommendations.\n"
     return SeoBundle(seo_data=seo_data, report_markdown=report_markdown)
 
 

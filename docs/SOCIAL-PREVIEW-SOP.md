@@ -32,7 +32,7 @@ request it. Do not redistribute a proprietary font without a license; request
 the user's font file when unavailable. Rendering needs Python and Pillow.
 
 ```powershell
-python scripts/render_social_preview.py --title legends-github --subtitle "agent-led repository audits, repairs, and search optimization" --font "E:\legends-clip-hunter\public\fonts\Legends-Regular.ttf" --output assets/social-preview.png
+python scripts/render_social_preview.py --title legends-github --subtitle "agent-led repository audits, repairs, and search optimization" --font "/path/to/Legends-Regular.ttf" --output assets/social-preview.png
 ```
 
 Inspect the full PNG and a 640 × 320 thumbnail. Confirm spelling, safe margins,

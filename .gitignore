@@ -1,5 +1,7 @@
 # Environment variables (contains API credentials)
 .env
+.env.local
+.env.*.local
 
 # OS files
 .DS_Store
