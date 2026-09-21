@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Fixed 1280x640 Legends social-preview renderer and agent-first upload protocol, distributed as a presentation-protocol supplement to v1.3.0; original source tag unchanged.
+
 - Gemini CLI extension manifest and `GEMINI.md` context file so the skill suite can install through `gemini extensions install`.
 - Legends GitHub social preview image.
 

@@ -36,7 +36,7 @@ repository audited by this toolkit. Preserve a third-party owner's design.
 Repositories without a banner should retain a normal text heading.
 
 The current rollout covers legends-geogrid, legends-stable-audio-3,
-legends-obs-kit, legends-github and hyperyap. legends-seo-dungeon is explicitly
+legends-obs-kit, legends-github, hyperyap and legends-dataforseo-kit. legends-seo-dungeon is explicitly
 excluded for now. Header edits do not update historical release archives.
 
 The wolf mascot and wolf-based illustrations are retired. Do not use them in READMEs, installer artwork, banners, or social previews. Use the approved typography banner.
