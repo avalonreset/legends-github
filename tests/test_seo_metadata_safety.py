@@ -11,11 +11,24 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "github" / "scripts"))
 
+import audit_repo
 import meta_repo
 import seo_repo
 
 
 class SeoMetadataSafetyTests(unittest.TestCase):
+    def test_application_manifest_and_agent_instructions_do_not_imply_library_or_skill(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "package.json").write_text(json.dumps({"name": "studio", "private": True, "scripts": {"dev": "vite"}}))
+            (root / "AGENTS.md").write_text("Project instructions")
+            self.assertEqual(audit_repo.detect_repo_type(root), "Application")
+            topics = seo_repo.build_topics("studio", "local search", [], [], "", audit_repo.detect_repo_type(root))
+            self.assertNotIn("library", topics)
+            self.assertNotIn("package", topics)
+            (root / "package.json").write_text(json.dumps({"name": "sdk", "exports": "./index.js"}))
+            self.assertEqual(audit_repo.detect_repo_type(root), "Library/Package")
+
     def test_seo_does_not_invent_open_source_topic(self):
         topics = seo_repo.build_topics("internal-tool", "inventory", [], [], "Python", "CLI Tool")
         self.assertNotIn("open-source", topics)

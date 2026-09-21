@@ -29,6 +29,7 @@ jobs:
             agents/*.md
             github/references/portable-workflows.md
             github/references/banner-generation.md
+            github/references/legends-banner-style.md
             github/references/github-seo-guide.md
 
   portable-entrypoint:

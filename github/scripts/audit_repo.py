@@ -12,7 +12,7 @@ from typing import Any
 
 from cache_state import write_repo_cache
 from github_runtime import repo_slug_from_git
-from audit_evidence import LocalEvidence, build_findings, collect_git, collect_remote
+from audit_evidence import LocalEvidence, build_findings, collect_git, collect_remote, infer_profile, observation, PROFILE_LABELS
 from audit_reports import build_evidence_action_plan, build_evidence_report
 from runtime_paths import repo_output_dir
 
@@ -53,21 +53,10 @@ def score_rating(score: int) -> str:
 
 
 def detect_repo_type(repo_root: Path) -> str:
-    """Infer repo type from common files."""
-    signals = {
-        "Skill/Plugin": ["SKILL.md", "AGENTS.md"],
-        "Library/Package": ["package.json", "pyproject.toml", "setup.py", "Cargo.toml", "go.mod"],
-        "CLI Tool": ["bin", "cli.py", "main.py"],
-        "Framework": ["middleware", "plugins"],
-        "API/Service": ["openapi.yaml", "openapi.yml", "swagger.json"],
-        "Application": ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"],
-        "Documentation": ["mkdocs.yml", "docusaurus.config.js"],
-    }
-    for repo_type, paths in signals.items():
-        for relative in paths:
-            if (repo_root / relative).exists():
-                return repo_type
-    return "Application"
+    """Use the same bounded profile as evidence findings across all workflows."""
+    stamp = utcnow_iso()
+    profile = infer_profile(LocalEvidence(repo_root, stamp), observation("github:repository", stamp, reason="not_collected"))
+    return PROFILE_LABELS[profile["primary"]]
 
 
 def load_readme(repo_root: Path) -> tuple[str, Path | None]:

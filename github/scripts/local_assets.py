@@ -30,7 +30,7 @@ def _prepare_image(source: Path, destination: Path, image_format: str, *, previe
     try:
         with Image.open(source) as image:
             oriented = ImageOps.exif_transpose(image)
-            prepared = ImageOps.fit(oriented, (1280, 640), method=Image.Resampling.LANCZOS) if preview else oriented
+            prepared = ImageOps.pad(oriented, (1280, 640), method=Image.Resampling.LANCZOS, color="#000000") if preview else oriented
             clean = Image.new("RGB" if image_format == "JPEG" else "RGBA", prepared.size)
             clean.paste(prepared.convert(clean.mode))
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -53,5 +53,5 @@ def convert_to_jpeg(source: Path, destination: Path) -> Path:
 
 
 def render_social_preview_from_banner(source: Path, destination: Path) -> Path:
-    """Create a centered 1280x640 JPEG crop of a supplied local banner."""
+    """Create a complete-image 1280x640 JPEG preview of a supplied local banner."""
     return _prepare_image(source, destination, "JPEG", preview=True)

@@ -29,7 +29,7 @@ For agent-driven work, ask your agent to read this toolkit's `AGENTS.md`, then g
 | --- | --- |
 | `audit` | Collect versioned findings, distinguish missing from unavailable evidence, and prioritize applicable fixes. |
 | `discover` | Build an organic discovery plan: audience, comparison briefs, proof, distribution, and measurement. |
-| `readme` | Preview a clearer explanation, setup instructions, and usage examples. |
+| `readme` | Preserve an existing README for targeted review, or scaffold a missing README with explicit draft requirements. |
 | `meta` | Propose descriptions, topics, and repository settings. |
 | `community` | Plan contributor documentation and issue workflows. |
 | `release` | Plan changelog, versioning, and release preparation. |
@@ -74,7 +74,7 @@ The plan turns repository evidence into candidate comparison pages, useful examp
 
 ## Optional artwork
 
-A strong repository does not require a mascot or banner. Keep an existing image if it helps, supply your own local asset, or use the image tool already available in your agent. The toolkit has no paid image-generation integration and asks for no image-provider key. Legacy image flags now reuse or convert local assets only. [Artwork guide](github/references/banner-generation.md).
+A strong repository does not require a mascot or banner. Keep an existing image if it helps, supply your own local asset, or use the image tool already available in your agent. The toolkit has no paid image-generation integration and asks for no image-provider key. Legacy image flags now reuse or convert local assets only. For a typography-first banner, use the [optional Legends recipe](github/references/legends-banner-style.md) with a supplied font. [Artwork guide](github/references/banner-generation.md).
 
 ## Existing skill installers
 
