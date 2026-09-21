@@ -14,7 +14,7 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_auth_ok, gh_repo_view, have_command, repo_slug_from_git, run_command
+from github_runtime import offline_mode, gh_auth_ok, gh_repo_view, have_command, repo_slug_from_git, run_command
 from release_repo import CANONICAL_RELEASE_YML
 from runtime_paths import repo_output_dir
 
@@ -617,6 +617,8 @@ def gh_discussion_categories(repo_slug: str) -> list[dict[str, str]]:
 
 def fetch_contributor_covenant() -> str:
     """Fetch Contributor Covenant text with a local fallback."""
+    if offline_mode():
+        return CONTRIBUTOR_COVENANT_FALLBACK.strip()
     if have_command("gh"):
         result = run_command(["gh", "api", "codes_of_conduct/contributor_covenant", "--jq", ".body"], check=False)
         if result.returncode == 0 and result.stdout.strip():

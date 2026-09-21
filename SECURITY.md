@@ -8,16 +8,11 @@
 
 ## Credential Handling
 
-This skill suite integrates with external services that require credentials:
+Local workflows need no provider API key. Live GitHub reads and mutations use your existing GitHub CLI authentication. Optional research services use credentials managed by your chosen host or integration; never place secrets in reports, prompts, Git commits, or generated examples.
 
-- **DataForSEO**: Configured via Claude Code MCP server settings
-  (`~/.claude/settings.json`). Credentials are managed by the MCP server
-  and are never stored in project files.
-- **KIE.ai**: API key stored in `~/.claude/skills/github/.env`.
-  This file is local to your machine and must not be committed to version control.
+The toolkit does not call a paid image-generation service. Use an existing local asset or your host's image tool separately when artwork is requested.
 
-**Important:** Never commit `.env` files, API keys, or credentials to any repository.
-The `.gitignore` in this project excludes `.env` files by default.
+Keep `.env`, `.env.local`, and other credential files out of version control. Offline mode disables the toolkit's external requests. Isolate cache/report output with `--artifacts-dir` when reviewing another repository.
 
 ## Reporting a Vulnerability
 
@@ -50,6 +45,6 @@ The following are in scope for security reports:
 
 The following are out of scope:
 
-- Vulnerabilities in third-party services (DataForSEO, KIE.ai)
-- Issues with Claude Code itself (report to [Anthropic](https://github.com/anthropics/claude-code/issues))
+- Vulnerabilities in third-party services (including optional research providers)
+- Issues in the hosting agent itself (report to its provider)
 - GitHub CLI (`gh`) vulnerabilities (report to [GitHub](https://github.com/cli/cli/security))

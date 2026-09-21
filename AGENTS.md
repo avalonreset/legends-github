@@ -6,7 +6,7 @@ Use this workflow with any agent that can read files and execute commands. No pa
 
 1. Resolve the toolkit and target as separate absolute paths. Read the target's instructions and check its Git status. Preserve existing user work.
 2. Establish the user's objective, audience, repository type, and authorized changes. Inspect the actual implementation before recommending templates.
-3. Run `python <toolkit>/legends_github.py verify --mode api --path <target>`. This mode checks the command runtime without requiring a Codex installation. Optional provider failures do not block unrelated local work.
+3. Run `python <toolkit>/legends_github.py verify --mode portable --path <target>`. All readiness modes check the portable runtime without requiring a host installation. Use `--offline --artifacts-dir <outside-target>` for an isolated local review. Optional provider failures do not block unrelated local work.
 4. Run `python <toolkit>/legends_github.py audit --path <target>`, then inspect the evidence and proposed actions. These commands write local caches and reports. An audit score is a checklist, not proof of quality or ranking potential.
 5. Choose the smallest relevant workflow using its `--help`. Distinguish observed facts, unavailable evidence, and hypotheses. Do not promote checklist points directly into business priorities.
 6. Make authorized changes, inspect the diff, and run relevant checks. External mutations, paid services, and publishing must follow the user's actual authorization. Do not repeat approval requests for already authorized work.

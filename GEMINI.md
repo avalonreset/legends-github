@@ -1,18 +1,7 @@
-# Legends GitHub
+# legends-github
 
-Legends GitHub exposes GitHub repository optimization workflows as Gemini CLI agent skills.
+Use `AGENTS.md` as the shared workflow contract. Gemini is one optional host for the portable file and command interface.
 
-Use the bundled skills from `skills/`:
+The bundled specialized instructions live under `skills/`. The source-checkout command entry point is `python legends_github.py`; use `capabilities` to inspect the workflow contract and `--help` for usage.
 
-- `github-audit`
-- `github-legal`
-- `github-community`
-- `github-release`
-- `github-seo`
-- `github-meta`
-- `github-readme`
-- `github-empire`
-
-Run these workflows from the root of the repository you want to optimize. The skills use local source files, git history, GitHub CLI metadata, and optional DataForSEO/KIE.ai credentials to make recommendations.
-
-Follow the GARE pattern in each workflow: gather data, analyze the current state, recommend changes, and execute only after the user approves live GitHub or filesystem mutations.
+Read repository evidence, propose useful changes, and act within the user's authorization. Optional research providers and native image tools are not prerequisites. Run sequentially when delegation is unnecessary or unsupported.

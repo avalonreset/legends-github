@@ -14,9 +14,10 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from audit_repo import run_audit, write_audit_artifacts
 from cache_state import append_run_cache, read_repo_cache
+from discovery_repo import run_discovery, write_discovery_artifacts
 from community_repo import run_community, write_community_artifacts
 from empire_repo import run_empire, write_empire_artifacts
-from github_runtime import resolve_repo_root
+from github_runtime import resolve_repo_root, offline_mode
 from legal_repo import run_legal, write_legal_artifacts
 from meta_repo import run_meta, write_meta_artifacts
 from readme_repo import run_readme, write_readme_artifacts
@@ -47,6 +48,12 @@ def run_audit_command(args: argparse.Namespace) -> dict:
         "overall_score": bundle.audit_data["overall_score"],
         "scores": bundle.audit_data["scores"],
         "action_items": bundle.audit_data["action_items"],
+        "legacy_fields_notice": "overall_score, scores and action_items are legacy checklist compatibility fields; use prioritized_actions and evidence_coverage for recommendations.",
+        "evidence_schema_version": bundle.audit_data["evidence_schema_version"],
+        "scoring_version": bundle.audit_data["scoring_version"],
+        "repository_profile": bundle.audit_data["repository_profile"],
+        "prioritized_actions": bundle.audit_data["prioritized_actions"],
+        "evidence_coverage": bundle.audit_data["evidence_coverage"],
         "artifacts": artifacts,
         "runtime_paths": runtime_paths_payload(repo_root),
     }
@@ -73,11 +80,12 @@ def run_cache_status(args: argparse.Namespace) -> dict:
         "readme_data": read_repo_cache(repo_root, "readme-data.json"),
         "releases_data": read_repo_cache(repo_root, "releases-data.json"),
         "empire_data": read_repo_cache(repo_root, "empire-data.json"),
+        "discovery_data": read_repo_cache(repo_root, "discovery-data.json"),
         "runtime_paths": runtime_paths_payload(repo_root),
     }
     payload["ready"] = any(
         payload[key] is not None
-        for key in ("repo_context", "audit_data", "seo_data", "legal_data", "community_data", "meta_data", "readme_data", "releases_data", "empire_data")
+        for key in ("repo_context", "audit_data", "seo_data", "legal_data", "community_data", "meta_data", "readme_data", "releases_data", "empire_data", "discovery_data")
     )
     return payload
 
@@ -340,13 +348,20 @@ def run_empire_command(args: argparse.Namespace) -> dict:
     return payload
 
 
+def run_discover_command(args: argparse.Namespace) -> dict:
+    repo_root = resolve_repo_root(args.path)
+    payload = run_discovery(repo_root, audience=args.audience, category=args.category, competitors=args.competitor)
+    artifacts = write_discovery_artifacts(repo_root, payload)
+    return {"operation": "discover", "status": "ok", "plan": payload, "artifacts": artifacts}
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build the CLI parser."""
     parser = argparse.ArgumentParser(description="Run Legends GitHub workflows non-interactively")
     sub = parser.add_subparsers(dest="command", required=True)
 
     verify = sub.add_parser("verify", help="Validate CLI/API readiness")
-    verify.add_argument("--mode", default="both", choices=["cli", "api", "both"])
+    verify.add_argument("--mode", default="portable", choices=["portable", "cli", "api", "both"])
     verify.add_argument("--path", default=".", help="Repo root or a path inside the repo")
     verify.add_argument("--allow-missing-gh-auth", action="store_true")
 
@@ -376,7 +391,7 @@ def build_parser() -> argparse.ArgumentParser:
     readme.add_argument(
         "--generate-assets",
         action="store_true",
-        help="Generate missing banner and social preview assets when runtime capabilities are available",
+        help="Prepare or reuse supplied local assets; no image service is called",
     )
 
     release = sub.add_parser("release", help="Plan deterministic release/versioning work for a local repo")
@@ -388,11 +403,16 @@ def build_parser() -> argparse.ArgumentParser:
     empire = sub.add_parser("empire", help="Plan deterministic portfolio branding work for the current GitHub owner")
     empire.add_argument("--path", default=".", help="Repo root or a path inside the repo")
     empire.add_argument("--username", default="", help="Explicit GitHub owner/login to analyze")
-    empire.add_argument("--generate-avatar", action="store_true", help="Generate an avatar asset when KIE and Pillow are available")
+    empire.add_argument("--generate-avatar", action="store_true", help="Reuse or convert a supplied local avatar; no image provider is called")
 
     cache_status = sub.add_parser("cache-status", help="Show current .github-audit cache state")
     cache_status.add_argument("--path", default=".", help="Repo root or a path inside the repo")
 
+    discover = sub.add_parser("discover", help="Plan evidence-backed organic discovery experiments")
+    discover.add_argument("--path", default=".")
+    discover.add_argument("--audience", default="", help="Intended users; use private/internal for non-public work")
+    discover.add_argument("--category", default="", help="The user problem or product category")
+    discover.add_argument("--competitor", action="append", default=[], help="Named comparison candidate; repeat as needed")
     return parser
 
 
@@ -400,7 +420,12 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
+    if offline_mode() and any(getattr(args, name, False) for name in ("apply", "create_release", "publish")):
+        print(json.dumps({"error": True, "message": "Remote mutation flags cannot be used with offline mode."}))
+        return 2
+
     handlers = {
+        "discover": run_discover_command,
         "verify": run_verify,
         "audit": run_audit_command,
         "seo": run_seo_command,

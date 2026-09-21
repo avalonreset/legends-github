@@ -22,4 +22,4 @@ abstract: >
   Code, Codex, and Gemini CLI. Includes 8 specialized sub-skills covering README
   generation, legal compliance, metadata optimization, SEO keyword research,
   community health, release management, and portfolio strategy. Powered by
-  DataForSEO for live keyword data and KIE.ai GPT Image 2 for generated visuals.
+  optional research integrations for keyword evidence and local artwork supplied by the user.

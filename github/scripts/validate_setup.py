@@ -14,23 +14,20 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from cache_state import append_run_cache, probe_repo_cache, write_setup_cache
-from github_runtime import gh_auth_ok, have_command, pillow_available, repo_slug_from_git, resolve_kie_api_key, resolve_repo_root
-from runtime_paths import codex_agents_dir, codex_config_path, codex_skill_dir, runtime_paths_payload
+from github_runtime import gh_auth_ok, have_command, pillow_available, repo_slug_from_git, offline_mode, resolve_repo_root
+from runtime_paths import runtime_paths_payload
 
 
 def _check(label: str, passed: bool, detail: str = "") -> dict:
     return {"label": label, "passed": bool(passed), "detail": detail}
 
 
-def validate_setup(repo_root: Path, mode: str = "both", allow_missing_gh_auth: bool = False) -> dict:
+def validate_setup(repo_root: Path, mode: str = "portable", allow_missing_gh_auth: bool = False) -> dict:
     """Validate Legends GitHub runtime readiness."""
     checks = []
     repo_slug = repo_slug_from_git(repo_root) or ""
     cache_dir, cache_writable = probe_repo_cache(repo_root)
-    kie_api_key, kie_source = resolve_kie_api_key(repo_root)
 
-    requires_cli = mode in {"cli", "both"}
-    requires_api = mode in {"api", "both"}
     dataforseo_helper = SCRIPT_DIR / "setup_dataforseo.py"
     headless_runner = SCRIPT_DIR / "run_headless.py"
     pillow_ready = pillow_available()
@@ -43,19 +40,13 @@ def validate_setup(repo_root: Path, mode: str = "both", allow_missing_gh_auth: b
     checks.append(_check("Repo cache directory writable", cache_writable, str(cache_dir)))
     checks.append(_check("Repo has a git remote", bool(repo_slug), repo_slug or "origin not resolved"))
 
-    if requires_cli:
-        checks.append(_check("Installed skill directory present", codex_skill_dir().exists(), str(codex_skill_dir())))
-        checks.append(_check("Installed agents directory present", codex_agents_dir().exists(), str(codex_agents_dir())))
-        checks.append(_check("Codex config path resolved", True, str(codex_config_path())))
-
     auth_ok = gh_auth_ok()
-    if requires_api or requires_cli:
+    if not offline_mode():
         if allow_missing_gh_auth:
-            checks.append(_check("GitHub CLI authenticated", True, "skipped by --allow-missing-gh-auth"))
+            checks.append(_check("GitHub CLI authenticated", auth_ok, "optional; --allow-missing-gh-auth supplied"))
         else:
             checks.append(_check("GitHub CLI authenticated", auth_ok, "gh auth status"))
 
-    checks.append(_check("KIE API key discoverable", bool(kie_api_key), kie_source or "not found"))
     checks.append(_check("Pillow available", pillow_ready, "PIL import" if pillow_ready else "not found"))
     checks.append(_check("DataForSEO setup helper present", dataforseo_helper.exists(), str(dataforseo_helper)))
     checks.append(_check("Headless runner present", headless_runner.exists(), str(headless_runner)))
@@ -66,37 +57,25 @@ def validate_setup(repo_root: Path, mode: str = "both", allow_missing_gh_auth: b
         "Repo cache directory writable",
         "Headless runner present",
     }
-    if requires_cli:
-        required_labels.update(
-            {
-                "Installed skill directory present",
-                "Installed agents directory present",
-                "Codex config path resolved",
-            }
-        )
-
     ready = all(check["passed"] for check in checks if check["label"] in required_labels)
     warnings: list[str] = []
     if not repo_slug:
         warnings.append("No git remote detected. Deterministic runs will use local-only metadata.")
-    if not auth_ok and not allow_missing_gh_auth:
+    if not auth_ok and not allow_missing_gh_auth and not offline_mode():
         warnings.append("GitHub CLI is not authenticated. Live GitHub metadata enrichment is unavailable.")
     if not have_command("gh"):
         warnings.append("GitHub CLI is not installed. Deterministic runs can still execute locally without GitHub enrichment.")
-    if not kie_api_key:
-        warnings.append("KIE_API_KEY not found. Banner and image generation remain unavailable.")
     if not pillow_ready:
         warnings.append("Pillow is not installed. Deterministic banner conversion and social preview generation are unavailable.")
     payload = {
         "mode": mode,
+        "offline": offline_mode(),
+        "readiness_contract": "portable-v1",
         "ready": ready,
         "repo_root": str(repo_root),
         "repo_slug": repo_slug,
         "checks": checks,
-        "kie_api_key_present": bool(kie_api_key),
-        "kie_api_key_source": kie_source,
         "capabilities": {
-            "banner_generation_ready": bool(kie_api_key) and pillow_ready,
             "image_pipeline_ready": pillow_ready,
             "github_cli_ready": have_command("gh"),
             "github_metadata_ready": auth_ok and bool(repo_slug),
@@ -112,7 +91,6 @@ def validate_setup(repo_root: Path, mode: str = "both", allow_missing_gh_auth: b
         repo_root=str(repo_root),
         repo_slug=repo_slug,
         gh_authenticated=auth_ok,
-        kie_api_key_present=bool(kie_api_key),
         checked_by=f"validate_setup.py --mode {mode}",
     )
     append_run_cache(
@@ -125,7 +103,7 @@ def validate_setup(repo_root: Path, mode: str = "both", allow_missing_gh_auth: b
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Legends GitHub for CLI or API execution")
-    parser.add_argument("--mode", default="both", choices=["cli", "api", "both"])
+    parser.add_argument("--mode", default="portable", choices=["portable", "cli", "api", "both"])
     parser.add_argument("--path", default=".", help="Repo root or a path inside the repo")
     parser.add_argument("--allow-missing-gh-auth", action="store_true")
     parser.add_argument("--json", action="store_true")

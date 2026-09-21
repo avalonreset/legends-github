@@ -1,440 +1,142 @@
 ---
 name: github-release
-description: GitHub release consultant — recommends version, drafts changelogs from commits, manages CHANGELOG/release.yml/badges, advises on package distribution.
+description: Assess release readiness from actual changes, versions, tags, tests, and artifacts; prepare changelogs and distribution plans, then execute only authorized release actions.
 ---
 
-# GitHub Releases -- Release Consultant, Versioning, and Changelog
+# GitHub release preparation
 
-## Role
+Help users obtain the intended, tested artifact with accurate version and change
+information. A release is justified by the project's delivery model and changes,
+not a commit-count, badge, or time-since-release threshold.
 
-You are a **release consultant** -- an intelligent, dynamic advisor. Not a template
-engine. Not a report generator. You interpret the data and give opinionated advice.
+## Runtime and scope
 
-Your job is to look at the full picture -- commit history, dates, what changed, how
-the project has been releasing historically -- and make a smart recommendation.
-Think about it the way a senior open source maintainer would:
+Resolve **GITHUB_HOME** from this skill directory: `../../github` in source,
+`../github` when installed. Verify `scripts/run_headless.py` exists and read
+`GITHUB_HOME/references/portable-workflows.md`. Resolve **TARGET** separately.
 
-- "You shipped 3 security patches and a feature in the last week but haven't
-  released. Your users are running vulnerable code. Cut v1.2.0 now."
-- "Your last release was 6 months ago but you've only had 2 doc fixes. Don't
-  release just to release -- wait until you have something meaningful."
-- "You're mixing CalVer tags with SemVer in your history. Pick one and stick
-  with it. I'd recommend SemVer because [reason]."
-- "Your v1.0.0 has 47 stars and 12 forks. People are using this. The 23
-  unreleased commits include breaking changes -- you need a v2.0.0, not a patch."
-
-**Be dynamic.** Read the commit messages. Understand what actually changed.
-A commit called "refactor auth flow" might be a breaking change even without
-the conventional commit prefix. A commit called "fix typo" is not worth a
-release on its own. Use judgment, not just pattern matching.
-
-**Follow how the big projects do it:**
-- Meaningful release titles that describe the theme, not just the version number
-- Changelog entries grouped by impact (breaking first, then features, then fixes)
-- Pre-release tags (beta, rc) for major versions that need testing
-- Release notes that tell the user "what do I need to know" not "what commits landed"
-
-File generation is secondary. The consulting is the value.
-
-## Deterministic entrypoint
-
-For API agents and non-interactive runners, use the deterministic script
-entrypoint:
-
-```bash
-python3 scripts/run_headless.py release --path /path/to/repo
-python3 scripts/run_headless.py release --path /path/to/repo --write-files
-python3 scripts/run_headless.py release --path /path/to/repo --create-release
-python3 scripts/run_headless.py release --path /path/to/repo --create-release --publish
+```text
+python "<GITHUB_HOME>/scripts/run_headless.py" release --help
+python "<GITHUB_HOME>/scripts/run_headless.py" release --path "<TARGET>"
+python "<GITHUB_HOME>/scripts/run_headless.py" release --path "<TARGET>" --write-files
+python "<GITHUB_HOME>/scripts/run_headless.py" release --path "<TARGET>" --create-release
+python "<GITHUB_HOME>/scripts/run_headless.py" release --path "<TARGET>" --create-release --publish
 ```
 
-`release` defaults to plan mode. It writes `.github-audit/releases-data.json`
-plus `RELEASE-REPORT.md`, `RELEASE-PROPOSAL.md`, and `RELEASE-SUMMARY.json`.
+These show increasing mutation scope, not a sequence to run. Default mode writes
+`releases-data.json`, `RELEASE-REPORT.md`, `RELEASE-PROPOSAL.md`, and
+`RELEASE-SUMMARY.json`. Review the plan before writing. `--write-files` prepares
+local files; `--create-release` requests an external draft and may prepare files;
+adding `--publish` requests publication. Inspect the current command contract and
+confirm exact tag/commit/artifact choices before invoking external actions.
 
-`--write-files` is the explicit approval gate for writing `CHANGELOG.md` and
-`.github/release.yml`. `--create-release` is the explicit approval gate for
-creating a GitHub release after file preparation. It defaults to draft creation;
-add `--publish` only when you explicitly want a live release created.
+## Establish the release baseline
 
-## Process (GARE Pattern)
+1. Inspect instructions, Git status, version policy, tags, package manifests,
+   changelog, release configuration, build scripts, and publish workflows.
+2. Read live releases with an explicit repository when available:
 
-### 1. Gather
+   ```text
+   gh release list --repo OWNER/REPO --limit 20
+   gh release view TAG --repo OWNER/REPO --json tagName,targetCommitish,isDraft,isPrerelease,publishedAt,assets,url
+   ```
 
-**Step 0 -- Check shared data cache:**
-Before gathering, check `.github-audit/` for cached data from other skills.
-Reference: `github/references/shared-data-cache.md` for schemas.
+3. Resolve the last relevant stable/prerelease tag to a commit. Identify the
+   intended target commit and branch. Do not substitute the default branch for
+   a historical version or assume the latest-looking tag applies to every package.
+4. Review both commit messages and actual diffs since the baseline. Verify which
+   user-visible changes shipped, what remains uncommitted, and which changes
+   affect compatibility. A `refactor` label does not prove compatibility.
+5. Compare package versions, tags, changelog headings, release records, and
+   published artifacts. Determine whether mismatches are intended development
+   state, independent monorepo releases, or defects.
+6. Inspect tests and build/package contents at the intended commit, supported
+   platforms, migrations, known issues, checksums/signatures where applicable,
+   and the repository's existing artifact provenance policy.
 
-- `repo-context.json` (optional) -- repo type, intent. If missing, gather yourself.
+Missing network/auth is **unavailable**, not "no releases." A shallow checkout
+can have incomplete tags/history. A missing GitHub Release is not necessarily a
+missing package release. Do not claim dependencies or users are vulnerable merely
+because an unreleased commit mentions security.
 
-**Release state (REQUIRED -- all of these):**
-- Existing releases: `gh release list --limit 10`
-- Latest release date and tag
-- Commit count since last release: `git rev-list --count [last-tag]..HEAD`
-- Commit log since last release: `git log --oneline [last-tag]..HEAD`
-- If no releases exist: total commit count and first commit date
+## Recommend a version and delivery action
 
-**File state:**
-- Check for CHANGELOG.md -- if exists, read it fully
-- Check for .github/release.yml (auto-generated notes config)
-- Check existing badges in README.md (first 15 lines)
-- Detect CI workflows: `ls .github/workflows/`
-- Detect package registry (npm, PyPI, crates.io, etc.)
+Preserve the project's version scheme (SemVer, CalVer, package-specific, or
+another documented policy). Explain the recommendation from observed compatibility
+and user impact. For SemVer projects, inspect the declared public API; pre-1.0 and
+prerelease behavior must follow the project's policy rather than a blind prefix
+rule. Document installation/runtime support changes as well as API changes.
 
-**Package distribution:**
-- Check GitHub Packages: `gh api repos/{owner}/{repo}/packages --jq '.[].name' 2>/dev/null`
-- Detect publishable package type from manifest files:
-  | File | Registry | Publish Command |
-  |------|----------|----------------|
-  | package.json (with `name`) | npm / GitHub Packages | `npm publish` |
-  | pyproject.toml / setup.py | PyPI | `twine upload` / `python -m build` |
-  | Cargo.toml | crates.io | `cargo publish` |
-  | go.mod | Go module proxy | `GOPROXY` auto-indexes on tag push |
-  | *.gemspec | RubyGems | `gem push` |
-  | Dockerfile | Docker Hub / GHCR | `docker push` |
-  | *.csproj (with `PackageId`) | NuGet | `dotnet nuget push` |
-- If no manifest files exist (pure scripts, skills, docs), note "No package registry
-  applicable" and skip distribution recommendations
-- Check for existing publish workflows: `grep -l "publish\|registry\|npm.*publish\|docker.*push\|twine\|cargo.*publish" .github/workflows/*.yml 2>/dev/null`
+A valid result can be prepare a first release, publish a specific next release,
+create a prerelease for testing, repair a confirmed historical record, or make no
+release. Old dates alone do not imply abandonment; many commits alone do not
+prove a release is overdue. Documentation fixes may matter to a docs product.
 
-**Cross-check:**
-- Compare CHANGELOG latest version vs GitHub Releases latest version
-- Compare CHANGELOG latest version vs latest git tag
-- Note any mismatches -- these are important findings
+For a historical catch-up release, require a verified historical tag/commit and
+notes for that artifact. Never create every old changelog version from today's
+HEAD. Do not move existing tags or replace published artifacts incidentally.
 
-### 2. Analyze
+Present the exact target, version, stable/prerelease/draft state, meaningful
+changes, checks, and remaining blockers. If the user already authorized that
+specific release action, execute after verification without another approval loop.
+Otherwise prepare the concrete notes/diff before requesting the needed decision.
 
-Reference: Read `github/references/releases-guide.md` for semver
-rules, changelog format, and badge URLs.
+## Prepare changelog and release configuration
 
-#### Release Health Dashboard
+Preserve curated history and the chosen format. Write changes for users:
+compatibility/migration, features, fixes, security information appropriate for
+public disclosure, and known limitations. Link supporting commits/PRs when useful.
+Do not expose private issue content or embargoed details in public notes.
 
-Present this dashboard FIRST, before anything else:
+When generating release-note categories, align labels with actual repository use.
+Do not automatically exclude dependency bot changes; they can include meaningful
+security or compatibility updates. An existing manually maintained release process
+need not acquire `.github/release.yml` for checklist completeness.
 
-```
-## Release Health Dashboard
+Badges are optional links to useful live state. If requested, verify each target
+and displayed meaning. Do not add badges instead of checking the build/artifact.
+Use `GITHUB_HOME/references/releases-guide.md` for examples, verifying current
+platform and ecosystem behavior as needed.
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| Latest GitHub Release | [version or "None"] | [OK/STALE/MISSING] |
-| Latest CHANGELOG version | [version or "None"] | [OK/MISSING] |
-| Version match | [Yes/No -- do they agree?] | [OK/MISMATCH] |
-| Commits since last release | [count] | [OK if <20, REVIEW if 20-50, OVERDUE if 50+] |
-| Days since last release | [days] | [OK if <90, STALE if 90-180, DORMANT if 180+] |
-| Release cadence | [Regular/Irregular/None] | -- |
-| Semver compliance | [Yes/No] | [OK/FIX] |
-```
+## Package and distribution strategy
 
-Status definitions:
-- **OK**: No action needed
-- **STALE**: Release exists but is getting old, consider a fresh release
-- **MISSING**: No releases at all -- needs first release
-- **MISMATCH**: CHANGELOG and GitHub Releases disagree -- needs reconciliation
-- **OVERDUE**: Many commits since last release, should cut a release
-- **FIX**: Version numbering doesn't follow semver
+| Project | Evidence to inspect | Possible delivery route |
+|---|---|---|
+| Library | Package name, metadata, included files, install/import | Existing language registry and documented version |
+| CLI | Entrypoint, supported OS/architectures, install/uninstall | Registry package or tested release binaries |
+| Container/service | Image build, base image, runtime config | Existing container registry/deployment pipeline |
+| Skill/plugin | Source layout, loader/install behavior, assets | Supported package/extension system or source installer |
+| Docs/data | Build outputs, data schema/license, versioning | Docs site, source archive, or dataset release |
+| Internal project | Access model and existing registry policy | Authorized private distribution channel |
 
-#### Commit Analysis (when commits exist since last release)
+A manifest alone does not prove a package is published or should be. Inspect the
+actual registry/package record before making a current distribution claim. Do not
+assume a nonexistent generic repository-packages API; use current documented APIs
+for the relevant owner and package type.
 
-Categorize each commit since the last release:
-- **feat/feature**: New functionality → bumps MINOR
-- **fix/bugfix**: Bug fixes → bumps PATCH
-- **breaking/BREAKING CHANGE**: Incompatible changes → bumps MAJOR
-- **docs/chore/refactor/style/test**: Non-functional → no version impact alone
-- **security**: Vulnerability fix → bumps PATCH (or MINOR if new security feature)
+New registry accounts, paid services, public publishing, and credential changes
+are separate from local release preparation. Never print tokens or write them
+into a workflow. Use the repository's approved credential/provenance model.
 
-Use the highest-impact category to determine the recommended version bump.
+## Execute and verify precisely
 
-#### File Infrastructure Check
+Prefer the existing release pipeline when it is the supported route. For explicit
+GitHub CLI creation, use an exact notes file and an existing verified tag:
 
-| Element | Current State | Ideal | Gap? |
-|---------|--------------|-------|------|
-| Releases | [count, latest version] | Regular releases with semver | ? |
-| CHANGELOG.md | [exists? format?] | Keep a Changelog format | ? |
-| release.yml | [exists?] | Auto-generated notes configured | ? |
-| Badges in README | [list current] | CI + Version + License minimum | ? |
-| Version format | [current] | Semver (MAJOR.MINOR.PATCH) | ? |
-| Package distribution | [registry or "N/A"] | Published to appropriate registry | ? |
-
-#### Package Distribution Assessment
-
-Only include this section when a publishable package type was detected in Gather.
-Skip entirely for projects with no package registry (scripts, skills, docs, configs).
-
-When applicable, assess:
-- **Current state:** Is the package published anywhere? Is GitHub Packages populated?
-- **Appropriate registry:** Where do users of this language/ecosystem expect to find
-  packages? (npm for JS, PyPI for Python, crates.io for Rust, etc.)
-- **Publish workflow:** Is there a CI workflow that auto-publishes on release/tag?
-- **GitHub Packages vs external registry:** GitHub Packages is useful for private/org
-  distribution (private npm, Docker images for internal teams). For public projects,
-  the language's native registry (npm, PyPI, crates.io) should be primary since that's
-  where developers search.
-
-**Distribution strategy by repo type:**
-
-| Repo Type | Primary Registry | GitHub Packages? | Publish Workflow? |
-|-----------|-----------------|-----------------|-------------------|
-| Library/Package | Language-native (npm, PyPI, etc.) | Optional mirror | Recommended |
-| CLI Tool | GitHub Releases (binaries) or language registry | Optional | Recommended |
-| Docker-based | Docker Hub or GHCR | Yes (GHCR) | Recommended |
-| Framework | Language-native registry | Optional mirror | Recommended |
-| Application | GitHub Releases (binaries) or Docker | If containerized | Optional |
-| Skill/Plugin | Git clone + installer | No | No |
-| Internal/Org tool | GitHub Packages (private) | Yes (primary) | Recommended |
-
-**When to recommend GitHub Packages specifically:**
-- Private org repos that need internal package distribution
-- Docker images (GHCR is free and tightly integrated)
-- Monorepos publishing multiple packages under one org
-- When the team already uses GitHub for CI/CD (reduces external dependencies)
-
-**When NOT to recommend GitHub Packages:**
-- Public packages that users expect to find on npm/PyPI/crates.io
-- Projects with no distributable artifact (scripts, configs, skill files)
-- When the project already publishes to the appropriate registry
-
-### 3. Recommend -- The Proposal
-
-**Every run of this skill MUST end with a concrete proposal the user can say yes or
-no to.** This is the entire point. You are a consultant who walks in with a
-recommendation, not an analyst who hands over a report.
-
-#### Step 3a: Fix Infrastructure First (if needed)
-
-Before proposing a release, fix any missing infrastructure silently:
-- If no CHANGELOG: generate it
-- If CHANGELOG missing `[Unreleased]` or link references: add them
-- If no release.yml: create it
-- If badges missing: generate badge markdown
-
-These are file-level changes that don't affect the live repo. Do them, note them
-briefly, then move to the proposal.
-
-#### Step 3a.5: Distribution Strategy (if applicable)
-
-If a publishable package type was detected in Gather, include a distribution
-recommendation as a separate section after the release proposal. This is advisory,
-not blocking. The user can create a release without setting up distribution.
-
-**When to recommend setting up distribution:**
-- Package manifest exists but no publish workflow detected
-- GitHub Packages tab is empty for a project that should publish there
-- The project is a library/package that users would `npm install` or `pip install`
-
-**When to skip distribution entirely:**
-- No package manifest (scripts, skills, configs, documentation)
-- Project is distributed via git clone + installer
-- Package is already published and workflow exists
-
-If recommending distribution, present it as:
-```
-### Distribution Opportunity
-
-Your project has a [package.json / pyproject.toml / etc.] but isn't published
-to [npm / PyPI / etc.]. Publishing would let users install with:
-
-    [npm install / pip install / cargo add] your-package
-
-Want me to generate a publish workflow? This is optional -- your release is
-ready either way.
+```text
+gh release create TAG --repo OWNER/REPO --verify-tag --draft --title "Release title" --notes-file "<NOTES_FILE>"
 ```
 
-#### Step 3b: The Release Proposal
+This example creates an external draft; it is not permission to do so. Add assets
+or publish only within the request. If a tag needs creating, establish the exact
+commit and authorization first. Never use a publish flag to bypass a failed check.
 
-**ALWAYS present exactly ONE of these proposals.** Format it as a clear yes/no
-decision, not a list of options.
+After execution, re-read release state and verify tag target, notes, assets,
+draft/prerelease status, and registry version if part of the task. Separate local
+file generation, external draft creation, published release, and tested install.
+Report partial failure with the completed state; do not blindly retry publication
+or recreate an existing release.
 
-**Proposal A -- First Release:**
-```
-## Proposed First Release: v[X.Y.Z] - "[Title]"
-
-Based on [X commits, Y days of development, stability assessment], I recommend
-your first release:
-
-**Version:** v[0.1.0 or 1.0.0]
-**Title:** "[descriptive title based on what the project does]"
-**Release notes:**
-> [2-3 sentence summary of what this release includes]
-
-**Draft changelog entry:**
-[full Keep a Changelog formatted entry]
-
-Ready to create this release? Say **yes** to proceed, or tell me what to change.
-```
-
-**Proposal B -- Next Release:**
-```
-## Proposed Release: v[X.Y.Z] - "[Title]"
-
-[X] commits since v[last], [Y] days ago. Here's what changed:
-- [1-line summary per significant commit]
-
-**Version:** v[X.Y.Z] ([MAJOR/MINOR/PATCH] because [reasoning])
-**Title:** "[descriptive title summarizing the theme of changes]"
-**Release notes:**
-> [2-3 sentence summary]
-
-**Draft changelog entry:**
-[full Keep a Changelog formatted entry]
-
-Ready to cut this release? Say **yes** to proceed, or tell me what to change.
-```
-
-**Proposal C -- Catch Up (CHANGELOG ahead of Releases):**
-```
-## Proposed: Publish [N] Missing Releases
-
-Your CHANGELOG documents v[X] through v[Y], but GitHub Releases only has v[Z].
-These [N] versions need to be published:
-
-| Version | Title | Key Changes |
-|---------|-------|-------------|
-| v[A] | [title] | [1-line summary] |
-| v[B] | [title] | [1-line summary] |
-| ... | ... | ... |
-
-Ready to publish all [N] releases? Say **yes** to proceed, or pick specific
-versions to publish.
-```
-
-**Proposal D -- Nothing to Release:**
-```
-## Release Status: Up to Date
-
-No release needed right now. [X] commits since v[last], but they're all
-[docs/chore/test] with no user-facing changes.
-
-**Next release trigger:** When you add a feature or fix a bug, come back
-and I'll draft the release for you.
-```
-
-#### Release Title Guidelines
-
-**Formatting rule:** Release titles MUST use a regular hyphen-dash (-), NEVER an
-em dash. Example: `v1.1.0 - Empire Builder` not `v1.1.0 -- Empire Builder`.
-The format is always: `v[X.Y.Z] - [Title]`
-
-Every release gets a human-readable title (not just "v1.2.3"). Derive it from
-the changes:
-- Security fixes dominant → "Security Hardening"
-- New features dominant → name the biggest feature: "GEO Optimization Support"
-- Bug fixes only → "Bug Fixes" or name the most important fix
-- Mixed → theme it: "Performance + Security Updates"
-- First release → "Initial Release" or project tagline
-- Port/migration → "[Platform] Port Complete"
-
-### 4. Execute (user says yes)
-
-**When the user approves the proposal**, execute immediately. Do not re-ask.
-
-**When the user says to change something**, adjust the proposal and re-present.
-
-**Creating GitHub Releases modifies the live repo.** The proposal IS the
-confirmation gate. Once the user says yes, proceed without further confirmation.
-
-If running inside the orchestrator (`github` or `github-audit`), file generation
-proceeds automatically. Release creation still requires the proposal + approval
-unless the orchestrator explicitly pre-approves releases.
-
-#### Generate/Update CHANGELOG.md
-- If missing: generate from git history and existing releases
-- If exists: add `[Unreleased]` section if missing, add link references at bottom,
-  draft new entry for unreleased commits
-
-#### Create/Update release.yml
-```yaml
-changelog:
-  exclude:
-    labels:
-      - ignore-for-release
-    authors:
-      - dependabot
-      - dependabot[bot]
-  categories:
-    - title: Breaking Changes
-      labels:
-        - breaking
-    - title: New Features
-      labels:
-        - enhancement
-        - feature
-    - title: Bug Fixes
-      labels:
-        - bug
-        - fix
-    - title: Security
-      labels:
-        - security
-    - title: Documentation
-      labels:
-        - docs
-        - documentation
-    - title: Other Changes
-      labels:
-        - "*"
-```
-
-#### Create GitHub Release (with user approval only)
-```bash
-gh release create v[X.Y.Z] --title "v[X.Y.Z]" --notes "[changelog entry]"
-```
-
-#### Generate Badge Markdown
-Produce ready-to-paste badge row based on repo type.
-
-## Badge Selection by Repo Type
-
-| Repo Type | Essential Badges | Optional Badges |
-|-----------|-----------------|----------------|
-| Library/Package | Version, CI, License, Downloads | Coverage, Stars |
-| CLI Tool | Version, CI, License | Downloads, Last Commit |
-| Framework | CI, Version, License, Stars | Contributors, Coverage |
-| API/Service | CI, Version, License | Uptime, Last Commit |
-| Application | CI, License, Last Commit | Contributors, Stars |
-| Skill/Plugin | Version, License, CI | Stars |
-
-## Version Decision Guide
-
-| Situation | Recommended Version |
-|-----------|-------------------|
-| Initial development, API unstable | 0.1.0 |
-| First stable public API | 1.0.0 |
-| New feature, backwards compatible | x.Y.0 (bump minor) |
-| Bug fix only | x.x.Z (bump patch) |
-| Breaking API change | X.0.0 (bump major) |
-| Pre-release testing | x.x.x-beta.1 |
-
-### Write to Shared Data Cache
-
-After generating release artifacts, write `.github-audit/releases-data.json`:
-```bash
-mkdir -p .github-audit
-grep -qxF '.github-audit/' .gitignore 2>/dev/null || echo '.github-audit/' >> .gitignore
-```
-Include: timestamp, changelog_created, release_yml_created, latest_version,
-changelog_latest_version, version_match, commits_since_release, release_verdict,
-recommended_next_version, badges array (markdown strings), versioning_scheme.
-Reference: `github/references/shared-data-cache.md` for exact schema.
-
-## Output
-
-Every run produces exactly this sequence:
-
-1. **Release Health Dashboard** -- quick status table (always)
-2. **Infrastructure fixes** -- any files created/updated (brief, if needed)
-3. **The Proposal** -- ONE concrete yes/no proposal (always, this is the main output)
-
-The proposal is the deliverable. Everything else is context for the proposal.
-
-### Next Step
-
-After completing release work (CHANGELOG, badges, version proposal), always end
-with this handoff:
-
-```
-Release work complete. Next recommended step:
-  github-seo -- keyword research to optimize your description and README
-```
-
-If running as part of the audit SOP, reference the step number:
-"Step 3 complete. Next skill: `github-seo`"
-
+Deliver paths/URLs, version and target, relevant checks, unresolved evidence, and
+only necessary next actions. Use **observed**, **unavailable**, and
+**not_applicable** distinctions; a proposal is not a shipped release.

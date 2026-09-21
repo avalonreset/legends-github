@@ -156,9 +156,10 @@ def recommended_topics(existing: list[str], seo_data: dict[str, Any], primary_la
         if normalized and normalized not in ordered:
             ordered.append(normalized)
 
+    for topic in existing:
+        add(topic)
     if primary_language:
         add(primary_language)
-    add("open-source")
     if repo_type == "Skill/Plugin":
         add("skill")
         add("plugin")
@@ -170,9 +171,7 @@ def recommended_topics(existing: list[str], seo_data: dict[str, Any], primary_la
     for topic in seo_data.get("recommended_topics", []):
         if isinstance(topic, str):
             add(topic)
-    for topic in existing:
-        add(topic)
-    return ordered[:15]
+    return ordered[:20]
 
 
 def current_description(metadata: dict[str, Any], cached_context: dict[str, Any]) -> str:
