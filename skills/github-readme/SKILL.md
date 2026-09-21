@@ -19,8 +19,9 @@ python3 scripts/run_headless.py readme --path /path/to/repo --write
 plus `README-REPORT.md`, `README-PREVIEW.md`, and `README-SUMMARY.json`.
 `--write` is the explicit approval gate for rewriting `README.md`.
 `--generate-assets` reuses an existing banner asset when present, otherwise it
-can generate a KIE-backed banner plus `assets/social-preview.jpg` and records
-local/raw/settings links in the cache and report artifacts.
+may contain legacy provider behavior. Do not use that flag for new image
+production; use `scripts/render_social_preview.py` and the social preview SOP.
+This SOP does not claim the legacy headless runtime has been migrated.
 
 ## Process (GARE Pattern)
 
@@ -171,7 +172,7 @@ Present README plan before writing:
 [breakdown by criterion]
 
 ### Proposed Structure:
-1. Banner image (generated via KIE.ai GPT Image 2)
+1. Banner image (approved typography and branding)
 2. H1: [Project Name -- keyword-rich tagline]
 3. Badges: [CI, version, license, downloads]
 4. Opening paragraph: [with primary keyword]
@@ -196,7 +197,7 @@ Present README plan before writing:
 
 **PAUSE HERE for interactive runs.** After presenting the optimization plan (Step 3), ask the user:
 "Ready to generate the optimized README? (This will also generate a banner image
-if KIE_API_KEY is available.)"
+using the approved font and artwork.)"
 
 Do NOT generate the README until the user confirms. The plan is the checkpoint --
 the user may want to adjust the keyword strategy, change the tone, skip the banner,
@@ -231,7 +232,7 @@ optimal delivery format.** See `banner-generation.md` for the full Image Format
 Pipeline section.
 
 When generating or placing images in the README:
-- **Banners** (AI-generated): request PNG from KIE.ai, convert to **WebP** (quality 80).
+- **Banners**: render approved typography to PNG, then derive **WebP** for README delivery.
   WebP is ~30% smaller than JPEG and GitHub renders it natively.
 - **Screenshots** (terminal, UI): keep as **PNG**. Lossless, sharp text, often smaller
   than lossy formats for flat-color content. Do NOT convert screenshots.
@@ -254,118 +255,21 @@ new = os.path.getsize("assets/banner.webp")
 print(f"{old//1024}KB -> {new//1024}KB ({100-new*100//old}% smaller, metadata stripped)")
 ```
 
-### Banner Image (Standard Practice -- Two-Step)
+### Banner and social preview
 
-Every README should include a professional banner. Generate one as part of the standard
-README creation/optimization workflow using the two-step process.
-
-Reference: Read `github/references/banner-generation.md` for full details
-including prompt strategy, text compositing script, and positioning principles.
-
-**Banner + Social Preview flow (MANDATORY -- do not skip any step):**
-1. Craft a background prompt (visual metaphor, NO text in image, subject offset to one side)
-2. Call KIE.ai GPT Image 2 API to generate background (21:9)
-3. Poll for completion, download the generated source as `assets/banner-source.png`
-4. Composite text overlay via Pillow (project name, tagline, optional features)
-5. Convert to WebP (quality 80): `assets/banner.webp`, delete source PNG
-6. Place at the very top of README, before H1:
-7. **Generate social preview from the banner** (see Social Preview Pipeline below)
-
-This is a 7-step flow, not 6. The social preview is not optional.
-
-```markdown
-<p align="center">
-  <img src="assets/banner.webp" alt="[Project Name] banner" width="100%">
-</p>
-```
-
-**Prerequisite:** Load KIE_API_KEY from the standard dotenv locations:
-```bash
-if [ -z "$KIE_API_KEY" ]; then
-  for envfile in ./.env.local ./.env github/.env.local github/.env ~/.env.local ~/.env; do
-    if [ -f "$envfile" ]; then
-      export $(grep -v '^#' "$envfile" | xargs) 2>/dev/null
-      break
-    fi
-  done
-fi
-[ -n "$KIE_API_KEY" ] && echo "KIE_API_KEY loaded" || echo "KIE_API_KEY NOT FOUND"
-```
-If the key is not found after checking those dotenv locations, **STOP and show this message:**
-
-```
-Banner generation requires a KIE.ai API key. It takes about 2 minutes to set up:
-
-1. Go to https://kie.ai/api-key and create a free account
-2. Copy your API key
-3. Paste it into `./.env.local` (preferred) or `github/.env`:
-   KIE_API_KEY=your_key_here
-
-Want to set this up now, or skip the banner and continue with the README?
-```
-
-Wait for the user to respond. If they want to set it up, help them. If they
-say skip/continue/later, generate the rest of the README with a placeholder
-comment: `<!-- TODO: Add banner image -->` at the top.
-
-### Social Preview Pipeline (MANDATORY after banner generation)
-
-After generating the README banner, ALWAYS run the social preview pipeline.
-This is step 7 of the banner flow. Do NOT skip it.
-
-Reference: Read `github/references/banner-generation.md` section
-"Social Preview Image Generation" for the full pipeline and Pillow script.
-
-**The pipeline:**
-1. Feed the banner into KIE.ai as `input_urls` with `gpt-image-2-image-to-image` at **16:9** aspect ratio.
-   This recomposes the design for the new ratio (AI adapts layout, centers elements).
-   Use the raw GitHub URL of the pushed banner as the input_urls source.
-   If the banner is WebP, convert to PNG first (GPT Image 2 rejects WebP input).
-2. Poll for completion, download the 16:9 result.
-3. Crop the 16:9 to **2:1** (center crop, trim ~5% from top and bottom).
-4. Resize to exactly **1280x640** (GitHub's required dimensions).
-5. Save as **JPEG** at quality 85 (GitHub rejects WebP for social previews, and
-   PNGs at 1280x640 often exceed the 1MB upload limit). Strip all metadata.
-6. If over 1MB, re-save at quality 70.
-7. Save to `assets/social-preview.jpg`.
-8. Show the user the result via Read tool, provide clickable links, and provide
-   the manual upload instructions for https://github.com/{owner}/{repo}/settings.
-
-**Fallback: No banner exists (new project or banner was skipped):**
-If there is no banner to feed as `input_urls`, generate the social preview from
-scratch as a standalone `gpt-image-2-text-to-image` KIE.ai call at 16:9. Use this prompt formula:
-
-```
-Professional 16:9 social preview card for a GitHub project called "[Project Name]".
-Dark background with [color accent matching project theme]. Text "[Project Name]"
-centered in bold white sans-serif, subtitle "[one-line description]" below in
-smaller text. Clean, modern tech aesthetic. Centered composition with padding
-on all edges (critical for the 2:1 crop that follows).
-```
-
-Then run the same crop/resize/JPEG pipeline as the banner-based path (steps 3-8).
-The key difference: explicitly ask for centered composition with edge padding,
-because there's no existing design to recompose from and the 2:1 crop will trim
-the top and bottom.
-
-**When to skip (the ONLY valid reasons):**
-- **Repo is private on a free org plan.** GitHub does not show the "Social
-  preview" upload option in settings for private repos on free organization
-  plans (only available for public repos or orgs on Team/Enterprise). Generating
-  the image wastes KIE.ai credits with no way to upload it. Check visibility:
-  `gh repo view --json visibility` -- if "PRIVATE", skip entirely and tell the
-  user why. This overrides the "banner was generated so social preview MUST be
-  generated" rule below.
-- User explicitly says they don't want a social preview
-- Repo already has a custom social preview set (`usesCustomOpenGraphImage: true`)
-- KIE_API_KEY is not available (banner was also skipped)
-
-If the banner was generated AND the repo is public (or on a paid org plan),
-the social preview MUST be generated. No exceptions.
-If the banner was skipped but KIE_API_KEY is available, offer to generate a
-standalone social preview using the fallback prompt above.
+Preserve the owner's approved branding. For Legends, follow
+[the README style](../../docs/LEGENDS-README-STYLE.md) and
+[the social preview SOP](../../docs/SOCIAL-PREVIEW-SOP.md).
+Use deterministic typography with the actual supplied font. KIE.ai is retired.
+Render the social preview directly at 1280x640 with fixed type sizes and measured
+safe margins. Do not crop a 16:9 image or shrink text to force it to fit.
+Attempt authorized upload through available browser/computer-use tools, verify
+it visually, and give a prepared manual handoff only when that route is blocked.
 
 ### H1 (Exactly One)
+For Legends banners, use the banner-only H1 from `docs/LEGENDS-README-STYLE.md`;
+do not add a duplicate visible product heading. The following text-heading
+guidance applies when the owner has no banner-heading convention.
 - Format: `# Project Name - Keyword-rich tagline`
 - Include primary keyword naturally (do NOT cram multiple keywords into the title)
 - Keep under 80 characters
@@ -578,7 +482,8 @@ Re-score the generated README against the same 7 criteria.
 ```
 
 ### Deliverables
-- Professional banner image saved to `assets/banner.webp` (if KIE_API_KEY available)
+- Approved banner image saved to `assets/banner.webp` when requested
+- Verified `assets/social-preview.png` and explicit upload status when requested
 - Full README.md content with banner at top
 - Before/after score comparison
 - List of changes made with reasoning
@@ -592,14 +497,9 @@ output clickable links so the user can access the file immediately:
 
 1. **Local file link:** `file:///[absolute-path]/assets/banner.webp`
 2. **Raw GitHub URL** (after push): `https://raw.githubusercontent.com/{owner}/{repo}/main/assets/banner.webp`
-3. **If the image doubles as a social preview**, also include the upload instructions:
-   ```
-   To set as your repo's social preview:
-   1. Download: https://raw.githubusercontent.com/{owner}/{repo}/main/{path}
-   2. Go to: https://github.com/{owner}/{repo}/settings
-   3. Scroll to "Social preview" > "Edit" > "Upload an image"
-   4. Save changes
-   ```
+3. **Social previews:** follow the agent-first upload SOP. Provide manual upload
+   steps only after a concrete tool/authentication blocker. Include the exact
+   settings URL, ready image link and honest upload status.
 
 Replace all placeholders with actual values. Never output just a relative path
 like `assets/banner.webp` without the clickable link next to it.

@@ -81,7 +81,7 @@ one actually does and why it matters:
   - **Projects** -- Built-in kanban boards. Usually fine to leave as-is.
 
 - **Social preview image** -- The card image when your repo is shared on social media.
-  Can't be set via API -- the skill provides guidance for manual upload.
+  Use the social-preview SOP: attempt browser/computer-use upload, then manual fallback if blocked.
 
 - **.gitattributes** -- Controls the language bar on your repo page. Only matters if
   GitHub is detecting the wrong primary language (e.g., showing 90% HTML when it's
@@ -323,58 +323,11 @@ repo page. Don't waste it or leave it pointing somewhere wrong.
 
 ## Social Preview Image
 
-**No API available** -- must be set via web UI. Make this as easy as possible for the user.
-
-**IMPORTANT: Private repos on free org plans cannot set a social preview.** GitHub
-does not display the "Social preview" upload section in repo settings for private
-repos on free organization plans. The option only appears for public repos or orgs
-on paid plans (Team/Enterprise). Before providing upload guidance, check:
-`gh repo view --json visibility` -- if "PRIVATE", skip this section entirely and
-note: "Social preview upload is not available for private repos on free org plans."
-
-**Social preview generation happens in `github-readme` (Step 6).** The readme skill
-generates the banner, then automatically runs the social preview pipeline (banner ->
-16:9 recompose -> 2:1 crop -> 1280x640 JPEG). This skill (meta) only handles the
-upload guidance for images that already exist.
-
-Provide the user with:
-- Recommended dimensions: 1280x640px
-- Format: JPEG, under 1MB (GitHub rejects WebP for social previews)
-- Content: Project name, tagline, logo/icon, key visual
-
-**Give the user everything they need in one block -- clickable links, no guessing:**
-
-**Rule: If a social preview image exists in the repo** (check `screenshots/`,
-`assets/`, and root for files named `social-preview.*`, `og-image.*`, or
-`social-card.*`), include a direct clickable link to the raw file on GitHub so
-the user can right-click and save it. Format:
-
-```
-Social Preview Setup:
-
-Image ready to upload:
-https://raw.githubusercontent.com/{owner}/{repo}/main/{path/to/social-preview.png}
-
-1. Download the image above (right-click > Save As)
-2. Open your repo settings: https://github.com/{owner}/{repo}/settings
-3. Scroll to "Social preview" section
-4. Click "Edit" > "Upload an image"
-5. Select the downloaded image
-6. Save changes
-
-Test it: paste your repo URL into https://www.opengraph.xyz to preview
-how it will look when shared on Twitter/X, LinkedIn, and Slack.
-```
-
-If no social preview image exists in the repo, note that it will be generated
-during `github-readme` (Step 6) and show the settings URL with dimensions
-guidance (1280x640px JPEG).
-
-Replace `{owner}/{repo}` and `{path/to/social-preview.png}` with actual values.
-Never leave placeholder URLs when you know the actual values.
-
-**Why it matters:** Controls how the repo appears when shared on Twitter/X, LinkedIn,
-Slack, Discord, iMessage. Default auto-generated image uses name + description + avatar.
+Follow [the social preview SOP](../../docs/SOCIAL-PREVIEW-SOP.md).
+Generate a fixed-size card from approved banner copy, then attempt the upload
+with available browser or computer-use tools. Manual handoff is the fallback,
+not the default. A committed asset is not a configured GitHub social preview.
+Do not skip a requested replacement merely because a custom image exists.
 
 ## .gitattributes for Language Bar
 

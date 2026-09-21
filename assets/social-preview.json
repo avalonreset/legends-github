@@ -1,0 +1,40 @@
+{
+  "template": "legends-social-v1",
+  "title": "legends-github",
+  "subtitle": "agent-led repository audits, repairs, and search optimization",
+  "size": [
+    1280,
+    640
+  ],
+  "title_px": 64,
+  "subtitle_px": 36,
+  "safe_margin_px": 80,
+  "lines": [
+    "agent-led repository audits,",
+    "repairs, and search optimization"
+  ],
+  "text_bounds": [
+    [
+      80,
+      176,
+      640,
+      239
+    ],
+    [
+      80,
+      324,
+      696,
+      362
+    ],
+    [
+      80,
+      372,
+      784,
+      408
+    ]
+  ],
+  "font_sha256": "3769f0f76477a7d9e2e6cb40422dedacb56c9ab1a6f7beee89b2b9ba6b8091ee",
+  "image_sha256": "3c1157739446bf62510dd5bb6e31278ac7823a2e7030d7f3c00b082bdf1116bc",
+  "bytes": 21360,
+  "upload_status": "not_attempted"
+}
