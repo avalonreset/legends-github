@@ -41,6 +41,21 @@ Use a new output directory. The renderer refuses to overwrite earlier drafts, re
 
 Inspect the small preview and original. Check exact characters, line breaks, readable size, whitespace, and contrast. Link the banner and write useful alt text when placing it in the README. Keep the subtitle available as real README text too; readers should not have to decode an image to understand the product. Preserve existing video artwork, captions, links, anchors, and section order.
 
+## Legends release video convention
+
+For Legends projects, include the owner's relevant YouTube video directly after
+the README introduction. Use a high-quality, representative square frame as a
+clickable image and a separate text hyperlink to the same video. Left-align both
+elements explicitly; do not center the image or bury the video at the bottom.
+The first frame is a good default when it is representative; otherwise choose
+an intentional, clear frame from the full-quality source. Preserve the complete
+frame without slicing or stretching it. Use descriptive alt text and an authentic
+caption, without a "creator spotlight" heading. GitHub READMEs use this linked
+preview rather than an embedded YouTube iframe. Record the video URL and frame
+timestamp in asset provenance. If no relevant video is available, flag the
+missing asset instead of inventing one. This convention is specific to Legends
+releases, not a requirement for unrelated repositories.
+
 ## Evaluate the effect honestly
 
 The intended effects are recognition and immediate comprehension. Retention and conversion are hypotheses until observed. Ask a new reader to explain the project and find the first useful example. Measure task completion or relevant traffic over comparable windows, recording other changes. Do not treat file generation, a higher checklist score, or a longer README as evidence that the banner worked.
