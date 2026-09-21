@@ -1,16 +1,11 @@
-<p align="left" id="banner">
-  <a href="https://cto-legends.com"><img src="assets/banner.webp" alt="legends-github: agent-led repository audits, repairs, and search optimization" width="100%"></a>
-</p>
+<a name="banner"></a>
+<a name="legends-github"></a>
 
-# legends-github
+# ![legends-github](assets/banner.webp)
 
-[![Version](https://img.shields.io/github/v/release/avalonreset/legends-github)](https://github.com/avalonreset/legends-github/releases)
-[![CI](https://img.shields.io/github/actions/workflow/status/avalonreset/legends-github/ci.yml?label=CI)](https://github.com/avalonreset/legends-github/actions)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)](#how-to-add-skills)
-[![Claude Code](https://img.shields.io/badge/works%20with-Claude%20Code-blueviolet)](https://claude.com/claude-code)
-[![Codex](https://img.shields.io/badge/works%20with-Codex-111827)](https://openai.com/codex/)
-[![Gemini CLI](https://img.shields.io/badge/works%20with-Gemini%20CLI-4285F4)](https://google-gemini.github.io/gemini-cli/)
+[![release](https://img.shields.io/github/v/release/avalonreset/legends-github?label=release&sort=date&style=flat-square&labelColor=000000&color=ff0000)](https://github.com/avalonreset/legends-github/releases/latest)
+[![checks](https://img.shields.io/github/actions/workflow/status/avalonreset/legends-github/ci.yml?branch=main&label=checks&style=flat-square&labelColor=000000)](https://github.com/avalonreset/legends-github/actions/workflows/ci.yml)
+[![license](https://img.shields.io/github/license/avalonreset/legends-github?label=license&style=flat-square&labelColor=000000&color=666666)](LICENSE)
 
 legends-github is a cross-runtime skill suite for GitHub repository optimization. It works with Claude Code, Codex, and Gemini CLI so the same audit, README, metadata, legal, release, community, SEO, and portfolio workflows can run wherever your agent work happens.
 
