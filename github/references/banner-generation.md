@@ -39,9 +39,9 @@ complete repository planning. The helpers in `github/scripts/local_assets.py`:
 - Preserve original files and refuse to overwrite an existing destination.
 - Apply stored image orientation and strip metadata from new derivatives.
 - Convert supplied banner originals to WebP and avatar originals to JPEG.
-- Center-crop an existing banner to a 1280 by 640 JPEG social preview.
+- Fit the complete banner inside a 1280 by 640 JPEG social preview with padding.
 
-Cropping can remove text or important details. Review the result before deciding
+The entire source image is retained without slicing or stretching. Review the result before deciding
 to use it. Choose formats according to the supplied artwork; diagrams and logos
 may need different treatment than photographs. There is no unconditional rule to
 convert every PNG or add decorative artwork.
@@ -63,3 +63,7 @@ Keep meaningful alt text for images included in a README. GitHub social-preview
 and profile-photo uploads remain separate user-directed actions through GitHub's
 interface. Report what was actually prepared and inspected; a local image is not
 proof that an upload or publication occurred.
+
+## Typography-first option
+
+For the optional black, red, and white Legends treatment, use the [typography recipe](legends-banner-style.md) and `scripts/render_banner.py` with a supplied font and explicit copy. No image service is involved. Existing README content is preserved; placing new artwork is a targeted editing task.

@@ -84,6 +84,17 @@ Restore the latest verified inventory snapshot.
         self.assertEqual(readme.count("./setup-local --verified"), 1)
         self.assertIn("Tracks local inventory changes.", readme)
 
+    def test_custom_opening_embeds_anchors_and_order_survive_verbatim(self):
+        source = ('<p align="left" id="banner"><a href="https://example.com">'
+                  '<img src="assets/banner.webp"></a></p>\n\n# demo\n\n'
+                  'First paragraph.\n\nSecond paragraph.\n\n'
+                  '<a href="https://youtube.com/shorts/example"><img src="art.png"></a>\n'
+                  '<p align="left">Caption</p>\n\n## Try it first\n\n'
+                  '```md\n## Example heading inside code\n```\n\n## Economics\n\nCosts.\n')
+        preview, _, metadata = readme_repo.build_readme_content(self.snapshot(source))
+        self.assertEqual(preview, source)
+        self.assertTrue(metadata["preserved_existing"])
+
     def test_configuration_and_licensing_do_not_invent_required_files(self):
         self.assertEqual(readme_repo.configuration_snippet(self.repo), "")
         self.assertEqual(readme_repo.license_type(self.repo, {}, {}), "Not established")

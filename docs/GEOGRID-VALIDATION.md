@@ -27,3 +27,7 @@ python legends_github.py --offline --artifacts-dir ./review-output discover --pa
 ```
 
 Select an artifact directory outside the target repository. Inspect the resulting evidence and plans. Omit `--offline` for a separate GitHub-enabled audit when authenticated access is available. Never interpret missing access as an absent repository feature.
+
+## Subsequent product acceptance
+
+The [acceptance review](GEOGRID-ACCEPTANCE.md) found limitations not caught by successful command execution. See that review for fixed preservation/classification defects and remaining release blockers.

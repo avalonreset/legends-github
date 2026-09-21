@@ -432,6 +432,17 @@ def build_readme_content(snapshot: dict[str, Any]) -> tuple[str, list[str], dict
     """Build deterministic README markdown plus metadata."""
     repo_root = Path(snapshot["repo_root"])
     current_readme = snapshot["current_readme"]
+    if current_readme.strip():
+        # A template cannot safely reinterpret custom layout, embeds, anchors or fences.
+        # Keep existing documents intact; an agent can propose a targeted evidence-backed patch.
+        headings = re.findall(r"^## (.+)$", current_readme, flags=re.MULTILINE)
+        title_match = re.search(r"^# [^\n]+", current_readme, flags=re.MULTILINE)
+        return current_readme, headings, {
+            "title": title_match.group(0) if title_match else "",
+            "banner_status": "preserved" if snapshot.get("banner_path") else "not_supplied",
+            "badges": [], "intro": first_paragraph(current_readme), "secondary_in_h2": [],
+            "preserved_existing": True,
+        }
     existing_sections = extract_sections(current_readme)
     license_label = snapshot["license_label"]
     docs_link = snapshot["docs_link"]
@@ -746,7 +757,7 @@ def build_readme_payload(repo_root: Path, generate_assets: bool = False) -> dict
         snapshot["docs_link"],
     )
 
-    warnings: list[str] = []
+    warnings: list[str] = ["Existing README preserved verbatim. Use audit evidence for targeted edits; no automatic layout rewrite was attempted."] if generated_meta.get("preserved_existing") else []
     blocked: list[str] = []
     if snapshot["seo_data"].get("analysis_mode") == "fallback":
         warnings.append("README plan is using fallback SEO cache data without live DataForSEO verification.")
@@ -764,7 +775,9 @@ def build_readme_payload(repo_root: Path, generate_assets: bool = False) -> dict
         "repo": snapshot["repo"],
         "repo_root": snapshot["repo_root"],
         "repo_type": snapshot["repo_type"],
-        "analysis_mode": "deterministic-preview",
+        "analysis_mode": "preserve-existing" if generated_meta.get("preserved_existing") else "draft-scaffold",
+        "preserved_existing": generated_meta.get("preserved_existing", False),
+        "scoring_version": "legacy-readme-checklist-v1",
         "assets_requested": generate_assets,
         "asset_mode": "local-only",
         "current_readme_path": snapshot["current_readme_path"],
@@ -806,6 +819,8 @@ def build_readme_payload(repo_root: Path, generate_assets: bool = False) -> dict
 
 def apply_readme_plan(repo_root: Path, payload: dict[str, Any]) -> str:
     """Write the generated README to disk."""
+    if payload.get("preserved_existing"):
+        return payload["current_readme_path"]
     readme_path = repo_root / "README.md"
     readme_path.write_text(payload["generated_readme"], encoding="utf-8")
     return str(readme_path)
