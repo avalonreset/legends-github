@@ -17,8 +17,6 @@ Most GitHub repos are invisible - no keywords in the description, no structured 
 > Scaffolded with [AgriciDaniel/skill-forge](https://github.com/AgriciDaniel/skill-forge).
 > SEO methodology adapted from [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
 
-<img src="assets/mascot.webp" alt="legends-github mascot" width="256">
-
 ## Table of Contents
 
 - [What You Get](#what-you-get)
@@ -176,8 +174,6 @@ The Claude and Codex installers can help set up:
 - **[KIE.ai](https://kie.ai/api-key)** (strongly recommended) - generates AI banner images for READMEs and AI profile avatars for your GitHub profile. The installer saves your API key to `.env`. Without it, image generation is skipped entirely. Each image costs about 4 cents.
 
 Both services are technically optional, but without them you lose the two most differentiated features of the suite: data-backed keyword optimization and professional AI-generated visuals. **Set them up during installation.** It takes 5 minutes and makes every other skill dramatically more useful.
-
-<img src="docs/images/install-experience.webp" alt="legends-github installer showing splash screen, skill installation, DataForSEO and KIE.ai setup, and available commands" width="100%">
 
 Restart your agent runtime after installing. Skills and extensions register on startup.
 
