@@ -56,3 +56,23 @@ class CollectionTests(TestCase):
             self.assertTrue(Path(result['serp_data'][0]).is_file())
         self.assertEqual(request.call_count, 2)
         self.assertAlmostEqual(request.call_args.kwargs['max_cost_usd'], .00788)
+
+    def test_authorized_no_ceiling_retains_cost_and_finite_calls(self):
+        request = Mock(return_value={'status_code': 20000, 'cost': 2.0, 'tasks': [{'status_code': 20000}]})
+        with tempfile.TemporaryDirectory() as tmp, patch.object(research, 'repo_output_dir', return_value=Path(tmp)), \
+             patch.dict(os.environ, {'LEGENDS_GITHUB_OFFLINE': '0'}), \
+             patch.dict(sys.modules, {'legends_dataforseo': SimpleNamespace(api_request=request)}):
+            result = research.collect_research(Path('.'), keywords=['a'], execute=True, no_cost_ceiling=True)
+            self.assertEqual(result['reported_cost_usd'], 2.0)
+            self.assertIsNone(result['cost_ceiling_usd'])
+        request.assert_called_once()
+        self.assertIsNone(request.call_args.kwargs['max_cost_usd'])
+
+    def test_no_ceiling_cannot_be_combined_with_budget(self):
+        with self.assertRaisesRegex(ValueError, 'not both'):
+            research.collect_research(Path('.'), keywords=['a'], ceiling=1, no_cost_ceiling=True)
+
+    def test_no_ceiling_does_not_bypass_offline(self):
+        with patch.dict(os.environ, {'LEGENDS_GITHUB_OFFLINE': '1'}):
+            with self.assertRaisesRegex(ValueError, 'offline'):
+                research.collect_research(Path('.'), keywords=['a'], execute=True, no_cost_ceiling=True)
