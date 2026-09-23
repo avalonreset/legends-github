@@ -51,3 +51,29 @@ portable workflow. Live acquisition is performed by the explicit `research` comm
 
 See [the GeoGrid research pilot](GEOGRID-SEARCH-STRATEGY.md) for actual keyword
 estimates, SERP interpretation, recommendations and costs.
+
+## Full SEO optimization means research and application
+
+For an authorized full optimization, keyword optimization, or DataForSEO-backed
+GitHub pass, presentation alone is incomplete. Run this sequence:
+
+1. Inspect the actual product and identify audiences and task/category queries.
+2. Check DataForSEO Kit readiness and preview research. Collect live demand and
+   SERPs through `research`; import them through `seo`. A local keyword list or
+   a `--mode full` analysis is not live research.
+3. Research distinct relevant intent clusters. Continue finite batches when an
+   unresolved decision warrants another query. Stop when positioning, primary
+   and supporting terms, competing result types, and exclusions are justified.
+4. Apply justified README opening/headings, description, topics, and helpful
+   documentation within authorization. Preserve approved branding and content.
+5. Save query/locale/date/source/cost evidence, keyword choices and exclusions,
+   before/after changes, and verification. Never claim improved rankings from
+   publishing copy. Report actual cost and unmeasured outcomes.
+
+Honor the user's spending scope. Do not invent a tiny dollar ceiling or equate
+cheap research with completion. With explicit no-ceiling authorization, use
+`research --execute --no-cost-ceiling`; each batch remains finite and retains
+actual costs. Otherwise use the approved `--confirm-cost-usd` ceiling. Preview
+remains the default and paid calls are never implicit in `seo`. If access fails,
+finish independent work and label live optimization incomplete. Artwork-only
+requests remain artwork-only; never represent them as a completed SEO pass.

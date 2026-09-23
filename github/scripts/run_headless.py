@@ -368,6 +368,7 @@ def build_parser() -> argparse.ArgumentParser:
     research.add_argument("--location-code", type=int, default=2840)
     research.add_argument("--language", default="en")
     research.add_argument("--execute", action="store_true")
+    research.add_argument("--no-cost-ceiling", action="store_true", help="Explicitly authorized research without a monetary ceiling; still finite batches and cost receipts")
     research.add_argument("--confirm-cost-usd", type=float, default=0)
 
     verify = sub.add_parser("verify", help="Validate CLI/API readiness")
@@ -440,7 +441,7 @@ def main() -> int:
     handlers = {
         "research": lambda a: collect_research(resolve_repo_root(a.path), keywords=a.keyword,
             serp_keywords=a.serp, location_code=a.location_code, language=a.language,
-            execute=a.execute, ceiling=a.confirm_cost_usd),
+            execute=a.execute, ceiling=a.confirm_cost_usd, no_cost_ceiling=a.no_cost_ceiling),
         "discover": run_discover_command,
         "verify": run_verify,
         "audit": run_audit_command,

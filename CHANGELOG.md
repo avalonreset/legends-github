@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] - 2026-09-23
+
+- Full optimization recipe requires live research, applied changes, and evidence receipts.
+- DataForSEO Kit v0.4.0 pinned to immutable public source.
+- Explicit no-cost-ceiling research mode preserves finite batches, costs, and failure receipts.
+- Offline estimates and existing authorized cost ceilings remain supported.
+
 ## [1.4.0] - 2026-09-20
 
 ### Added
