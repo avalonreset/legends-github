@@ -15,10 +15,10 @@ Use it through your agent or run its Python commands directly. Skills are an opt
 
 ## Start with your repository
 
-Download and extract the [v1.4.0 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v1.4.0), or clone this toolkit beside the repository you want to improve. Python 3.10+ and Git are required; authenticated [GitHub CLI](https://cli.github.com/) enables live GitHub metadata and changes.
+Download and extract the [v1.5.0 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v1.5.0), or clone this toolkit beside the repository you want to improve. Python 3.10+ and Git are required; authenticated [GitHub CLI](https://cli.github.com/) enables live GitHub metadata and changes.
 
 ```sh
-git clone --branch v1.4.0 https://github.com/avalonreset/legends-github.git
+git clone --branch v1.5.0 https://github.com/avalonreset/legends-github.git
 cd legends-github
 python -m pip install -r github/requirements.txt
 python legends_github.py capabilities
