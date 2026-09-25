@@ -33,17 +33,17 @@ If you want to submit a fix or improvement:
 
 1. Create a branch from `main` with a descriptive name (`fix/audit-score-calculation`, `feature/new-agent`)
 2. Make your changes. Keep commits focused on one thing.
-3. Test your changes by running the relevant skill against a real repo
+3. Test your changes by running the relevant workflow against a real repo
 4. Open a Pull Request with a clear description of what changed and why
 
 All pull requests are reviewed by the project maintainer before merging.
 
 ## Code Style
 
-- Skill files (SKILL.md) follow the [Agent Skills](https://github.com/anthropics/claude-code) open standard
-- Reference files use Markdown with consistent heading hierarchy
-- Shell scripts (`install.sh`) target Bash 4+
-- PowerShell scripts (`install.ps1`) target PowerShell 5.1+
+- The vendored router skill (`skills/cto-legends/SKILL.md`) is byte-exact from the router repo; never edit it in place, re-pin from the canonical source instead
+- Reference and recipe files use Markdown with consistent heading hierarchy
+- Shell scripts target Bash 4+
+- PowerShell scripts target PowerShell 5.1+
 - Never commit credentials, API keys, or `.env` files
 
 ## Code of Conduct

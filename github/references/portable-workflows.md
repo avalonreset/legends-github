@@ -1,22 +1,15 @@
 # Portable execution and evidence contract
 
-This contract is shared by the GitHub orchestrator and specialized skills. It
+This contract is shared by the GitHub workflows. It
 requires file access and commands; a native skill loader, model, parallel
 workers, and paid services are optional.
 
 ## Resolve the toolkit separately from the target
 
-Set **SKILL_DIR** to the absolute directory of the skill being read. Resolve
-**GITHUB_HOME** by checking candidates for `scripts/run_headless.py`:
-
-| Layout | Candidate relative to SKILL_DIR |
-|---|---|
-| Main `github/SKILL.md`, source or installed | `.` |
-| Source `skills/github-name/SKILL.md` | `../../github` |
-| Installed sibling `github-name/SKILL.md` | `../github` |
-
-Use the matching directory, not a guessed host-specific home. References live in
-`GITHUB_HOME/references/`. If multiple candidates exist, use the selected source
+Set **GITHUB_HOME** to the absolute directory of this toolkit checkout: it holds
+`legends_github.py`, `github/scripts/run_headless.py`, and `github/references/`.
+The router loads the recipe from `docs/GITHUB-RECIPE.md`; there are no installed
+skill layouts. References live in `GITHUB_HOME/github/references/`. If multiple candidates exist, use the selected source
 checkout or installation and record its absolute path. If none exists, report
 the missing runtime and continue useful file-based work without invoking an
 unrelated installation.

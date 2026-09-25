@@ -23,10 +23,6 @@ jobs:
             CHANGELOG.md
             AGENTS.md
             docs/*.md
-            GEMINI.md
-            github/SKILL.md
-            skills/*/SKILL.md
-            agents/*.md
             github/references/portable-workflows.md
             github/references/banner-generation.md
             github/references/legends-banner-style.md

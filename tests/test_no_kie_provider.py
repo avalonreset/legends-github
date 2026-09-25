@@ -135,10 +135,12 @@ class NoImageProviderTests(unittest.TestCase):
             local_assets.convert_to_jpeg(source, destination)
         self.assertEqual(destination.read_bytes(), before)
 
-    def test_installers_and_image_paths_have_no_provider_code(self):
+    def test_module_scripts_have_no_provider_code(self):
         self.assertFalse((ROOT / "github/scripts/kie_assets.py").exists())
-        files = [ROOT / name for name in ("install.ps1", "install.sh", "install-codex.ps1", "install-codex.sh")]
-        files.extend(ROOT / "github/scripts" / name for name in ("local_assets.py", "readme_repo.py", "empire_repo.py"))
+        for installer in ("install.ps1", "install.sh",
+                          "install-codex.ps1", "install-codex.sh"):
+            self.assertFalse((ROOT / installer).exists())
+        files = [ROOT / "github/scripts" / name for name in ("local_assets.py", "readme_repo.py", "empire_repo.py")]
         for path in files:
             with self.subTest(path=path.name):
                 source = path.read_text(encoding="utf-8").lower()

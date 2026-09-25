@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.0] - 2026-09-25
+
+- Router-native reset generation: de-skillified to the single `cto-legends` router skill (vendored pinned copy at `skills/cto-legends/SKILL.md`, router commit `6975dcb`).
+- Module recipe moved to `docs/GITHUB-RECIPE.md` with no skill frontmatter. Per-module skill dirs, reviewer definitions, host installers, Gemini manifest and shim removed.
+- Version file `VERSION` is authoritative. Dependency pin on `legends-dataforseo-kit` re-verified live at the immutable commit.
+
 ## [1.5.0] - 2026-09-23
 
 - Full optimization recipe requires live research, applied changes, and evidence receipts.
