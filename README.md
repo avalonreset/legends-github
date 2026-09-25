@@ -9,16 +9,22 @@
 
 A GitHub companion for improving repositories: understand what exists, identify the changes that matter, and turn them into reviewable work.
 
-Use it through your agent or run its Python commands directly. Skills are an optional instruction layer; the underlying workflows do not require a particular model vendor.
+Use it through your agent or run its Python commands directly. The `cto-legends` router is the only skill; the underlying workflows do not require a particular model vendor.
 
 [Releases](https://github.com/avalonreset/legends-github/releases) · [Modernization plan](docs/MODERNIZATION.md) · [Agent entry point](AGENTS.md) · [MIT license](LICENSE)
 
+## Agent setup (via `cto-legends`)
+
+Part of the [CTO Legends](https://github.com/avalonreset/cto-legends) ecosystem. `cto-legends` is the only registered skill; this repo vendors a pinned copy at `skills/cto-legends/SKILL.md`.
+
+Install with `cto-legends install legends-github`, then follow the module recipe the router loads. Do not register this module as its own skill.
+
 ## Start with your repository
 
-Download and extract the [v1.5.0 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v1.5.0), or clone this toolkit beside the repository you want to improve. Python 3.10+ and Git are required; authenticated [GitHub CLI](https://cli.github.com/) enables live GitHub metadata and changes.
+Download and extract the [v0.1.0 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.1.0), or clone this toolkit beside the repository you want to improve. Python 3.10+ and Git are required; authenticated [GitHub CLI](https://cli.github.com/) enables live GitHub metadata and changes.
 
 ```sh
-git clone --branch v1.5.0 https://github.com/avalonreset/legends-github.git
+git clone --branch v0.1.0 https://github.com/avalonreset/legends-github.git
 cd legends-github
 python -m pip install -r github/requirements.txt
 python legends_github.py capabilities
@@ -55,9 +61,8 @@ The portable interface is files plus commands and JSON output. That is the inten
 | --- | --- |
 | Python command interface | Included; independent of agent-specific installation paths. |
 | File-based instructions | Read `AGENTS.md` explicitly when the host does not discover it automatically. |
-| Skills | Included under `github/`, `skills/`, and `extensions/`; specialized instructions share the portable evidence and execution contract. |
-| Existing native adapters | Claude and Codex installers and a Gemini extension manifest are retained. Their presence is not an end-to-end compatibility certificate. |
-| Other hosts | Use the command interface where file and shell tools exist. Native adapter verification is planned. |
+| Skills | `cto-legends` is the only registered skill; the module recipe lives in this README plus `docs/GITHUB-RECIPE.md`. No per-module skill installation exists. |
+| Other hosts | Use the command interface where file and shell tools exist. |
 
 No new provider API key is needed for the local audit. Keyword research and image generation are optional capabilities, not prerequisites for basic repository improvement. An existing agent subscription can provide the reasoning; the toolkit does not require its own LLM account.
 
@@ -83,26 +88,19 @@ The plan turns repository evidence into candidate comparison pages, useful examp
 
 A strong repository does not require a mascot or banner. Keep an existing image if it helps, supply your own local asset, or use the image tool already available in your agent. The toolkit has no paid image-generation integration and asks for no image-provider key. Legacy image flags now reuse or convert local assets only. For a typography-first banner, use the [optional Legends recipe](github/references/legends-banner-style.md) with a supplied font. [Artwork guide](github/references/banner-generation.md).
 
-The [social preview protocol](github/references/social-preview-sop.md) and [README/badge formula](github/references/legends-readme-style.md) are included in skill installations. The fixed-size renderer at `github/scripts/render_social_preview.py` recomposes approved copy at 1280 × 640, measures wrapping, and rejects clipping without shrinking type. Supply your licensed Legends font; it is not bundled. Agents visually inspect outputs and attempt upload with available tools, reporting the exact blocker if manual upload is needed.
+The [social preview protocol](github/references/social-preview-sop.md) and [README/badge formula](github/references/legends-readme-style.md) ship in this checkout. The fixed-size renderer at `github/scripts/render_social_preview.py` recomposes approved copy at 1280 × 640, measures wrapping, and rejects clipping without shrinking type. Supply your licensed Legends font; it is not bundled. Agents visually inspect outputs and attempt upload with available tools, reporting the exact blocker if manual upload is needed.
 
-## Existing skill installers
+## Install route
 
-These are retained for existing users while the portable interface is modernized. Review installer behavior before running it; legacy installers can configure optional services.
-
-| Adapter | macOS / Linux | Windows |
-| --- | --- | --- |
-| Claude | `bash install.sh` | `./install.ps1` |
-| Codex | `bash install-codex.sh` | `./install-codex.ps1` |
-
-Gemini integration is described by `gemini-extension.json` and `GEMINI.md`. For other hosts, start with the explicit `AGENTS.md` workflow instead of guessing an installation directory.
+There are no per-host installers. The router installs this module with `cto-legends install legends-github` after an explicit preview; nothing is written until authorized. For other hosts, start with the explicit `AGENTS.md` workflow instead of guessing an installation directory.
 
 ## Project layout
 
 - `legends_github.py`: portable command entry point.
 - `github/scripts/`: existing deterministic workflows and shared runtime.
 - `github/references/`: rubrics, evidence guidance, and workflow references.
-- `skills/`: specialized agent instructions.
-- `agents/`: existing reviewer definitions.
+- `skills/cto-legends/SKILL.md`: pinned copy of the router skill (the only skill).
+- `docs/GITHUB-RECIPE.md`: router-loaded module recipe.
 - `extensions/`: optional service integrations.
 - `docs/MODERNIZATION.md`: reconciliation findings, milestones, and acceptance criteria.
 

@@ -26,7 +26,7 @@ WORKFLOWS = {
 
 def main():
     parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
-    parser.add_argument("--version", action="version", version="legends-github 1.4.0")
+    parser.add_argument("--version", action="version", version="legends-github 0.1.0")
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--artifacts-dir", type=Path)
     options, args = parser.parse_known_args()

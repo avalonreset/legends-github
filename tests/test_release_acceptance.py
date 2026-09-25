@@ -51,9 +51,10 @@ class ReleaseAcceptanceTests(unittest.TestCase):
                     meta_repo.apply_meta_plan(payload)
                 execute.assert_not_called()
 
-    def test_installer_payload_contains_visual_protocol(self):
+    def test_no_per_host_installers_router_native(self):
         for name in ('social-preview-sop.md', 'legends-readme-style.md'):
             self.assertTrue((ROOT / 'github/references' / name).is_file())
         self.assertTrue((ROOT / 'github/scripts/render_social_preview.py').is_file())
-        for installer in ('install-codex.ps1', 'install-codex.sh'):
-            self.assertNotIn('Configure DataForSEO MCP', (ROOT / installer).read_text())
+        for installer in ('install.ps1', 'install.sh',
+                          'install-codex.ps1', 'install-codex.sh'):
+            self.assertFalse((ROOT / installer).exists())

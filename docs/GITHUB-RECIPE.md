@@ -1,9 +1,6 @@
----
-name: github
-description: Improve GitHub repositories through evidence-based audits, documentation, discovery, licensing review, community workflows, releases, and portfolio maintenance. Works with local commands and optional agent tools.
----
+# GitHub repository workflows (router-loaded recipe)
 
-# GitHub repository workflows
+Part of the `cto-legends` ecosystem. Loaded by the router on demand; this file carries no skill registration.
 
 Help the repository's intended users understand, evaluate, install, and maintain
 its project. Choose work from the user's objective and observed problems. A
@@ -11,9 +8,9 @@ checklist score, artwork, or a particular agent host is not the objective.
 
 ## Start here
 
-1. Resolve this skill's directory as **GITHUB_HOME**, containing `scripts/` and
-   `references/`. Resolve the target repository separately as **TARGET**.
-2. Read [portable-workflows.md](references/portable-workflows.md) for path
+1. Resolve this toolkit checkout as **GITHUB_HOME**, containing `github/scripts/`
+   and `github/references/`. Resolve the target repository separately as **TARGET**.
+2. Read [portable-workflows.md](../github/references/portable-workflows.md) for path
    resolution, evidence handling, authorization, and credentials. Read the
    target's instructions and inspect its status before changing files.
 3. Use the stated intent. Infer a reasonable audience and repository type from
@@ -34,32 +31,31 @@ python "<GITHUB_HOME>/scripts/run_headless.py" cache-status --path "<TARGET>"
 ```
 
 In a source checkout, `python "<SOURCE_ROOT>/legends_github.py" <workflow>` is
-also supported. Installed skills need not have that launcher; their
-`GITHUB_HOME/scripts/run_headless.py` is the equivalent entry point. Never resolve
+the supported launcher and `GITHUB_HOME/github/scripts/run_headless.py` is the
+equivalent entry point. Never resolve
 runtime paths against the target repository's current directory.
 
 The source launcher exposes `capabilities` as machine-readable workflow metadata.
 Its `--offline` option disables external requests; `--artifacts-dir "<OUTPUT>"`
 isolates artifacts from the target. Inspect launcher help before using global
-options: the installed script may expose configuration through environment
+options: the run_headless.py script may expose configuration through environment
 variables instead. `verify --mode api` remains a compatibility alias.
 
 ## Route by outcome
 
-| User objective | Skill | Runtime command | Main evidence |
-|---|---|---|---|
-| Find actionable defects and gaps | `github-audit` | `audit` | Source, examples, settings, verification |
-| Explain and demonstrate the project | `github-readme` | `readme` | Implementation, working installation and usage |
-| Review licenses and upstream notices | `github-legal` | `legal` | License text, provenance, distribution context |
-| Correct description, topics, settings | `github-meta` | `meta` | Current settings, project capabilities |
-| Improve relevant organic discovery | `github-seo` | `discover`, `seo` | User questions, comparisons, search observations |
-| Make contribution and support usable | `github-community` | `community` | Existing workflows and maintainer capacity |
-| Prepare a reliable release | `github-release` | `release` | Tags, diff, package contents, tests |
-| Present or maintain related projects | `github-empire` | `empire` | Owner scope, repo purpose, profile, shared users |
+| User objective | Runtime command | Main evidence |
+|---|---|---|
+| Find actionable defects and gaps | `audit` | Source, examples, settings, verification |
+| Explain and demonstrate the project | `readme` | Implementation, working installation and usage |
+| Review licenses and upstream notices | `legal` | License text, provenance, distribution context |
+| Correct description, topics, settings | `meta` | Current settings, project capabilities |
+| Improve relevant organic discovery | `discover`, `seo` | User questions, comparisons, search observations |
+| Make contribution and support usable | `community` | Existing workflows and maintainer capacity |
+| Prepare a reliable release | `release` | Tags, diff, package contents, tests |
+| Present or maintain related projects | `empire` | Owner scope, repo purpose, profile, shared users |
 
-Source sub-skills live at `<SOURCE_ROOT>/skills/github-*/SKILL.md`. Installed
-sub-skills live beside this `github` directory under the host's skill root.
-Load only relevant instructions and references.
+Run the smallest relevant workflow for the objective. Domain background lives in
+`github/references/`; this recipe plus the README are the only agent instructions.
 
 For a bare repository request, gather a bounded baseline and give the highest
 value findings with supporting evidence. If asked to improve the repository,
@@ -141,7 +137,7 @@ before preparing an asset for a platform-specific setting.
 
 ## References and delivery
 
-`references/portable-workflows.md` is the shared execution and evidence contract.
+`github/references/portable-workflows.md` is the shared execution and evidence contract.
 Domain examples include `license-guide.md`, `readme-framework.md`,
 `github-seo-guide.md`, `community-files-guide.md`, `community-templates.md`,
 `releases-guide.md`, `repo-type-templates.md`, and `shared-data-cache.md`.
@@ -158,7 +154,7 @@ URL. Recommend another workflow only for unresolved parts of the user's objectiv
 
 ## Repository presentation
 
-For banner-led headers and useful badges, read `references/legends-readme-style.md`. For social cards, read `references/social-preview-sop.md` and use `scripts/render_social_preview.py` with a supplied font. Visually inspect full-size and thumbnail output; attempt authorized upload and verify the saved image.
+For banner-led headers and useful badges, read `github/references/legends-readme-style.md`. For social cards, read `github/references/social-preview-sop.md` and use `github/scripts/render_social_preview.py` with a supplied font. Visually inspect full-size and thumbnail output; attempt authorized upload and verify the saved image.
 
 ## Full SEO optimization means research and application
 

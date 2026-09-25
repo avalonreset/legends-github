@@ -14,7 +14,7 @@ Use this workflow with any agent that can read files and execute commands. No pa
 
 ## Optional instructions and tools
 
-Read specialized `skills/github-*/SKILL.md` instructions when useful. Legacy host-specific paths, mandatory multi-agent language, and optional-provider setup prompts are not requirements of this portable entry point. Translate supported operations into the current host's tools; run sequentially when delegation is unavailable or unnecessary.
+Read `docs/GITHUB-RECIPE.md` and the pinned router copy at `skills/cto-legends/SKILL.md` when useful. Legacy host-specific paths, mandatory multi-agent language, and optional-provider setup prompts are not requirements of this portable entry point. Translate supported operations into the current host's tools; run sequentially when delegation is unavailable or unnecessary.
 
 Use configured providers only for requested capabilities. Never print credentials or load arbitrary dotenv contents into a shell command. Keep artwork optional and follow the repository owner's design direction.
 

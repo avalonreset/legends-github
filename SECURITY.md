@@ -38,10 +38,10 @@ it responsibly. **Do not open public issues for security vulnerabilities.**
 
 The following are in scope for security reports:
 
-- Install scripts (`install.sh`, `install.ps1`) that modify system configuration
-- Credential handling in skill files or reference documents
+- Launcher or script behavior (`legends_github.py`, `github/scripts/`) that modifies system configuration
+- Credential handling in recipe files or reference documents
 - MCP server configuration that could expose credentials
-- Any skill behavior that could leak sensitive data to external services
+- Any workflow behavior that could leak sensitive data to external services
 
 The following are out of scope:
 
