@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-09-25
+
+- Re-pinned the DataForSEO provider to the router-native kit 0.1.2
+  commit. The 0.1.0 pin still pointed at a pre-reset kit commit.
+
 ## [0.1.0] - 2026-09-25
 
 - Router-native reset generation: de-skillified to the single `cto-legends` router skill (vendored pinned copy at `skills/cto-legends/SKILL.md`, router commit `6975dcb`).
