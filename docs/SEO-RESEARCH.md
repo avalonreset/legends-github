@@ -1,6 +1,6 @@
 # Use measured keyword research
 
-Live research uses the public [legends-dataforseo-kit](https://github.com/avalonreset/legends-dataforseo-kit) dependency. Install it with `python -m pip install -r requirements-dataforseo.txt`. Set `DATAFORSEO_LOGIN` (or `DATAFORSEO_USERNAME`) and `DATAFORSEO_PASSWORD` in the environment; no MCP server is needed.
+Live research uses the public [legends-dataforseo](https://github.com/avalonreset/legends-dataforseo) dependency. Install it with `python -m pip install -r requirements-dataforseo.txt`. Set `DATAFORSEO_LOGIN` (or `DATAFORSEO_USERNAME`) and `DATAFORSEO_PASSWORD` in the environment; no MCP server is needed.
 
 Estimate before execution:
 
@@ -58,7 +58,7 @@ For an authorized full optimization, keyword optimization, or DataForSEO-backed
 GitHub pass, presentation alone is incomplete. Run this sequence:
 
 1. Inspect the actual product and identify audiences and task/category queries.
-2. Check DataForSEO Kit readiness and preview research. Collect live demand and
+2. Check DataForSEO readiness and preview research. Collect live demand and
    SERPs through `research`; import them through `seo`. A local keyword list or
    a `--mode full` analysis is not live research.
 3. Research distinct relevant intent clusters. Continue finite batches when an

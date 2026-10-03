@@ -24,7 +24,7 @@ Keep executable behavior in `github/scripts/`, with `legends_github.py` as the p
 
 ## DataForSEO research dependency
 
-For measured demand and SERP research, install `requirements-dataforseo.txt` and use `research` to estimate before explicit execution. This uses the public legends-dataforseo-kit; no MCP installation is required. Follow `docs/SEO-RESEARCH.md`, preserve locale and observation dates, and import collected exports through `seo`. Offline audits remain independent of provider credentials.
+For measured demand and SERP research, install `requirements-dataforseo.txt` and use `research` to estimate before explicit execution. This uses the public legends-dataforseo; no MCP installation is required. Follow `docs/SEO-RESEARCH.md`, preserve locale and observation dates, and import collected exports through `seo`. Offline audits remain independent of provider credentials.
 
 ## Full SEO optimization means research and application
 
@@ -32,7 +32,7 @@ For an authorized full optimization, keyword optimization, or DataForSEO-backed
 GitHub pass, presentation alone is incomplete. Run this sequence:
 
 1. Inspect the actual product and identify audiences and task/category queries.
-2. Check DataForSEO Kit readiness and preview research. Collect live demand and
+2. Check DataForSEO readiness and preview research. Collect live demand and
    SERPs through `research`; import them through `seo`. A local keyword list or
    a `--mode full` analysis is not live research.
 3. Research distinct relevant intent clusters. Continue finite batches when an

@@ -1,6 +1,6 @@
 # DataForSEO setup
 
-Live research now uses the public legends-dataforseo-kit Python dependency.
+Live research now uses the public legends-dataforseo Python dependency.
 Run `python -m pip install -r requirements-dataforseo.txt` from the toolkit root.
 Set `DATAFORSEO_LOGIN` (or `DATAFORSEO_USERNAME`) and `DATAFORSEO_PASSWORD` in
 your environment. No MCP server or model-specific configuration is required.
