@@ -42,13 +42,25 @@ committing this file does **not** configure GitHub's social preview.
 
 ## agent uploads first
 
+Social preview upload is part of an authorized repository presentation/release
+pass when the owner requested the artwork. Complete it in the agent's workflow;
+do not hand over routine clicks merely because the first label match failed.
+The Python helper prepares and verifies evidence; the host browser tool performs
+the upload. There is no universal upload capability implied by installing this
+module.
+
+```sh
+python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --output /outside/repo/prepared.json
+```
+
 1. Confirm the exact repository, current authorization and local PNG. Reuse
    existing authorization to update repository presentation; do not ask again.
 2. Discover tools actually available in the session. A client name is not proof
-   it has browser control, file upload or computer use. On Benjamin's fleet use
-   Legends Chrome Kit first, then a supported Legends Shell Kit action. Elsewhere
-   use the available Claude/Codex browser extension or computer-use tool if it
-   actually supports the required actions. Do not install new tooling implicitly.
+   it has browser control, file upload or computer use. Prefer the host's active
+   browser and its supported DOM-bound file upload, then a supported native file
+   picker. Fleet-specific browser or desktop adapters may supply these actions;
+   no particular adapter, operating system or model is required. Inspect actual
+   schemas/readiness. Do not install new tooling implicitly.
 3. Open the repository's **Settings → General → Social preview**. Inspect the
    actual page. Do not infer upload eligibility solely from privacy or plan.
 4. Identify **Edit inside Social preview**, not Edit beside Default branch.
@@ -56,6 +68,16 @@ committing this file does **not** configure GitHub's social preview.
    click the first Edit. Choose **Upload an image…**, supply the exact local PNG
    through a supported upload control or native file picker, and complete any
    save/crop confirmation shown. Preserve the full 2:1 image and its safe area.
+   If an upload label cannot be resolved, take a fresh page/DOM inspection. Locate
+   the actual `input[type=file]` associated with Social preview (including its
+   current id/name/accept attributes). Use that observed element with the tool's
+   supported file-upload operation. Do not assume the menu's visible text is the
+   input's accessible label, reuse stale element references, assign a string to
+   the input's value, or type the path into a normal text field. A hidden input
+   can be a normal supported upload target; use only the host tool's documented
+   file-upload mechanism. If unsupported, try its supported native picker route.
+   GitHub currently may expose `input#repo-image-file-input` inside a
+   `file-attachment` element; treat this as a discovery hint, never an invariant.
 5. If the primary tool cannot complete an action, try the next available supported
    route once the exact limitation is understood. Do not bypass blocked transports,
    extract cookies, or invent a private GitHub upload API. A blocked upload does
@@ -65,6 +87,26 @@ committing this file does **not** configure GitHub's social preview.
    and inspect the served image. A true custom-image flag alone may describe the
    OLD image, so compare the actual new design. Record uploaded-and-verified only
    when the new image is confirmed. Social networks may cache older previews.
+
+```sh
+python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --verify --output /outside/repo/verified.json
+```
+
+This command uses authenticated `gh api graphql` for the explicit repository
+and downloads only the returned HTTPS GitHub-hosted image, without attaching
+GitHub credentials. It compares dimensions and decoded pixels, allowing
+lossless PNG re-encoding. It never performs an upload. `image_verified` proves
+the requested image is currently served, not who uploaded it. `mismatch` covers
+old or changed artwork; platform recompression can also require visual review.
+`unavailable` covers offline mode, missing access and failed image reads. Both
+return a nonzero exit code. Repeat verification after a bounded cache delay
+when appropriate, without re-uploading blindly.
+
+Save the host upload action result or exact blocker alongside the helper JSON,
+and visually inspect the reloaded thumbnail. A manual visual match after lossy
+recompression must be labeled as manual verification with its evidence; do not
+rewrite the helper result. A prepared image, click acknowledgement, repository
+commit, changed URL, or true custom-image flag alone is not completion.
 
 ## bounded manual fallback
 

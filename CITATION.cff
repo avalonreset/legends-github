@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "Legends GitHub"
-version: "0.1.0"
-date-released: 2026-09-25
+version: "0.1.2"
+date-released: 2026-10-10
 authors:
   - name: "Avalon Reset"
 url: "https://github.com/avalonreset/legends-github"
@@ -18,8 +18,9 @@ keywords:
   - github-seo
   - repository-audit
 abstract: >
-  A cross-runtime skill suite for GitHub repository optimization across Claude
-  Code, Codex, and Gemini CLI. Includes 8 specialized sub-skills covering README
-  generation, legal compliance, metadata optimization, SEO keyword research,
-  community health, release management, and portfolio strategy. Powered by
-  optional research integrations for keyword evidence and local artwork supplied by the user.
+  Portable agent-led GitHub repository workflows through a Python command
+  interface and the CTO Legends router. Supports repository audits, README
+  improvements, licensing review, metadata, search research, community health,
+  releases, portfolio presentation, and social-preview upload preparation and
+  verification. Optional integrations provide measured search evidence; social
+  uploads use the agent host's supported browser or file-picker tools.

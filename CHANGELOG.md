@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-10
+
+- Added portable social-preview preparation and live served-image verification,
+  with explicit repository/image receipts and truthful incomplete statuses.
+- Made supported agent upload, DOM-bound retry after label mismatch, and saved
+  image verification part of the repository presentation/release workflow.
+- Added macOS to the Python CI matrix and made launcher version reporting follow
+  the authoritative VERSION file.
+
 ## [0.1.1] - 2026-09-25
 
 - Re-pinned the DataForSEO provider to the router-native kit 0.1.2

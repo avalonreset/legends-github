@@ -21,10 +21,10 @@ Install with `cto-legends install legends-github`, then follow the module recipe
 
 ## Start with your repository
 
-Download and extract the [v0.1.0 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.1.0), or clone this toolkit beside the repository you want to improve. Python 3.10+ and Git are required; authenticated [GitHub CLI](https://cli.github.com/) enables live GitHub metadata and changes.
+Download and extract the [v0.1.2 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.1.2), or clone this toolkit beside the repository you want to improve. Python 3.10+ and Git are required; authenticated [GitHub CLI](https://cli.github.com/) enables live GitHub metadata and changes.
 
 ```sh
-git clone --branch v0.1.0 https://github.com/avalonreset/legends-github.git
+git clone --branch v0.1.2 https://github.com/avalonreset/legends-github.git
 cd legends-github
 python -m pip install -r github/requirements.txt
 python legends_github.py capabilities
@@ -50,6 +50,7 @@ For agent-driven work, ask your agent to read this toolkit's `AGENTS.md`, then g
 | `seo` | Produce repository-derived keyword hypotheses; enrich them with research when available. |
 | `empire` | Review a portfolio and prepare a consistent presentation. |
 | `cache-status` | Inspect evidence saved by earlier workflows. |
+| `social-preview` | Prepare an agent upload and verify the image GitHub serves against the intended artwork. |
 
 Run `python legends_github.py <workflow> --help` for its exact options. Default planning commands still write local artifacts. Flags such as `--write`, `--write-files`, `--apply`, `--generate-assets`, and `--publish` have additional effects; select them deliberately for the user's task.
 
@@ -89,6 +90,18 @@ The plan turns repository evidence into candidate comparison pages, useful examp
 A strong repository does not require a mascot or banner. Keep an existing image if it helps, supply your own local asset, or use the image tool already available in your agent. The toolkit has no paid image-generation integration and asks for no image-provider key. Legacy image flags now reuse or convert local assets only. For a typography-first banner, use the [optional Legends recipe](github/references/legends-banner-style.md) with a supplied font. [Artwork guide](github/references/banner-generation.md).
 
 The [social preview protocol](github/references/social-preview-sop.md) and [README/badge formula](github/references/legends-readme-style.md) ship in this checkout. The fixed-size renderer at `github/scripts/render_social_preview.py` recomposes approved copy at 1280 × 640, measures wrapping, and rejects clipping without shrinking type. Supply your licensed Legends font; it is not bundled. Agents visually inspect outputs and attempt upload with available tools, reporting the exact blocker if manual upload is needed.
+
+```sh
+python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --output ./review-output/prepared.json
+# Agent completes Settings > Social preview > Edit > Upload using supported host tools.
+python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --verify --output ./review-output/verified.json
+```
+
+The command validates the image and gives exact upload instructions; it does not
+control a browser. Agents use an observed file input or native picker if label
+matching fails. Verification reads GitHub GraphQL and compares the served image's
+dimensions and decoded pixels. A custom-image flag alone cannot pass. Preparation
+is offline; `--verify` needs authenticated GitHub CLI and network access.
 
 ## Install route
 

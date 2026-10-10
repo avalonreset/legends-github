@@ -10,6 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = {
+    "social-preview": {"purpose": "Prepare a supported agent upload and verify the served social image", "effects": ["explicit_local_receipt", "optional_github_reads"], "upload": "host_browser_tool_required"},
     "research": {"purpose": "Estimate or collect DataForSEO search evidence", "effects": ["local_artifacts", "explicit_paid_api_calls"], "mutation_flags": ["--execute"]},
     "discover": {"purpose": "Plan evidence-backed organic discovery experiments", "effects": ["local_artifacts"]},
     "verify": {"purpose": "Check local readiness and optional capabilities", "effects": ["local_artifacts"]},
@@ -26,7 +27,7 @@ WORKFLOWS = {
 
 def main():
     parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
-    parser.add_argument("--version", action="version", version="legends-github 0.1.0")
+    parser.add_argument("--version", action="version", version=f"legends-github {(ROOT / 'VERSION').read_text().strip()}")
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--artifacts-dir", type=Path)
     options, args = parser.parse_known_args()

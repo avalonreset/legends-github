@@ -25,6 +25,7 @@ from release_repo import run_release, write_release_artifacts
 from runtime_paths import runtime_paths_payload
 from research_dataforseo import collect_research
 from seo_repo import run_seo, write_seo_artifacts
+from social_preview import social_preview
 from validate_setup import validate_setup
 
 
@@ -361,6 +362,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run Legends GitHub workflows non-interactively")
     sub = parser.add_subparsers(dest="command", required=True)
 
+    social = sub.add_parser("social-preview", help="Prepare an agent upload or verify GitHub's served image")
+    social.add_argument("--repo", required=True, help="Explicit github.com OWNER/REPO")
+    social.add_argument("--image", required=True, type=Path, help="Exact local social-preview image")
+    social.add_argument("--verify", action="store_true", help="Read GraphQL and compare served image pixels")
+    social.add_argument("--output", type=Path, help="Write a JSON receipt at this explicit path")
+
     research = sub.add_parser("research", help="Estimate or collect keyword/SERP evidence using legends-dataforseo-kit")
     research.add_argument("--path", default=".")
     research.add_argument("--keyword", action="append", required=True)
@@ -439,6 +446,7 @@ def main() -> int:
         return 2
 
     handlers = {
+        "social-preview": lambda a: social_preview(a.repo, a.image, verify=a.verify, output=a.output),
         "research": lambda a: collect_research(resolve_repo_root(a.path), keywords=a.keyword,
             serp_keywords=a.serp, location_code=a.location_code, language=a.language,
             execute=a.execute, ceiling=a.confirm_cost_usd, no_cost_ceiling=a.no_cost_ceiling),
@@ -457,6 +465,8 @@ def main() -> int:
     try:
         payload = handlers[args.command](args)
         print(json.dumps(payload, indent=2))
+        if args.command == "social-preview":
+            return 0 if payload["status"] in ("prepared", "image_verified") else 1
         if payload.get("status") == "error":
             return 1
         if payload.get("operation") == "verify":
