@@ -53,6 +53,7 @@ variables instead. `verify --mode api` remains a compatibility alias.
 | Make contribution and support usable | `community` | Existing workflows and maintainer capacity |
 | Prepare a reliable release | `release` | Tags, diff, package contents, tests |
 | Present or maintain related projects | `empire` | Owner scope, repo purpose, profile, shared users |
+| Upload and verify social preview artwork | `social-preview` plus supported host upload | Exact image, scoped file input, served-image comparison |
 
 Run the smallest relevant workflow for the objective. Domain background lives in
 `github/references/`; this recipe plus the README are the only agent instructions.
@@ -154,7 +155,16 @@ URL. Recommend another workflow only for unresolved parts of the user's objectiv
 
 ## Repository presentation
 
-For banner-led headers and useful badges, read `github/references/legends-readme-style.md`. For social cards, read `github/references/social-preview-sop.md` and use `github/scripts/render_social_preview.py` with a supplied font. Visually inspect full-size and thumbnail output; attempt authorized upload and verify the saved image.
+For banner-led headers and useful badges, read `github/references/legends-readme-style.md`. For social cards, read `github/references/social-preview-sop.md` and use `github/scripts/render_social_preview.py` with a supplied font. Visually inspect full-size and thumbnail output. Run `social-preview --repo OWNER/REPO --image ABSOLUTE_PATH` to prepare the exact upload, complete it through supported host browser/file-picker tools, then run the same command with `--verify` to compare the image GitHub actually serves.
+
+Social preview upload belongs in the authorized release/presentation pass. A
+failed visible-label match requires fresh DOM inspection and a supported upload
+bound to the actual file input, or a supported native picker. Do not stop at
+manual instructions for a routine recoverable selector mismatch. Report a
+manual fallback only after identifying a real missing capability, authentication
+requirement or blocked supported route. Never bypass transport restrictions or
+extract browser credentials. Preserve the upload result and verification receipt;
+the Python helper performs no upload itself.
 
 ## Full SEO optimization means research and application
 
