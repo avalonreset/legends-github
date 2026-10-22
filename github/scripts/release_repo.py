@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic release planning for Legends GitHub."""
+"""Deterministic release planning for legends-github."""
 
 from __future__ import annotations
 

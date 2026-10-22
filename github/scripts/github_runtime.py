@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Runtime helpers for Legends GitHub headless workflows."""
+"""Runtime helpers for legends-github headless workflows."""
 
 from __future__ import annotations
 

@@ -106,7 +106,7 @@ without downloadable release assets can mark the metric not applicable. See
 
 ## Comparing an open source tool with hosted alternatives
 
-For a project such as Legends GeoGrid, the same generic workflow can organize
+For a project such as `legends-geogrid`, the same generic workflow can organize
 an evaluation around a repeatable workload and documented costs. Supply its
 audience/category and only the alternatives actually under consideration. The
 planner has no GeoGrid-specific assumptions or mandatory service integration.

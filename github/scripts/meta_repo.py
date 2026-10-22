@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic metadata planning for Legends GitHub."""
+"""Deterministic metadata planning for legends-github."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from audit_repo import detect_repo_type, slugify
 from cache_state import read_repo_cache, write_repo_cache
 from github_runtime import gh_auth_ok, gh_repo_view, repo_slug_from_git, run_command
 from runtime_paths import repo_output_dir
-from seo_repo import normalize_topic, run_seo, topic_names
+from seo_repo import LOW_VALUE_TOPICS, normalize_topic, run_seo, topic_names
 
 
 def utcnow_iso() -> str:
@@ -67,7 +67,12 @@ def feature_defaults(repo_type: str) -> dict[str, bool]:
     }
 
 
-def homepage_recommendation(repo_slug: str, homepage_url: str, repo_name: str) -> tuple[str | None, str | None, str]:
+def homepage_recommendation(
+    repo_slug: str,
+    homepage_url: str,
+    repo_name: str,
+    repo_root: Path | None = None,
+) -> tuple[str | None, str | None, str]:
     """Return homepage recommendation tuple of action, recommended value, and reason."""
     current = (homepage_url or "").strip()
     if not current:
@@ -87,6 +92,19 @@ def homepage_recommendation(repo_slug: str, homepage_url: str, repo_name: str) -
         return "keep", current, "Homepage URL appears aligned with the project name."
     if "github.io" in lowered or "/docs" in lowered or "readthedocs" in lowered:
         return "keep", current, "Homepage URL already looks like a docs or project site."
+    is_legends_member = (
+        "legends" in repo_slug.lower()
+        or "legends" in repo_name.lower()
+        or (
+            repo_root is not None
+            and (
+                (repo_root / ".legends-module").exists()
+                or (repo_root / "skills" / "cto-legends" / "SKILL.md").exists()
+            )
+        )
+    )
+    if "cto-legends.com" in lowered and is_legends_member:
+        return "keep", current, "Homepage URL points to the parent cto-legends ecosystem site."
     return "review_required", None, "Current homepage may be unrelated. Deterministic mode will not clear it automatically."
 
 
@@ -150,11 +168,35 @@ def current_topics(metadata: dict[str, Any], cached_context: dict[str, Any]) -> 
 def recommended_topics(existing: list[str], seo_data: dict[str, Any], primary_language: str, repo_type: str) -> list[str]:
     """Build deterministic recommended topics for metadata updates."""
     ordered: list[str] = []
+    excluded = set(LOW_VALUE_TOPICS)
+    if repo_type != "Skill/Plugin":
+        excluded.update({"skill", "plugin"})
 
     def add(topic: str) -> None:
         normalized = normalize_topic(topic)
-        if normalized and normalized not in ordered:
+        if normalized and normalized not in ordered and normalized not in excluded:
             ordered.append(normalized)
+
+    if seo_data.get("analysis_mode") == "imported-dataforseo-evidence":
+        for preserved in ("open-source", "cto-legends"):
+            if preserved in {normalize_topic(item) for item in existing}:
+                add(preserved)
+        for topic in seo_data.get("recommended_topics", []):
+            if isinstance(topic, str):
+                add(topic)
+        if primary_language:
+            add(primary_language)
+        if repo_type == "Skill/Plugin":
+            add("skill")
+            add("plugin")
+        elif repo_type == "CLI Tool":
+            add("cli")
+            add("developer-tools")
+        elif repo_type == "Library/Package":
+            add("library")
+        for topic in existing:
+            add(topic)
+        return ordered[:20]
 
     for topic in existing:
         add(topic)
@@ -228,6 +270,7 @@ def build_meta_payload(repo_root: Path) -> dict[str, Any]:
         repo_slug=repo_slug,
         homepage_url=current_homepage,
         repo_name=snapshot["repo_name"],
+        repo_root=repo_root,
     )
     current_features = {
         "issues": bool(metadata.get("hasIssuesEnabled", True)),

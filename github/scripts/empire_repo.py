@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic portfolio planning for Legends GitHub."""
+"""Deterministic portfolio planning for legends-github."""
 
 from __future__ import annotations
 

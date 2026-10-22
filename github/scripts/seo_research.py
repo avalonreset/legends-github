@@ -36,6 +36,8 @@ def import_research(keyword_data, primary_keyword, serp_data=()):
         for item in result.get("items") or []:
             info = item.get("keyword_info") or {}
             keywords.append({"keyword": item["keyword"], "volume": metric(info.get("search_volume")),
+                "cpc": metric(info.get("cpc")),
+                "competition_level": info.get("competition_level"),
                 "difficulty": metric((item.get("keyword_properties") or {}).get("keyword_difficulty")),
                 "intent": (item.get("search_intent_info") or {}).get("main_intent") or "unknown",
                 "source": "dataforseo-keyword-overview", "updated_at": info.get("last_updated_time"),

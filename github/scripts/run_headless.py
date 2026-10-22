@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic headless entrypoint for Legends GitHub."""
+"""Deterministic headless entrypoint for legends-github."""
 
 from __future__ import annotations
 
@@ -359,7 +359,7 @@ def run_discover_command(args: argparse.Namespace) -> dict:
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the CLI parser."""
-    parser = argparse.ArgumentParser(description="Run Legends GitHub workflows non-interactively")
+    parser = argparse.ArgumentParser(description="Run legends-github workflows non-interactively")
     sub = parser.add_subparsers(dest="command", required=True)
 
     social = sub.add_parser("social-preview", help="Prepare an agent upload or verify GitHub's served image")
@@ -368,7 +368,7 @@ def build_parser() -> argparse.ArgumentParser:
     social.add_argument("--verify", action="store_true", help="Read GraphQL and compare served image pixels")
     social.add_argument("--output", type=Path, help="Write a JSON receipt at this explicit path")
 
-    research = sub.add_parser("research", help="Estimate or collect keyword/SERP evidence using legends-dataforseo-kit")
+    research = sub.add_parser("research", help="Estimate or collect keyword/SERP evidence using legends-dataforseo")
     research.add_argument("--path", default=".")
     research.add_argument("--keyword", action="append", required=True)
     research.add_argument("--serp", action="append", default=[])

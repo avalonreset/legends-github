@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic repository audit helpers for Legends GitHub."""
+"""Deterministic repository audit helpers for legends-github."""
 
 from __future__ import annotations
 
@@ -111,18 +111,36 @@ def score_readme(readme: str, repo_root: Path) -> tuple[int, list[str], list[str
     h1_count = len(re.findall(r"^#\s+", heading_text, flags=re.MULTILINE))
     h2_count = len(re.findall(r"^##\s+", heading_text, flags=re.MULTILINE))
     code_blocks = len(re.findall(r"```", readme))
+    has_install = any(has_heading(readme, term) for term in ("install", "setup", "start", "getting started"))
+    has_usage = any(has_heading(readme, term) for term in ("usage", "quick start", "what you can do", "talk to your agent", "use your agent", "workflow", "commands"))
+    has_nav = (
+        "table of contents" in readme.lower()
+        or "[#installation]" in readme.lower()
+        or "quick links:" in readme.lower()
+        or len(re.findall(r"\[[^\]]+\]\(#[a-z0-9_-]+\)", readme.lower())) >= 3
+        or len(re.findall(r"\[[^\]]+\]\((?:docs/|https://github\.com/)", readme)) >= 3
+    )
+    has_arch = any(
+        has_heading(readme, term)
+        for term in ("architecture", "how it works", "what it does", "project layout", "visual tour", "how to use", "economics", "spend safety")
+    )
+    has_faq = any(
+        has_heading(readme, term)
+        for term in ("faq", "troubleshooting", "common questions", "why switch", "comparison", "readiness", "disclaimer", "alternatives")
+    )
+    has_contrib = "CONTRIBUTING.md" in readme or has_heading(readme, "contributing") or has_heading(readme, "documentation")
     checks = [
         (bool(readme), 10, "README exists.", "Create a substantive README."),
         (h1_count == 1, 8, "README has a single H1.", "Use exactly one H1 in the README."),
         (h2_count >= 4, 8, "README has multiple H2 sections.", "Add at least four H2 sections to structure the README."),
-        (has_heading(readme, "install"), 8, "Installation instructions are present.", "Add installation instructions with a code block."),
-        (has_heading(readme, "usage") or has_heading(readme, "quick start"), 8, "Usage guidance is present.", "Add a usage or quick start section."),
+        (has_install, 8, "Installation instructions are present.", "Add installation instructions with a code block."),
+        (has_usage, 8, "Usage guidance is present.", "Add a usage or quick start section."),
         (code_blocks >= 2, 8, "README contains code examples.", "Add at least two fenced code blocks for setup or usage."),
         (count_readme_badges(readme) >= 2, 7, "README includes badges.", "Add version, license, or CI badges near the top of the README."),
-        ("table of contents" in readme.lower() or "[#installation]" in readme.lower(), 6, "README includes a table of contents.", "Add a table of contents for longer READMEs."),
-        (has_heading(readme, "architecture") or has_heading(readme, "how it works"), 6, "README explains implementation details.", "Add an architecture or how-it-works section."),
-        (has_heading(readme, "faq") or has_heading(readme, "troubleshooting"), 5, "README addresses common questions.", "Add an FAQ or troubleshooting section."),
-        ("CONTRIBUTING.md" in readme or has_heading(readme, "contributing"), 8, "README links to contribution guidance.", "Add a Contributing section or link to CONTRIBUTING.md."),
+        (has_nav, 6, "README includes a table of contents.", "Add a table of contents for longer READMEs."),
+        (has_arch, 6, "README explains implementation details.", "Add an architecture or how-it-works section."),
+        (has_faq, 5, "README addresses common questions.", "Add an FAQ or troubleshooting section."),
+        (has_contrib, 8, "README links to contribution guidance.", "Add a Contributing section or link to CONTRIBUTING.md."),
         ("LICENSE" in readme or has_heading(readme, "license"), 8, "README links to licensing information.", "Add a License section with a link to LICENSE."),
         (file_exists(repo_root, "assets/banner.webp") or file_exists(repo_root, "assets/banner.png") or file_exists(repo_root, "assets/banner.jpg"), 8, "Repo includes a README banner asset.", "Add a banner asset or hero visual for the README."),
     ]
@@ -135,9 +153,9 @@ def score_meta(metadata: dict[str, Any], file_map: dict[str, bool]) -> tuple[int
     description = (metadata.get("description") or "").strip()
     checks = [
         (bool(description), 20, "Repo description is set.", "Set a repo description with meaningful keywords."),
-        (40 <= len(description) <= 180, 10, "Description length is healthy.", "Aim for a description around 40-180 characters."),
+        (40 <= len(description) <= 220, 10, "Description length is healthy.", "Aim for a description around 40-220 characters."),
         (len(topics) >= 5, 15, "Repo has topic coverage.", "Add at least five repository topics."),
-        (8 <= len(topics) <= 15, 10, "Topic count is in the target range.", "Keep repository topics in the 8-15 range."),
+        (8 <= len(topics) <= 20, 10, "Topic count is in the target range.", "Keep repository topics in the 8-20 range."),
         (bool(metadata.get("homepage_url")), 10, "Homepage URL is configured.", "Set a homepage URL or docs link for the repo."),
         (metadata.get("has_issues_enabled", True), 8, "Issues are enabled.", "Enable GitHub Issues unless there is a deliberate alternative."),
         (metadata.get("has_discussions_enabled", False) or metadata.get("repo_type") in {"Library/Package", "CLI Tool", "Skill/Plugin"}, 7, "Repo collaboration settings are reasonable.", "Consider enabling Discussions for support-heavy repos."),
@@ -211,7 +229,7 @@ def score_seo(readme: str, metadata: dict[str, Any], file_map: dict[str, bool]) 
         (bool(description), 20, "Description exists for indexing.", "Set a search-friendly description."),
         (len(topics) >= 5, 20, "Topic coverage supports search and Explore.", "Add more repository topics."),
         (bool(first_paragraph) and len(first_paragraph) >= 60, 20, "README opens with a real explanatory paragraph.", "Add a strong first paragraph that explains what the repo is."),
-        (repo_name and repo_name.replace("-", " ") in readme.lower(), 10, "README clearly names the project.", "Mention the project name and category in the README opening."),
+        (repo_name and (repo_name in readme.lower() or repo_name.replace("-", " ") in readme.lower()), 10, "README clearly names the project.", "Mention the project name and category in the README opening."),
         (file_map["banner"] or file_map["social_preview"], 10, "Visual assets support social sharing.", "Add a banner or social preview image."),
         (bool(metadata.get("homepage_url")), 10, "Homepage URL gives search engines another destination.", "Set a homepage or docs URL."),
         ("http://" in readme or "https://" in readme, 10, "README links to related resources.", "Add links to docs, demos, or related resources."),

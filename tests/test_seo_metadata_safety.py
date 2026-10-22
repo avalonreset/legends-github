@@ -119,6 +119,56 @@ class SeoMetadataSafetyTests(unittest.TestCase):
             self.assertFalse((repo_a / ".github-audit").exists())
             self.assertFalse((repo_b / ".github-audit").exists())
 
+    def test_vendored_router_skill_does_not_classify_module_as_skill_and_strips_filler_topics(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "skills" / "cto-legends").mkdir(parents=True)
+            (root / "skills" / "cto-legends" / "SKILL.md").write_text("# Router pin\n", encoding="utf-8")
+            (root / "package.json").write_text(
+                json.dumps({"name": "legends-geogrid", "private": True, "scripts": {"dev": "vite"}}),
+                encoding="utf-8",
+            )
+            self.assertEqual(audit_repo.detect_repo_type(root), "Application")
+            topics = seo_repo.build_topics(
+                "legends-geogrid",
+                "google maps rank checker",
+                [{"keyword": "local rank tracker", "volume": 1300}],
+                ["skill", "plugin", "vite", "prospecting", "cto-legends"],
+                "JavaScript",
+                "Application",
+            )
+            for unwanted in ("skill", "plugin", "vite", "prospecting"):
+                self.assertNotIn(unwanted, topics)
+            self.assertIn("cto-legends", topics)
+            self.assertIn("google-maps-rank-checker", topics)
+            self.assertIn("local-rank-tracker", topics)
+
+    def test_cto_legends_homepage_is_recognized_for_ecosystem_modules(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "skills" / "cto-legends").mkdir(parents=True)
+            (root / "skills" / "cto-legends" / "SKILL.md").write_text("# Router pin\n", encoding="utf-8")
+            action, target, _reason = meta_repo.homepage_recommendation(
+                "avalonreset/legends-geogrid",
+                "https://cto-legends.com",
+                "legends-geogrid",
+                repo_root=root,
+            )
+            self.assertEqual(action, "keep")
+            self.assertEqual(target, "https://cto-legends.com")
+
+    def test_product_brand_is_lowercase_slug(self):
+        forbidden = ("CTO Legends", "CTO-Legends", "Legends GitHub", "Legends GeoGrid", "Legends DataForSEO")
+        checked_exts = {".md", ".py", ".json", ".yml", ".yaml", ".cff", ".txt"}
+        for path in ROOT.rglob("*"):
+            if not path.is_file() or ".git" in path.parts or path.suffix not in checked_exts:
+                continue
+            if path.resolve() == Path(__file__).resolve():
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            for phrase in forbidden:
+                self.assertNotIn(phrase, text, f"Found forbidden brand casing {phrase!r} in {path.relative_to(ROOT)}")
+
 
 if __name__ == "__main__":
     unittest.main()

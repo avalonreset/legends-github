@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared cache helpers for Legends GitHub."""
+"""Shared cache helpers for legends-github."""
 
 from __future__ import annotations
 

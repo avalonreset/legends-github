@@ -162,7 +162,13 @@ def infer_profile(local: LocalEvidence, metadata: dict[str, Any]) -> dict[str, A
         if paths:
             signals.setdefault(kind, []).extend(paths)
     add("skill", local.paths(["SKILL.md", ".claude-plugin/plugin.json", ".codex-plugin/plugin.json"])["value"] or [])
-    add("skill", [p.relative_to(local.root).as_posix() for p in sorted(local.root.glob("skills/*/SKILL.md"))[:100]])
+    is_router_repo = (local.root / "cto_legends" / "catalog.json").is_file()
+    skill_paths = [
+        p.relative_to(local.root).as_posix()
+        for p in sorted(local.root.glob("skills/*/SKILL.md"))[:100]
+        if is_router_repo or p.relative_to(local.root).as_posix() != "skills/cto-legends/SKILL.md"
+    ]
+    add("skill", skill_paths)
     add("documentation", local.paths(["mkdocs.yml", "mkdocs.yaml", "docusaurus.config.js",
                                       "docusaurus.config.ts", ".readthedocs.yaml"])["value"] or [])
     add("service", local.paths(["openapi.yaml", "openapi.yml", "swagger.json"])["value"] or [])
@@ -171,6 +177,7 @@ def infer_profile(local: LocalEvidence, metadata: dict[str, Any]) -> dict[str, A
     if re.search(r"(?m)^\s*\[(?:project\.scripts|tool\.poetry\.scripts)\]", pyproject):
         add("cli", ["pyproject.toml#scripts"])
     add("cli", local.paths(["cli.py", "__main__.py"])["value"] or [])
+    add("cli", [p.relative_to(local.root).as_posix() for p in sorted(local.root.glob("legends_*.py"))[:10] if p.is_file()])
     if package and (package.get("exports") or package.get("main") or package.get("types")):
         add("library", ["package.json#exports/main/types"])
     if pyproject and re.search(r"(?m)^\s*\[(?:project|tool\.poetry)\]", pyproject):
@@ -230,7 +237,8 @@ def _section_present(text: str, pattern: str) -> bool:
 SETUP_COMMAND = re.compile(
     r"(?im)^\s*(?:\$\s+)?(?:python(?:3)?\s+-m\s+pip\s+install|pip(?:3)?\s+install|"
     r"(?:npm|pnpm)\s+(?:install|ci)|yarn(?:\s+install)?\s*$|uv\s+(?:sync|pip\s+install)|"
-    r"poetry\s+install|cargo\s+(?:install|build)|go\s+(?:install|build)|docker\s+compose\s+up)\b"
+    r"poetry\s+install|cargo\s+(?:install|build)|go\s+(?:install|build)|docker\s+compose\s+up|"
+    r"cto-legends\s+install)\b"
 )
 
 
@@ -248,8 +256,8 @@ def _usage_example_present(text: str) -> bool:
             if SETUP_COMMAND.match(stripped):
                 continue
             # Avoid treating arbitrary prose, credentials, and generic fence text as executable examples.
-            if re.match(r"(?:\$\s+)?(?:python(?:3)?\s+(?!-m\s+pip)|(?:npm|pnpm)\s+(?:run\s+)?[\w:-]+|"
-                        r"node\s+|curl\s+|docker\s+run\s+|import\s+|from\s+\w+\s+import\s+|"
+            if re.match(r"(?:\$\s+)?(?:python(?:3)?\s+(?!-m\s+pip)|py\s+(?:-\d\s+)?(?!-m\s+pip)|(?:npm|pnpm)\s+(?:run\s+)?[\w:-]+|"
+                        r"cto-legends\s+(?:run|status|handoff)\s+|node\s+|curl\s+|docker\s+run\s+|import\s+|from\s+\w+\s+import\s+|"
                         r"const\s+|let\s+|print\(|[\w.]+\([^)]*\))", stripped):
                 return True
     return False
@@ -349,13 +357,13 @@ def build_findings(repo_root: Path, collected_at: str, remote: dict[str, dict[st
                          "Write a repository introduction with its purpose and the first usable step.",
                          "Nonempty README found." if text.strip() else "No nonempty root README found.", impact="high")]
     findings.append(_finding("readme.installation", "readme", "Setup guidance signal is present", readme,
-                             _section_present(text, r"install|setup|getting started|quick\s*start") or bool(SETUP_COMMAND.search(text)),
+                             _section_present(text, r"install|setup|getting started|quick\s*start|start here|start with") or bool(SETUP_COMMAND.search(text)),
                              "Review setup guidance; if absent, document the supported setup path and prerequisites or link to that guide.",
                              "Checked setup section content and common package-install commands; linked guides and prose may require manual review.",
                              applicable=not docs_only, why="Documentation-only repositories do not necessarily install software.",
                              confidence=0.7, basis="hypothesis", verification="Follow the documented setup from a clean environment; section presence does not prove installation works."))
     findings.append(_finding("readme.usage", "readme", "Usage or navigation signal is present", readme,
-                             _section_present(text, r"usage|quick\s*start|getting started|example|navigation|contents|how to") or _usage_example_present(text),
+                             _section_present(text, r"usage|quick\s*start|getting started|example|navigation|contents|how to|what you can do|talk to your agent|use your agent") or _usage_example_present(text),
                              "Review first-use guidance; if absent, add a concrete example or a clear route into the documentation.",
                              "Checked usage/navigation section content and fenced command or code examples; alternative formats may need manual review.",
                              confidence=0.7, basis="hypothesis", verification="Have a new user complete the documented example; no examples were executed by this audit."))

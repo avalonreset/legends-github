@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic community-health planning for Legends GitHub."""
+"""Deterministic community-health planning for legends-github."""
 
 from __future__ import annotations
 

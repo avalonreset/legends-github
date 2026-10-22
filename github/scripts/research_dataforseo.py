@@ -1,4 +1,4 @@
-"""Bounded keyword/SERP acquisition through the shared Legends DataForSEO Kit."""
+"""Bounded keyword/SERP acquisition through the shared legends-dataforseo module."""
 from datetime import datetime, timezone
 from decimal import Decimal
 import json
@@ -13,8 +13,8 @@ def collect_research(repo_root, *, keywords, serp_keywords=(), location_code=284
                      language="en", execute=False, ceiling=0, no_cost_ceiling=False):
     keywords = list(dict.fromkeys(k.strip() for k in keywords if k.strip()))
     serp_keywords = list(dict.fromkeys(k.strip() for k in serp_keywords if k.strip()))
-    if not 1 <= len(keywords) <= 30 or len(serp_keywords) > 3:
-        raise ValueError("Use 1-30 keywords and at most three SERP queries per research run")
+    if not 1 <= len(keywords) <= 100 or len(serp_keywords) > 10:
+        raise ValueError("Use 1-100 keywords and at most 10 SERP queries per research run")
     if location_code <= 0 or not language.strip() or any(len(k) > 200 for k in keywords + serp_keywords):
         raise ValueError("Supply an explicit valid locale and keywords of at most 200 characters")
     if no_cost_ceiling and ceiling != 0:
@@ -23,7 +23,7 @@ def collect_research(repo_root, *, keywords, serp_keywords=(), location_code=284
         raise ValueError("Cost ceiling must be finite and nonnegative")
     demand_cost = Decimal("0.012") + Decimal("0.00012") * len(keywords)
     estimate = demand_cost + Decimal("0.002") * len(serp_keywords)
-    plan = {"operation": "research", "status": "estimate", "provider": "legends-dataforseo-kit",
+    plan = {"operation": "research", "status": "estimate", "provider": "legends-dataforseo",
             "keywords": keywords, "serp_keywords": serp_keywords, "location_code": location_code,
             "language_code": language, "cost_ceiling_usd": None if no_cost_ceiling else ceiling, "estimated_cost_usd": float(estimate),
             "cost_note": "Modeled base rates; not provider-enforced billing limits. No optional clickstream or SERP enrichments."}

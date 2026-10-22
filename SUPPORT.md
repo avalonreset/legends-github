@@ -2,7 +2,7 @@
 
 ## Getting Help
 
-If you need help with Legends GitHub, here are your options:
+If you need help with `legends-github`, here are your options:
 
 ### Questions and Discussion
 
@@ -18,7 +18,7 @@ If something is broken or not working as expected:
 
 **[Open a Bug Report](https://github.com/avalonreset/legends-github/issues/new?template=bug_report.yml)**
 
-Please include the skill name, what happened, and your OS/Claude Code version.
+Please include the workflow name, what happened, and your OS/Python/agent environment.
 
 ### Feature Requests
 
@@ -32,11 +32,11 @@ Found a security vulnerability? **Do not open a public issue.** Email benjamin@r
 
 ## Common Issues
 
-**Skills not appearing after installation:**
-Check the host's current discovery rules, or bypass native discovery by asking it to read `AGENTS.md`. The portable command interface works without a native skill installer.
+**Module not appearing after installation:**
+Check the host's current discovery rules with `cto-legends status`, or bypass native discovery by asking your agent to read `AGENTS.md`. The portable command interface works without a native skill installer.
 
 **Optional research provider errors:**
-Check the selected integration's credentials and account status. Continue local analysis with unverified search metrics clearly labeled.
+Check `legends-dataforseo` credentials and account status. Continue local analysis with unverified search metrics clearly labeled.
 
 **Artwork:**
 Reuse an existing local image or create one with an available host tool. No paid image service is required or called by this toolkit.

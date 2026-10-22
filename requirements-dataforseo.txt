@@ -1,2 +1,2 @@
-# Provider engine pinned to immutable source (kit 0.1.2 commit 2c8d817ab41d9085f89a6e0b4583082bf92ebcd0, resolves live); no git client needed.
-legends-dataforseo-kit @ https://github.com/avalonreset/legends-dataforseo-kit/archive/2c8d817ab41d9085f89a6e0b4583082bf92ebcd0.zip
+# Provider engine pinned to immutable source (legends-dataforseo 0.1.5 commit 1e602c00f6cd654329d696e2731548948776479b, resolves live); no git client needed.
+legends-dataforseo @ https://github.com/avalonreset/legends-dataforseo/archive/1e602c00f6cd654329d696e2731548948776479b.zip
