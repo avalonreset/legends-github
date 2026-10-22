@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic README planning for Legends GitHub."""
+"""Deterministic README planning for legends-github."""
 
 from __future__ import annotations
 
@@ -34,14 +34,14 @@ from seo_repo import (
 
 
 SECTION_SYNONYMS = {
-    "what_it_does": ["what it does", "about", "overview", "features", "why this framework", "why"],
-    "installation": ["installation", "install", "getting started", "setup"],
-    "quick_start": ["quick start", "quickstart", "usage", "getting started"],
-    "commands": ["commands", "command reference", "cli"],
-    "usage": ["usage", "examples", "example", "api reference"],
-    "configuration": ["configuration", "config", "settings", "environment"],
-    "architecture": ["architecture", "how it works", "internals", "design"],
-    "faq": ["frequently asked questions", "faq", "troubleshooting", "common issues"],
+    "what_it_does": ["what it does", "about", "overview", "features", "why this framework", "why", "visual tour", "what you can do"],
+    "installation": ["installation", "install", "getting started", "setup", "agent setup", "agent setup via cto legends", "install route", "start here", "start with your repository"],
+    "quick_start": ["quick start", "quickstart", "usage", "getting started", "talk to your agent", "use your agent", "start with your repository"],
+    "commands": ["commands", "command reference", "cli", "what you can do", "workflows"],
+    "usage": ["usage", "examples", "example", "api reference", "how to use the findings", "organic discovery without guesswork"],
+    "configuration": ["configuration", "config", "settings", "environment", "environment readiness"],
+    "architecture": ["architecture", "how it works", "internals", "design", "project layout", "data cost economics", "built in spend safety"],
+    "faq": ["frequently asked questions", "faq", "troubleshooting", "common issues", "why switch", "comparison", "disclaimer"],
     "documentation": ["documentation", "docs"],
     "contributing": ["contributing", "community", "support"],
     "license": ["license"],
@@ -599,15 +599,15 @@ def score_readme_candidate(readme: str, repo_type: str, seo_data: dict[str, Any]
         structure += 4
 
     content = 0
-    if re.search(r"^##\s+(installation|install|getting started)\b", readme, flags=re.IGNORECASE | re.MULTILINE):
+    if re.search(r"^##\s+(installation|install|getting started|agent setup|start here|start with)\b", readme, flags=re.IGNORECASE | re.MULTILINE):
         content += 5
     if len(re.findall(r"```[a-zA-Z0-9_-]*\n", readme)) >= 2:
         content += 5
-    if any(name in [normalize_heading(h2) for h2 in h2_lines] for name in {"configuration", "config", "commands", "api reference"}):
+    if any(name in [normalize_heading(h2) for h2 in h2_lines] for name in {"configuration", "config", "commands", "api reference", "what you can do", "talk to your agent", "use your agent", "environment readiness"}):
         content += 4
-    if re.search(r"^##\s+(architecture|how it works|what it does|features|about)\b", readme, flags=re.IGNORECASE | re.MULTILINE):
+    if re.search(r"^##\s+(architecture|how it works|what it does|features|about|project layout|visual tour|data-cost economics|built-in spend safety)\b", readme, flags=re.IGNORECASE | re.MULTILINE):
         content += 3
-    if re.search(r"^##\s+(frequently asked questions|faq|troubleshooting|common issues)\b", readme, flags=re.IGNORECASE | re.MULTILINE):
+    if re.search(r"^##\s+(frequently asked questions|faq|troubleshooting|common issues|why switch|comparison|disclaimer)\b", readme, flags=re.IGNORECASE | re.MULTILINE):
         content += 3
 
     seo = 0

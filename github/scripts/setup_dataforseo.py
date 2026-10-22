@@ -14,7 +14,7 @@ def check_setup():
     if installed:
         from legends_dataforseo import credential_status
         credentials = bool(credential_status().get("present"))
-    return {"package": "legends-dataforseo-kit", "installed": installed,
+    return {"package": "legends-dataforseo", "installed": installed,
             "configured": installed and credentials, "credentials_present": credentials,
             "network_checked": False, "mcp_required": False}
 

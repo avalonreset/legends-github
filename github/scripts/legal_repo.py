@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic legal planning for Legends GitHub."""
+"""Deterministic legal planning for legends-github."""
 
 from __future__ import annotations
 

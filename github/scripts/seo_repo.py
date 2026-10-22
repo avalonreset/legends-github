@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic SEO cache generation for Legends GitHub."""
+"""Deterministic SEO cache generation for legends-github."""
 
 from __future__ import annotations
 
@@ -377,6 +377,30 @@ def choose_secondary_keywords(candidates: list[str], primary_keyword: str) -> li
     return secondary
 
 
+LOW_VALUE_TOPICS = {
+    "babel",
+    "eslint",
+    "postcss",
+    "prettier",
+    "prospecting",
+    "rollup",
+    "vite",
+    "webpack",
+}
+
+NON_TOPIC_PREFIXES = (
+    "best ",
+    "check ",
+    "free ",
+    "how ",
+    "online ",
+    "what ",
+    "when ",
+    "where ",
+    "why ",
+)
+
+
 def build_topics(
     repo_name: str,
     primary_keyword: str,
@@ -387,10 +411,13 @@ def build_topics(
 ) -> list[str]:
     """Build a deterministic recommended topic list."""
     topics: list[str] = []
+    excluded = set(LOW_VALUE_TOPICS)
+    if repo_type != "Skill/Plugin":
+        excluded.update({"skill", "plugin"})
 
     def add(topic: str) -> None:
         normalized = normalize_topic(topic)
-        if not normalized or normalized in topics:
+        if not normalized or normalized in topics or normalized in excluded:
             return
         topics.append(normalized)
 
@@ -403,9 +430,12 @@ def build_topics(
         add(topic)
 
     def concise_phrase_topic(value: str) -> bool:
+        lowered = value.strip().lower()
+        if any(lowered.startswith(prefix) for prefix in NON_TOPIC_PREFIXES):
+            return False
         tokens = tokenize(value)
         slug = normalize_topic(value)
-        return bool(tokens) and len(tokens) <= 2 and len(slug) <= 24 and not all(token in GENERIC_WORDS for token in tokens)
+        return bool(tokens) and len(tokens) <= 4 and len(slug) <= 35 and not all(token in GENERIC_WORDS for token in tokens)
 
     if concise_phrase_topic(primary_keyword):
         add(primary_keyword)
@@ -413,21 +443,25 @@ def build_topics(
         phrase = keyword["keyword"]
         if concise_phrase_topic(phrase):
             add(phrase)
-    for token in tokenize(primary_keyword):
-        if token not in GENERIC_WORDS:
-            add(token)
-    for keyword in secondary_keywords:
-        for token in tokenize(keyword["keyword"]):
-            if token not in GENERIC_WORDS:
+    if len(topics) < 12:
+        for token in tokenize(primary_keyword):
+            if token not in GENERIC_WORDS and len(token) >= 3:
                 add(token)
+        for keyword in secondary_keywords[:10]:
+            for token in tokenize(keyword["keyword"]):
+                if token not in GENERIC_WORDS and len(token) >= 3:
+                    add(token)
 
-    return topics[:10]
+    return topics[:20]
 
 
 def build_recommended_description(project_name: str, summary: str, primary_keyword: str) -> str:
     """Draft a deterministic SEO-forward repo description."""
     cleaned_summary = clean_text(summary)
-    pretty_name = project_name.replace("-", " ").replace("_", " ").strip()
+    if project_name.lower().startswith("legends-") or project_name.lower() == "cto-legends":
+        pretty_name = project_name.lower().strip()
+    else:
+        pretty_name = project_name.replace("-", " ").replace("_", " ").strip()
     if cleaned_summary and primary_keyword.lower() in cleaned_summary.lower():
         description = cleaned_summary
     elif cleaned_summary:
@@ -624,13 +658,42 @@ def run_seo(repo_root: Path, mode: str = "quick", keyword_data=None, primary_key
     if keyword_data:
         research = import_research(keyword_data, primary_keyword_choice, serp_data)
         seo_data.update(research)
-        seo_data["secondary_keywords"] = [k for k in research["keyword_research"] if k != research["primary_keyword"]]
+        sorted_secondary = sorted(
+            (k for k in research["keyword_research"] if k != research["primary_keyword"]),
+            key=lambda item: (
+                item.get("volume") is not None,
+                item.get("volume") or 0,
+                item.get("cpc") or 0,
+            ),
+            reverse=True,
+        )
+        seo_data["secondary_keywords"] = sorted_secondary
+        seo_data["recommended_topics"] = build_topics(
+            repo_name=snapshot["repo_name"],
+            primary_keyword=research["primary_keyword"]["keyword"],
+            secondary_keywords=sorted_secondary,
+            existing_topics=snapshot["topics"],
+            language=snapshot["primary_language"],
+            repo_type=snapshot["repo_type"],
+        )
+        seo_data["recommended_description"] = build_recommended_description(
+            snapshot["repo_name"],
+            summary,
+            research["primary_keyword"]["keyword"],
+        )
         seo_data["data_sources"].extend(["dataforseo-keyword-overview-export", "dataforseo-serp-export"] if serp_data else ["dataforseo-keyword-overview-export"])
         seo_data["warnings"] = ["Provider estimates are locale-specific, not measured traffic or ranking improvements. Keywords require product-fit review; imported research does not automatically rewrite metadata."]
         seo_data["serp_verified"] = bool(research["serp_observations"])
-        seo_data["github_in_serp"] = None
+        github_ranks = [
+            row["rank"]
+            for obs in research["serp_observations"]
+            for row in obs.get("results") or []
+            if isinstance(row.get("url"), str) and "github.com" in row["url"].lower() and isinstance(row.get("rank"), int)
+        ]
+        seo_data["github_in_serp"] = bool(github_ranks) if research["serp_observations"] else None
+        seo_data["github_serp_position"] = min(github_ranks) if github_ranks else None
         seo_data["ai_visibility"]["cited"] = None
-        seo_data["paa_questions"] = []
+        seo_data["paa_questions"] = fallback_paa_questions(research["primary_keyword"]["keyword"], snapshot["repo_type"])
     elif primary_keyword_choice or serp_data:
         raise ValueError("Research options require --keyword-data")
     report_markdown = build_seo_report(snapshot, seo_data)

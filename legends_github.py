@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Portable, discoverable entry point for Legends GitHub workflows."""
+"""Portable, discoverable entry point for legends-github workflows."""
 from pathlib import Path
 import argparse
 import hashlib

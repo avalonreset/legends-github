@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-10-22
+
+- Prevented vendored `skills/cto-legends/SKILL.md` router pins from misclassifying non-skill `cto-legends` modules as `Skill/Plugin`, and automatically strip stale `skill`, `plugin`, and build-tool filler topics (`vite`, `webpack`, `prospecting`) on non-skill repositories.
+- Broadened README and metadata rubrics (`audit_repo.py`, `audit_evidence.py`, `readme_repo.py`, `meta_repo.py`) to recognize agent-first `cto-legends` onboarding sections, `cto-legends.com` ecosystem homepages, and 8-20 GitHub topic slots.
+- Upgraded `seo` and `meta` to recompute up to 20 high-discovery repository topics, descriptions, FAQ prompts, and SERP rank observations directly from imported DataForSEO keyword and SERP exports (`cpc`, `competition_level`, volume-weighted sorting).
+- Raised `research` batch limits to up to 100 keywords and 10 SERP queries per run, re-pinned `requirements-dataforseo.txt` to `legends-dataforseo` v0.1.5 (`1e602c00f6cd654329d696e2731548948776479b`), and standardized lowercase hyphenated branding (`cto-legends`, `legends-github`, `legends-geogrid`, `legends-dataforseo`).
+
 ## [0.1.2] - 2026-10-10
 
 - Added portable social-preview preparation and live served-image verification,
@@ -46,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Regression coverage and Windows/Linux Python CI; read-only GeoGrid validation example.
 
 - Gemini CLI extension manifest and `GEMINI.md` context file so the skill suite can install through `gemini extensions install`.
-- Legends GitHub social preview image.
+- `legends-github` social preview image.
 
 ### Changed
 
@@ -55,8 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Simplified the README, removed mascot artwork, and replaced unsupported SEO claims.
 - Fixed audit cache side effects, atomic JSON writes, and metadata topic preservation.
 
-- Renamed public project branding from provider-specific GitHub variants to Legends GitHub.
-- Updated README, citation metadata, support links, installer splash text, and generated artwork for the Legends GitHub name.
+- Renamed public project branding from provider-specific GitHub variants to `legends-github`.
+- Updated README, citation metadata, support links, installer splash text, and generated artwork for the `legends-github` name.
 
 ## [1.3.0] - 2026-05-09
 

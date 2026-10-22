@@ -1,21 +1,21 @@
-# Contributing to Legends GitHub
+# Contributing to legends-github
 
-Thank you for being part of the community. This guide covers how to report issues, request features, and contribute improvements to the skill suite.
+Thank you for being part of the community. This guide covers how to report issues, request features, and contribute improvements to `legends-github`.
 
 ## Reporting Bugs
 
 Found something broken? Open a [Bug Report](https://github.com/avalonreset/legends-github/issues/new?template=bug_report.yml) with:
 
-- Which skill triggered the issue (`/github audit`, `/github readme`, etc.)
+- Which workflow triggered the issue (`audit`, `seo`, `meta`, `readme`, `discover`, `release`, etc.)
 - What you expected to happen vs. what actually happened
-- Your operating system (Windows, macOS, Linux)
-- Your Claude Code version (`claude --version`)
+- Your operating system (Windows, macOS, Linux) and Python version
+- Your coding agent host (if running through `cto-legends`)
 
 The more detail you provide, the faster we can fix it.
 
 ## Requesting Features
 
-Have an idea for a new skill, a missing check in the audit, or a better workflow? Open a [Feature Request](https://github.com/avalonreset/legends-github/issues/new?template=feature_request.yml). Include the problem you are trying to solve, not just the solution you imagine. Understanding the "why" helps us design the right fix.
+Have an idea for a new workflow, a missing check in the audit, or a better discoverability pass? Open a [Feature Request](https://github.com/avalonreset/legends-github/issues/new?template=feature_request.yml). Include the problem you are trying to solve, not just the solution you imagine. Understanding the "why" helps us design the right fix.
 
 ## Asking Questions
 
@@ -23,17 +23,17 @@ For general questions, troubleshooting, and discussion, use [GitHub Discussions]
 
 Common questions to check first:
 
-- **DataForSEO not working?** Verify your MCP config in `~/.claude/settings.json`. The installer sets this up, but credentials expire or get misconfigured.
-- **Skills not showing up?** Restart Claude Code after installation. Skills register on startup.
+- **DataForSEO not working?** Run `python github/scripts/setup_dataforseo.py --check` and verify `requirements-dataforseo.txt` is installed alongside your `legends-dataforseo` credentials.
+- **Router not discovering `legends-github`?** Run `cto-legends status` or ask your agent to read `AGENTS.md` directly.
 - **Artwork missing?** Supply an existing local asset or use your host's image tool; a banner is optional.
 
 ## Contributing Code
 
 If you want to submit a fix or improvement:
 
-1. Create a branch from `main` with a descriptive name (`fix/audit-score-calculation`, `feature/new-agent`)
+1. Create a branch from `main` with a descriptive name (`fix/audit-score-calculation`, `feature/new-workflow`)
 2. Make your changes. Keep commits focused on one thing.
-3. Test your changes by running the relevant workflow against a real repo
+3. Run `python -m unittest discover -s tests -v` and test your changes against a real repository
 4. Open a Pull Request with a clear description of what changed and why
 
 All pull requests are reviewed by the project maintainer before merging.
@@ -42,8 +42,7 @@ All pull requests are reviewed by the project maintainer before merging.
 
 - The vendored router skill (`skills/cto-legends/SKILL.md`) is byte-exact from the router repo; never edit it in place, re-pin from the canonical source instead
 - Reference and recipe files use Markdown with consistent heading hierarchy
-- Shell scripts target Bash 4+
-- PowerShell scripts target PowerShell 5.1+
+- Keep executable behavior in `github/scripts/` with `legends_github.py` as the public launcher
 - Never commit credentials, API keys, or `.env` files
 
 ## Code of Conduct

@@ -23,7 +23,7 @@ The discovery workflow supplies useful briefs and evidence leads for examples an
 
 ## Banner acceptance
 
-The supplied banner-session rendering recipe and approved artwork were inspected. The optional renderer in `github/scripts/render_banner.py` reproduced the approved Legends GitHub PNG pixels exactly using the supplied Legends Regular font. The font is not bundled. New outputs include a preview and hashes; existing output directories cannot be overwritten. Social-preview conversion preserves both edges of the source image with padding.
+The supplied banner-session rendering recipe and approved artwork were inspected. The optional renderer in `github/scripts/render_banner.py` reproduced the approved `legends-github` PNG pixels exactly using the supplied Legends Regular font. The font is not bundled. New outputs include a preview and hashes; existing output directories cannot be overwritten. Social-preview conversion preserves both edges of the source image with padding.
 
 The Legends template is a project-specific choice, not a mandatory style for arbitrary repositories. Branding and comprehension are intended benefits; retention improvement has not been measured.
 

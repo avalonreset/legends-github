@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
-title: "Legends GitHub"
-version: "0.1.2"
-date-released: 2026-10-10
+title: "legends-github"
+version: "0.2.0"
+date-released: 2026-10-22
 authors:
   - name: "Avalon Reset"
 url: "https://github.com/avalonreset/legends-github"
@@ -11,16 +11,18 @@ repository-code: "https://github.com/avalonreset/legends-github"
 license: "MIT"
 keywords:
   - agent-skills
+  - ai-coding-agent
   - claude-code
   - codex
+  - cto-legends
   - gemini-cli
   - github-optimization
   - github-seo
+  - open-source-seo
   - repository-audit
 abstract: >
-  Portable agent-led GitHub repository workflows through a Python command
-  interface and the CTO Legends router. Supports repository audits, README
-  improvements, licensing review, metadata, search research, community health,
-  releases, portfolio presentation, and social-preview upload preparation and
-  verification. Optional integrations provide measured search evidence; social
-  uploads use the agent host's supported browser or file-picker tools.
+  Portable agent-led GitHub repository and SEO discoverability workflows through
+  a Python command interface and the cto-legends router. Supports repository
+  audits, README improvements, licensing review, metadata, live DataForSEO
+  search research, community health, releases, portfolio presentation, and
+  social-preview upload preparation and verification.
