@@ -31,10 +31,10 @@ Do not register `legends-github` as a standalone skill; the router loads [`docs/
 
 ## Start with your repository
 
-Download and extract the [v0.2.0 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.2.0), or clone this toolkit beside the repository you want to improve. Python 3.10+ and Git are required; authenticated [GitHub CLI (`gh`)](https://cli.github.com/) enables live GitHub metadata reads and `--apply` updates.
+Download and extract the [v0.2.1 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.2.1), or clone this toolkit beside the repository you want to improve. Python 3.11+ and Git are required; authenticated [GitHub CLI (`gh`)](https://cli.github.com/) enables live GitHub metadata reads and `--apply` updates.
 
 ```sh
-git clone --branch v0.2.0 https://github.com/avalonreset/legends-github.git
+git clone --branch v0.2.1 https://github.com/avalonreset/legends-github.git
 cd legends-github
 python -m pip install -r github/requirements.txt
 python legends_github.py capabilities

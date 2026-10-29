@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] - 2026-10-29
+
+- Raise minimum supported Python runtime to Python 3.11 (`sys.version_info >= (3, 11)` in `github/scripts/validate_setup.py`, remove Python <3.11 `tomli` dependency from `github/requirements.txt`, and update CI matrix to Python 3.11 and 3.12).
+- Re-pin `requirements-dataforseo.txt` to `legends-dataforseo` `v0.1.6` (`58c3409253beaa5614f3f9af0a5b71903d322b55`).
+- Harden GitHub Actions workflows with 40-character commit SHA action pins, explicit `contents: read` permissions, and `pip>=26.2.2` before package installation.
+
 ## [0.2.0] - 2026-10-22
 
 - Prevented vendored `skills/cto-legends/SKILL.md` router pins from misclassifying non-skill `cto-legends` modules as `Skill/Plugin`, and automatically strip stale `skill`, `plugin`, and build-tool filler topics (`vite`, `webpack`, `prospecting`) on non-skill repositories.

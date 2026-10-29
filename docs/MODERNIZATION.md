@@ -75,7 +75,7 @@ No repository rename, license change, removal of attribution, mandatory image ge
 - Portable readiness passes with isolated cache paths and without requiring an installed host skill.
 - The existing audit executes successfully through the new launcher and produces artifacts.
 - README, agent entry point, and this plan pass Markdown lint.
-- Windows/Linux and Python 3.10/3.12 launcher jobs are added to CI; remote execution remains pending publication of the branch.
+- Windows/Linux and Python 3.11/3.12 launcher jobs are added to CI; remote execution remains pending publication of the branch.
 
 The legacy audit assigns this revised repository 88/100. That number is recorded only as a smoke-test output, not as validation of the new methodology.
 
