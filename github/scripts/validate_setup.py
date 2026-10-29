@@ -32,7 +32,7 @@ def validate_setup(repo_root: Path, mode: str = "portable", allow_missing_gh_aut
     headless_runner = SCRIPT_DIR / "run_headless.py"
     pillow_ready = pillow_available()
 
-    checks.append(_check("Python runtime available", sys.version_info >= (3, 10), sys.version.split()[0]))
+    checks.append(_check("Python runtime available", sys.version_info >= (3, 11), sys.version.split()[0]))
     checks.append(_check("Git installed", have_command("git"), shutil.which("git") or "not found"))
     checks.append(_check("GitHub CLI installed", have_command("gh"), shutil.which("gh") or "not found"))
     checks.append(_check("Node.js installed", have_command("node"), shutil.which("node") or "not found"))
