@@ -161,3 +161,10 @@ This tool provides automated recommendations for GitHub repository optimization,
 ## License
 
 Released under the [MIT License](LICENSE). Free and open source.
+
+---
+
+**Specification & benchmarks on cto-legends.com:**
+- **Module specification & architecture matrix:** [cto-legends.com/modules/legends-github](https://cto-legends.com/modules/legends-github)
+- **Related engineering dispatches:** [Codex vs Claude Code: CLI and Cursor Agent Benchmarks](https://cto-legends.com/blog?post=codex-vs-claude-code-benchmarks) · [Fractional CTO Advisory: Technical Due Diligence Guide](https://cto-legends.com/blog?post=fractional-cto-technical-due-diligence-guide) · [How to Build AI Agents: Production CLI & MCP Routing](https://cto-legends.com/blog?post=how-to-build-ai-agents-cli-mcp-routing)
+- **Ecosystem hub:** [cto-legends.com/home](https://cto-legends.com/home)
