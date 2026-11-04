@@ -25,13 +25,13 @@ Use an available Python executable (`python`, `python3`, or `py -3`). Replace
 these absolute placeholders before running commands:
 
 ```text
-python "<GITHUB_HOME>/scripts/run_headless.py" verify --mode portable --path "<TARGET>"
-python "<GITHUB_HOME>/scripts/run_headless.py" audit --path "<TARGET>"
-python "<GITHUB_HOME>/scripts/run_headless.py" cache-status --path "<TARGET>"
+python "<GITHUB_HOME>/github/scripts/run_headless.py" verify --mode portable --path "<TARGET>"
+python "<GITHUB_HOME>/github/scripts/run_headless.py" audit --path "<TARGET>"
+python "<GITHUB_HOME>/github/scripts/run_headless.py" cache-status --path "<TARGET>"
 ```
 
 In a source checkout, `python "<SOURCE_ROOT>/legends_github.py" <workflow>` is
-the supported launcher and `GITHUB_HOME/github/scripts/run_headless.py` is the
+the supported launcher and `GITHUB_HOME/github/scripts/run_headless.py` (or the compatibility wrapper `GITHUB_HOME/scripts/run_headless.py`) is the
 equivalent entry point. Never resolve
 runtime paths against the target repository's current directory.
 
