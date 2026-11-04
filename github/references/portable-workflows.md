@@ -20,13 +20,14 @@ path. Quote paths and use host shell syntax. Retain actual Windows drive and
 directory names. Do not accidentally audit the toolkit instead of the target.
 
 ```text
-python "<GITHUB_HOME>/scripts/run_headless.py" <workflow> --help
-python "<GITHUB_HOME>/scripts/run_headless.py" <workflow> --path "<TARGET>"
+python "<GITHUB_HOME>/github/scripts/run_headless.py" <workflow> --help
+python "<GITHUB_HOME>/github/scripts/run_headless.py" <workflow> --path "<TARGET>"
 ```
 
 Use the installed Python executable, including `python3` or `py -3` where
-appropriate. Source users may substitute `SOURCE_ROOT/legends_github.py` for
-`GITHUB_HOME/scripts/run_headless.py`. `verify --mode portable` selects portable
+appropriate. Source users may substitute `GITHUB_HOME/legends_github.py` (or the
+compatibility wrapper `GITHUB_HOME/scripts/run_headless.py`) for
+`GITHUB_HOME/github/scripts/run_headless.py`. `verify --mode portable` selects portable
 runtime checks; `api` is a compatibility alias. Host-specific adapter checks
 matter only when inspecting those adapters.
 

@@ -55,6 +55,9 @@ class ReleaseAcceptanceTests(unittest.TestCase):
         for name in ('social-preview-sop.md', 'legends-readme-style.md'):
             self.assertTrue((ROOT / 'github/references' / name).is_file())
         self.assertTrue((ROOT / 'github/scripts/render_social_preview.py').is_file())
+        self.assertTrue((ROOT / 'scripts/render_social_preview.py').is_file())
+        self.assertTrue((ROOT / 'scripts/render_banner.py').is_file())
+        self.assertTrue((ROOT / 'scripts/run_headless.py').is_file())
         for installer in ('install.ps1', 'install.sh',
                           'install-codex.ps1', 'install-codex.sh'):
             self.assertFalse((ROOT / installer).exists())

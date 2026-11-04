@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.2] - 2026-11-04
+
+- Align `<GITHUB_HOME>` runner path examples in `docs/GITHUB-RECIPE.md` and `github/references/portable-workflows.md` to `<GITHUB_HOME>/github/scripts/run_headless.py` and add source-checkout compatibility wrappers at `scripts/run_headless.py` and `scripts/render_banner.py` alongside `scripts/render_social_preview.py` so agents never encounter `FileNotFoundError` or improvise shell discovery.
+
 ## [0.2.1] - 2026-10-29
 
 - Raise minimum supported Python runtime to Python 3.11 (`sys.version_info >= (3, 11)` in `github/scripts/validate_setup.py`, remove Python <3.11 `tomli` dependency from `github/requirements.txt`, and update CI matrix to Python 3.11 and 3.12).

@@ -24,5 +24,12 @@ class PortableEntrypointTests(unittest.TestCase):
         result = subprocess.run([sys.executable, str(ROOT / "legends_github.py"), "not-a-workflow"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 2)
 
+    def test_both_runner_paths_work(self):
+        for runner in (ROOT / "github/scripts/run_headless.py", ROOT / "scripts/run_headless.py"):
+            with self.subTest(runner=str(runner)):
+                result = subprocess.run([sys.executable, str(runner), "verify", "--help"], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("--mode", result.stdout)
+
 if __name__ == "__main__":
     unittest.main()
