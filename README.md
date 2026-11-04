@@ -130,15 +130,19 @@ Every `audit` run produces both versioned evidence findings (`FINDINGS.json`) an
 ## Frequently asked questions
 
 ### How does `legends-github` improve GitHub SEO and repository discoverability?
+
 It combines technical repository hygiene (clear H1/H2 hierarchy, descriptive opening definition, valid local links, 1280x640 Open Graph social preview) with live Google and GitHub keyword demand from `legends-dataforseo`. Your GitHub About description, 20 repository topics, and README headings are aligned with the exact terms developers search for.
 
 ### Will `legends-github readme` overwrite my custom README layout or video embeds?
+
 No. When a repository already has a `README.md`, `readme_repo.py` preserves existing content, HTML embeds, badges, and section order verbatim (`preserve-existing` mode) and outputs diagnostic scoring so your agent can make surgical edits without clobbering your work.
 
 ### Do I need DataForSEO credits to run an audit or metadata check?
+
 No. All 13 workflows run locally and offline for free (`--offline`). Live DataForSEO keyword and SERP collection (`research --execute`) is strictly opt-in, costs roughly `$0.014` to `$0.03` per batch, and enforces explicit cost ceilings (`--confirm-cost-usd`).
 
 ### Why does `legends-github` use `cto-legends` instead of `.claude` or `.codex` installer scripts?
+
 Per-host shell installers clutter your home directory and break across agent updates. By routing through `cto-legends` and exposing a deterministic Python CLI (`legends_github.py`), the exact same workflows run identically across every AI coding agent and operating system.
 
 ## Project layout
@@ -165,6 +169,7 @@ Released under the [MIT License](LICENSE). Free and open source.
 ---
 
 **Specification & benchmarks on cto-legends.com:**
+
 - **Module specification & architecture matrix:** [cto-legends.com/modules/legends-github](https://cto-legends.com/modules/legends-github)
 - **Related engineering dispatches:** [Codex vs Claude Code: CLI and Cursor Agent Benchmarks](https://cto-legends.com/blog?post=codex-vs-claude-code-benchmarks) · [Fractional CTO Advisory: Technical Due Diligence Guide](https://cto-legends.com/blog?post=fractional-cto-technical-due-diligence-guide) · [How to Build AI Agents: Production CLI & MCP Routing](https://cto-legends.com/blog?post=how-to-build-ai-agents-cli-mcp-routing)
 - **Ecosystem hub:** [cto-legends.com/home](https://cto-legends.com/home)
