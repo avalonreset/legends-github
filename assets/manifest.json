@@ -1,0 +1,18 @@
+{
+  "banner.png": {
+    "bytes": 63711,
+    "sha256": "0f2f02ccab95f153b66be53048299183e2ac7e2573b24da0baa328bf957e322f"
+  },
+  "banner.webp": {
+    "bytes": 24368,
+    "sha256": "6a9c8eb7a05c7164381acd681b0ff543ba1e103a2ed3f67308671ba7a95ec93a"
+  },
+  "preview.png": {
+    "bytes": 23941,
+    "sha256": "5edb77efc8e769db769173a227920e4b3bd20467089997a6b49aa28478fc5b6b"
+  },
+  "social-preview.png": {
+    "bytes": 21360,
+    "sha256": "3c1157739446bf62510dd5bb6e31278ac7823a2e7030d7f3c00b082bdf1116bc"
+  }
+}
