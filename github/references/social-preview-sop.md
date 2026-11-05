@@ -17,7 +17,7 @@ The Legends `legends-social-v1` layout is fixed:
 | subtitle | approved copy, white, 36 px, up to three lines, 48 px line spacing |
 | text safe area | 80 px from every edge |
 | title position | left 80, top 176 |
-| divider | x 80–1200, y 282, gray `#666666`, 1 px |
+| divider | x 80-1200, y 282, gray `#666666`, 1 px |
 | subtitle position | left 80, top 324 |
 | left rule | red, 4 px, full height |
 | delivery | opaque RGB PNG, under 1,000,000 bytes |

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.3] - 2026-11-05
+
+- Removed legacy `scripts/invite-members.ps1`, `scripts/invite-members.sh`, and orphan `assets/ben.webp` to enforce zero shipped executable shell scripts and clean asset provenance.
+- Added metadata-stripped `assets/preview.png` (`1024x256`), `assets/manifest.json`, `THIRD_PARTY_NOTICES.md`, `docs/AGENT-RECIPE.md`, and `scripts/check_release.py` Gold Standard static release gate.
+- Documented explicit EDR and Security Guardrails in `AGENTS.md`, `docs/AGENT-RECIPE.md`, and `docs/GITHUB-RECIPE.md`, and normalized punctuation in `github/references/social-preview-sop.md`.
+
 ## [0.2.2] - 2026-11-04
 
 - Align `<GITHUB_HOME>` runner path examples in `docs/GITHUB-RECIPE.md` and `github/references/portable-workflows.md` to `<GITHUB_HOME>/github/scripts/run_headless.py` and add source-checkout compatibility wrappers at `scripts/run_headless.py` and `scripts/render_banner.py` alongside `scripts/render_social_preview.py` so agents never encounter `FileNotFoundError` or improvise shell discovery.

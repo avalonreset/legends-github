@@ -191,3 +191,10 @@ actual costs. Otherwise use the approved `--confirm-cost-usd` ceiling. Preview
 remains the default and paid calls are never implicit in `seo`. If access fails,
 finish independent work and label live optimization incomplete. Artwork-only
 requests remain artwork-only; never represent them as a completed SEO pass.
+
+## EDR and Security Guardrails
+
+- Zero browser state or local desktop credential store reads (Local State, Login Data, Cookies, IndexedDB, LevelDB, DPAPI, Keychain).
+- Zero executable shell wrappers (.ps1, .sh, .bat, .cmd, .vbs, .wsf, .hta, .scr) shipped inside the repository.
+- Outbound network traffic is restricted to explicit user-invoked GitHub CLI (gh) commands, HTTPS GitHub social-preview image verification, and optional DataForSEO API requests (--execute).
+- All PNG and WebP assets are stripped of ancillary metadata chunks (	EXt, iTXt, zTXt, XIf, EXIF, XMP ) before commit.
