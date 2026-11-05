@@ -63,6 +63,6 @@ python legends_github.py [--offline] [--artifacts-dir PATH] <workflow> [options]
 - Zero browser state or local desktop credential store reads (`Local State`, `Login Data`, `Cookies`, `IndexedDB`, `LevelDB`, DPAPI, Keychain).
 - Zero executable shell wrappers (`.ps1`, `.sh`, `.bat`, `.cmd`, `.vbs`, `.wsf`, `.hta`, `.scr`) shipped inside the repository.
 - Outbound network traffic is restricted to explicit user-invoked GitHub CLI (`gh`) commands, HTTPS GitHub social-preview image verification, and optional DataForSEO API requests (`--execute`).
-- All PNG and WebP assets are stripped of ancillary metadata chunks (`tEXt`, `iTXt`, `zTXt`, `eXIf`, `EXIF`, `XMP `) before commit.
+- All PNG and WebP assets are stripped of ancillary metadata chunks (`tEXt`, `iTXt`, `zTXt`, `eXIf`, `EXIF`, `XMP`) before commit.
 - Read before writing; keep remote changes opt-in (`--apply`, `--create-release`, `--publish`, `--execute`).
 - Never fabricate metrics, license provenance, or search volume, and never claim a social preview is live until `--verify` passes.
