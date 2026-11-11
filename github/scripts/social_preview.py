@@ -106,7 +106,7 @@ def social_preview(repo: str, image: Path, *, verify: bool = False,
         raise ValueError("Use a PNG, JPG or GIF image.")
     if expected["width"] < 640 or expected["height"] < 320:
         raise ValueError("Social preview must be at least 640 by 320 pixels.")
-    if output and safe_local_path(output) == image:
+    if output and safe_local_path(output).resolve() == image:
         raise ValueError("Receipt output must not overwrite the image.")
     receipt = {
         "schema_version": "1.0", "operation": "social-preview", "status": "prepared",
