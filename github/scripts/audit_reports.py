@@ -18,7 +18,7 @@ def _actions(audit: dict[str, Any]) -> str:
         lines.extend([
             f"### {action['id']} ({action['priority']})", "", action["recommendation"], "",
             f"Impact: {action['impact']}; effort: {action['effort']}; confidence: {action['confidence']:.0%}; basis: {action['recommendation_basis']}.", "",
-            "Evidence: " + "; ".join(f"`{_cell(e['source'])}` — {_cell(e['detail'])}" for e in action["evidence"]), "",
+            "Evidence: " + "; ".join(f"`{_cell(e['source'])}` - {_cell(e['detail'])}" for e in action["evidence"]), "",
             "Verify: " + action["verification"]["method"], "",
         ])
     return "\n".join(lines).rstrip()

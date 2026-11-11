@@ -13,7 +13,7 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_auth_ok, gh_repo_view, repo_slug_from_git, run_command
+from github_runtime import gh_auth_ok, gh_repo_view, repo_slug_from_git, run_command, valid_owner, valid_repo_slug
 from local_assets import AssetPreparationError, convert_to_jpeg
 from runtime_paths import repo_output_dir
 from seo_repo import normalize_topic, topic_names
@@ -95,9 +95,10 @@ def current_login() -> str:
 
 def gh_user_profile(owner: str) -> dict[str, Any]:
     """Fetch a public GitHub profile via gh when available."""
-    if not owner or not gh_auth_ok():
+    cleaned_owner = valid_owner(owner)
+    if not cleaned_owner or not gh_auth_ok():
         return {}
-    result = run_command(["gh", "api", f"users/{owner}"], check=False)
+    result = run_command(["gh", "api", f"users/{cleaned_owner}"], check=False)
     if result.returncode != 0:
         return {}
     try:
@@ -108,7 +109,8 @@ def gh_user_profile(owner: str) -> dict[str, Any]:
 
 def gh_repo_list(owner: str) -> list[dict[str, Any]]:
     """Fetch public repositories for one owner via gh."""
-    if not owner or not gh_auth_ok():
+    cleaned_owner = valid_owner(owner)
+    if not cleaned_owner or not gh_auth_ok():
         return []
     fields = ",".join(
         [
@@ -127,7 +129,7 @@ def gh_repo_list(owner: str) -> list[dict[str, Any]]:
         ]
     )
     result = run_command(
-        ["gh", "repo", "list", owner, "--visibility", "public", "--limit", "100", "--json", fields],
+        ["gh", "repo", "list", cleaned_owner, "--visibility", "public", "--limit", "100", "--json", fields],
         check=False,
     )
     if result.returncode != 0:
@@ -221,8 +223,9 @@ def build_local_repo_entry(repo_root: Path) -> dict[str, Any]:
     cached_context = read_repo_cache(repo_root, "repo-context.json") or {}
     cached_audit = read_repo_cache(repo_root, "audit-data.json") or {}
     seo_data = read_repo_cache(repo_root, "seo-data.json") or {}
-    repo_slug = str(cached_context.get("repo") or repo_slug_from_git(repo_root) or repo_root.name)
-    metadata = gh_repo_view(repo_slug) if "/" in repo_slug else {}
+    cached_slug = valid_repo_slug(str(cached_context.get("repo") or ""))
+    repo_slug = cached_slug or repo_slug_from_git(repo_root) or repo_root.name
+    metadata = gh_repo_view(repo_slug) if valid_repo_slug(repo_slug) else {}
     readme_text, _ = load_readme(repo_root)
     description = safe_text(str((metadata or {}).get("description") or ""), repo_description_fallback(repo_root, cached_context, seo_data))
     topics = topic_names((metadata or {}).get("repositoryTopics") or []) or local_topics(cached_context, seo_data)
@@ -290,11 +293,14 @@ def build_remote_repo_entry(row: dict[str, Any]) -> dict[str, Any]:
 def portfolio_owner(repo_root: Path, username: str) -> str:
     """Resolve the portfolio owner from explicit input, git remote, or gh auth."""
     if username.strip():
-        return username.strip()
+        checked = valid_owner(username)
+        if not checked:
+            raise ValueError(f"Invalid GitHub username: {username}")
+        return checked
     repo_slug = repo_slug_from_git(repo_root) or ""
     if "/" in repo_slug:
-        return repo_slug.split("/", 1)[0]
-    return current_login()
+        return valid_owner(repo_slug.split("/", 1)[0])
+    return valid_owner(current_login())
 
 
 def topic_authority_map(repos: list[dict[str, Any]]) -> list[dict[str, Any]]:

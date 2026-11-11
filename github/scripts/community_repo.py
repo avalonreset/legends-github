@@ -14,9 +14,25 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import offline_mode, gh_auth_ok, gh_repo_view, have_command, repo_slug_from_git, run_command
+from github_runtime import (
+    _safe_path,
+    gh_auth_ok,
+    gh_repo_view,
+    have_command,
+    offline_mode,
+    repo_slug_from_git,
+    run_command,
+    safe_local_path,
+    valid_discussion_slug,
+    valid_repo_slug,
+)
 from release_repo import CANONICAL_RELEASE_YML
 from runtime_paths import repo_output_dir
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise urllib.error.HTTPError(req.full_url, code, f"Redirects not allowed ({msg})", headers, fp)
 
 
 CONTRIBUTOR_COVENANT_FALLBACK = """# Contributor Covenant Code of Conduct
@@ -175,7 +191,7 @@ def utcnow_iso() -> str:
 
 def safe_read_text(path: Path) -> str:
     """Read a text file if present."""
-    if not path.exists():
+    if not _safe_path(path) or not path.exists():
         return ""
     return path.read_text(encoding="utf-8", errors="replace")
 
@@ -192,6 +208,34 @@ def git_config_value(repo_root: Path, key: str) -> str:
     return result.stdout.strip() if result.returncode == 0 else ""
 
 
+def _has_typescript_files(repo_root: Path, max_files: int = 500) -> bool:
+    """Bounded check for TypeScript files skipping heavy/ignored directories and symlinks."""
+    skip_dirs = {".git", "node_modules", "dist", "build", ".venv", "venv", "__pycache__"}
+    scanned = 0
+    stack = [repo_root]
+    while stack and scanned < max_files:
+        current = stack.pop()
+        if not _safe_path(current, root=repo_root):
+            continue
+        try:
+            entries = list(current.iterdir())
+        except OSError:
+            continue
+        for entry in entries:
+            if entry.is_symlink():
+                continue
+            if entry.is_dir():
+                if entry.name not in skip_dirs:
+                    stack.append(entry)
+                continue
+            scanned += 1
+            if entry.suffix == ".ts":
+                return True
+            if scanned >= max_files:
+                break
+    return False
+
+
 def detect_primary_language(repo_root: Path, cached_context: dict[str, Any], metadata: dict[str, Any]) -> str:
     """Return the best-effort primary language."""
     name = ((metadata.get("primaryLanguage") or {}).get("name")) or cached_context.get("primary_language")
@@ -200,7 +244,7 @@ def detect_primary_language(repo_root: Path, cached_context: dict[str, Any], met
     if (repo_root / "pyproject.toml").exists() or (repo_root / "requirements.txt").exists() or (repo_root / "setup.py").exists():
         return "Python"
     if (repo_root / "package.json").exists():
-        if any(path.suffix == ".ts" for path in repo_root.rglob("*.ts")):
+        if _has_typescript_files(repo_root):
             return "TypeScript"
         return "JavaScript"
     if (repo_root / "Cargo.toml").exists():
@@ -589,9 +633,10 @@ def detect_ecosystems(repo_root: Path) -> list[tuple[str, str]]:
 
 def gh_discussion_categories(repo_slug: str) -> list[dict[str, str]]:
     """Fetch discussion categories when gh auth is available."""
-    if not gh_auth_ok() or "/" not in repo_slug:
+    slug = valid_repo_slug(repo_slug)
+    if not gh_auth_ok() or not slug:
         return []
-    owner, repo = repo_slug.split("/", 1)
+    owner, repo = slug.split("/", 1)
     query = (
         "query($owner: String!, $repo: String!) { "
         "repository(owner: $owner, name: $repo) { "
@@ -620,10 +665,13 @@ def gh_discussion_categories(repo_slug: str) -> list[dict[str, str]]:
     nodes = (((payload.get("data") or {}).get("repository") or {}).get("discussionCategories") or {}).get("nodes") or []
     categories: list[dict[str, str]] = []
     for node in nodes:
+        cat_slug = valid_discussion_slug(node.get("slug"))
+        if not cat_slug:
+            continue
         categories.append(
             {
                 "name": str(node.get("name") or "").strip(),
-                "slug": str(node.get("slug") or "").strip(),
+                "slug": cat_slug,
                 "is_answerable": bool(node.get("isAnswerable")),
             }
         )
@@ -642,12 +690,15 @@ def fetch_contributor_covenant() -> str:
         "https://api.github.com/codes_of_conduct/contributor_covenant",
         headers={"Accept": "application/vnd.github+json", "User-Agent": "legends-github-community-runner"},
     )
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
     try:
-        with urllib.request.urlopen(request, timeout=10) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-            body = str(payload.get("body") or "").strip()
-            if body:
-                return body
+        with opener.open(request, timeout=15) as response:
+            raw = response.read(262_144 + 1)
+            if len(raw) <= 262_144:
+                payload = json.loads(raw.decode("utf-8", errors="replace"))
+                body = str(payload.get("body") or "").strip()
+                if body:
+                    return body
     except (OSError, TimeoutError, urllib.error.URLError, json.JSONDecodeError):
         pass
     return CONTRIBUTOR_COVENANT_FALLBACK.strip()
@@ -923,8 +974,8 @@ def generate_discussion_templates(snapshot: dict[str, Any]) -> dict[str, str]:
     """Render discussion templates when categories are known."""
     templates: dict[str, str] = {}
     for category in snapshot["discussion_categories"]:
-        slug = category["slug"]
-        name = category["name"]
+        slug = valid_discussion_slug(category.get("slug"))
+        name = str(category.get("name") or "").replace('"', "'").replace("\n", " ").strip()
         if not slug:
             continue
         prompt = "What are you trying to accomplish?" if category.get("is_answerable") else "What should the community discuss?"
@@ -1140,13 +1191,14 @@ def generate_ci_workflow(snapshot: dict[str, Any]) -> str:
     )
 
 
-def write_if_changed(path: Path, content: str) -> bool:
+def write_if_changed(path: Path, content: str, *, root: Path | None = None) -> bool:
     """Write a file when content changes."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    existing = safe_read_text(path)
+    target = safe_local_path(path, root=root)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    existing = safe_read_text(target)
     if existing == content:
         return False
-    path.write_text(content, encoding="utf-8")
+    target.write_text(content, encoding="utf-8")
     return True
 
 
@@ -1255,7 +1307,7 @@ def build_snapshot(repo_root: Path) -> dict[str, Any]:
     """Collect repo signals for community planning."""
     cached_context = read_repo_cache(repo_root, "repo-context.json") or {}
     legal_data = read_repo_cache(repo_root, "legal-data.json") or {}
-    repo_slug = str(cached_context.get("repo") or repo_slug_from_git(repo_root) or repo_root.name)
+    repo_slug = valid_repo_slug(cached_context.get("repo")) or repo_slug_from_git(repo_root) or repo_root.name
     metadata = gh_repo_view(repo_slug) if "/" in repo_slug else {}
     if metadata is None:
         metadata = {}
@@ -1482,9 +1534,13 @@ def apply_community_plan(repo_root: Path, payload: dict[str, Any]) -> dict[str, 
         relative = entry["path"]
         if relative not in content:
             continue
-        path = repo_root / relative
+        path = safe_local_path(repo_root / relative, root=repo_root)
+        if relative.startswith(".github/DISCUSSION_TEMPLATE/"):
+            disc_root = (repo_root / ".github" / "DISCUSSION_TEMPLATE").resolve()
+            if not path.resolve(strict=False).is_relative_to(disc_root):
+                raise ValueError(f"Refusing discussion template path outside DISCUSSION_TEMPLATE: {relative}")
         existed = path.exists()
-        changed = write_if_changed(path, content[relative])
+        changed = write_if_changed(path, content[relative], root=repo_root)
         if not changed:
             continue
         written_targets.append(relative)
@@ -1494,10 +1550,11 @@ def apply_community_plan(repo_root: Path, payload: dict[str, Any]) -> dict[str, 
             created.append(relative)
 
     discussion_dir = repo_root / ".github" / "DISCUSSION_TEMPLATE"
-    if snapshot["has_discussions"] and snapshot["discussion_categories"] and discussion_dir.exists():
+    if snapshot["has_discussions"] and snapshot["discussion_categories"] and _safe_path(discussion_dir, root=repo_root) and discussion_dir.exists():
         for stale in sorted(discussion_dir.glob("*.md")):
-            stale.unlink(missing_ok=True)
-            removed.append(str(stale.relative_to(repo_root)).replace("\\", "/"))
+            if _safe_path(stale, root=repo_root):
+                stale.unlink(missing_ok=True)
+                removed.append(str(stale.relative_to(repo_root)).replace("\\", "/"))
 
     refreshed = build_community_payload(repo_root)
     refreshed["mode"] = "write"

@@ -11,7 +11,7 @@ from typing import Any
 
 from audit_repo import detect_repo_type, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_auth_ok, gh_repo_view, repo_slug_from_git, run_command
+from github_runtime import gh_auth_ok, gh_repo_view, repo_slug_from_git, run_command, valid_repo_slug
 from runtime_paths import repo_output_dir
 from seo_repo import LOW_VALUE_TOPICS, normalize_topic, run_seo, topic_names
 
@@ -23,9 +23,10 @@ def utcnow_iso() -> str:
 
 def gh_repo_languages(repo_slug: str) -> dict[str, int]:
     """Fetch repository language bytes through gh if available."""
-    if not gh_auth_ok() or "/" not in repo_slug:
+    slug = valid_repo_slug(repo_slug)
+    if not slug or not gh_auth_ok():
         return {}
-    result = run_command(["gh", "api", f"repos/{repo_slug}/languages"], check=False)
+    result = run_command(["gh", "api", f"repos/{slug}/languages"], check=False)
     if result.returncode != 0:
         return {}
     try:
@@ -136,15 +137,16 @@ def build_command_entry(
     blocked_reason: str | None = None,
 ) -> dict[str, Any]:
     """Build one planned gh command entry."""
+    slug = valid_repo_slug(repo_slug)
     shell_args = ["gh", "repo", "edit"]
-    if repo_slug and "/" in repo_slug:
-        shell_args.append(repo_slug)
+    if slug:
+        shell_args.append(slug)
     shell_args.extend(args)
     rendered = " ".join(shell_quote(value) if " " in value or value == "" else value for value in shell_args)
     return {
         "label": label,
         "command": rendered,
-        "args": ["gh", "repo", "edit", *([repo_slug] if repo_slug and "/" in repo_slug else []), *args],
+        "args": ["gh", "repo", "edit", *([slug] if slug else []), *args],
         "reason": reason,
         "status": "ready" if ready else "pending",
         "blocked_reason": blocked_reason,
@@ -224,8 +226,9 @@ def current_description(metadata: dict[str, Any], cached_context: dict[str, Any]
 def build_snapshot(repo_root: Path) -> dict[str, Any]:
     """Gather repo signals for metadata planning."""
     cached_context = read_repo_cache(repo_root, "repo-context.json") or {}
-    repo_slug = str(cached_context.get("repo") or repo_slug_from_git(repo_root) or repo_root.name)
-    metadata = gh_repo_view(repo_slug) if "/" in repo_slug else {}
+    cached_slug = valid_repo_slug(str(cached_context.get("repo") or ""))
+    repo_slug = cached_slug or repo_slug_from_git(repo_root) or repo_root.name
+    metadata = gh_repo_view(repo_slug) if valid_repo_slug(repo_slug) else {}
     if metadata is None:
         metadata = {}
     repo_type = str(cached_context.get("repo_type") or detect_repo_type(repo_root))

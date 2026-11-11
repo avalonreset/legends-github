@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from github_runtime import safe_local_path
+
 try:
     from PIL import Image, ImageOps
 except ImportError:  # pragma: no cover - exercised through capability guards
@@ -25,6 +27,11 @@ def _prepare_image(source: Path, destination: Path, image_format: str, *, previe
     """Write a new metadata-free derivative while preserving existing files."""
     if Image is None:
         raise AssetPreparationError("Pillow is required to prepare local image derivatives.")
+    try:
+        source = safe_local_path(source)
+        destination = safe_local_path(destination)
+    except ValueError as exc:
+        raise AssetPreparationError(str(exc)) from exc
     if destination.exists():
         raise AssetPreparationError(f"Existing image will not be overwritten: {destination}")
     try:

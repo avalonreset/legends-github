@@ -4,7 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
-| 1.x     | Yes       |
+| 0.2.x   | Yes       |
 
 ## Credential Handling
 
@@ -19,7 +19,7 @@ Keep `.env`, `.env.local`, and other credential files out of version control. Of
 If you discover a security vulnerability in this project, please report
 it responsibly. **Do not open public issues for security vulnerabilities.**
 
-**Email:** benjamin@rankenstein.pro
+**Report via GitHub Private Vulnerability Reporting:** https://github.com/avalonreset/legends-github/security/advisories/new
 
 **What to include:**
 

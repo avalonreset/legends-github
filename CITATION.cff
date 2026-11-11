@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "legends-github"
-version: "0.2.3"
-date-released: 2026-10-22
+version: "0.2.4"
+date-released: 2026-11-11
 authors:
   - name: "Avalon Reset"
 url: "https://github.com/avalonreset/legends-github"

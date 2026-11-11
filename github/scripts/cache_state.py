@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from github_runtime import _safe_path, safe_local_path
 from runtime_paths import github_home, github_runs_cache, github_setup_cache, repo_cache_dir
 
 
@@ -20,7 +21,7 @@ def now_iso() -> str:
 
 
 def _load_json(path: Path, default: Any) -> Any:
-    if not path.exists():
+    if not _safe_path(path) or not path.exists():
         return default
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -35,13 +36,15 @@ def ensure_cache_gitignore(repo_root: Path) -> None:
 
 def _atomic_json(path: Path, payload: Any) -> None:
     """Replace complete JSON atomically so an interrupted write cannot truncate it."""
-    fd, temporary = tempfile.mkstemp(prefix=".json-", dir=path.parent)
+    target = safe_local_path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".json-", dir=target.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
             json.dump(payload, stream, indent=2)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
+        os.replace(temporary, target)
     finally:
         if os.path.exists(temporary):
             os.unlink(temporary)
@@ -80,7 +83,7 @@ def probe_repo_cache(repo_root: Path) -> tuple[Path, bool]:
 def read_repo_cache(repo_root: Path, filename: str) -> dict[str, Any] | None:
     """Read one per-repo cache file if it exists."""
     path = repo_cache_dir(repo_root) / filename
-    if not path.exists():
+    if not _safe_path(path) or not path.exists():
         return None
     try:
         return json.loads(path.read_text(encoding="utf-8"))

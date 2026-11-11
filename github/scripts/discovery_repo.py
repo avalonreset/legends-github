@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from cache_state import write_repo_cache
+from github_runtime import _safe_path as _runtime_safe_path
 from runtime_paths import repo_output_dir
 
 SCHEMA_VERSION = "1.0.0"
@@ -69,18 +70,7 @@ def _context(value: str, label: str) -> str:
 
 def _safe_path(root: Path, path: Path) -> bool:
     """Reject links/reparse points as well as paths outside the selected root."""
-    try:
-        if not path.resolve().is_relative_to(root):
-            return False
-        current = root
-        for part in path.relative_to(root).parts:
-            current = current / part
-            info = current.lstat()
-            if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
-                return False
-        return True
-    except (OSError, ValueError, RuntimeError):
-        return False
+    return _runtime_safe_path(path, root=root)
 
 
 def _inventory(root: Path) -> tuple[list[dict[str, Any]], dict[str, str], dict[str, Any]]:

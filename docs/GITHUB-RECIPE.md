@@ -194,7 +194,7 @@ requests remain artwork-only; never represent them as a completed SEO pass.
 
 ## EDR and Security Guardrails
 
-- Zero browser state or local desktop credential store reads (Local State, Login Data, Cookies, IndexedDB, LevelDB, DPAPI, Keychain).
-- Zero executable shell wrappers (.ps1, .sh, .bat, .cmd, .vbs, .wsf, .hta, .scr) shipped inside the repository.
-- Outbound network traffic is restricted to explicit user-invoked GitHub CLI (gh) commands, HTTPS GitHub social-preview image verification, and optional DataForSEO API requests (--execute).
-- All PNG and WebP assets are stripped of ancillary metadata chunks (tEXt, iTXt, zTXt, XIf, EXIF, XMP ) before commit.
+- Zero browser state or local desktop credential store reads (Chromium/Firefox cookie, session, or local storage databases, DPAPI, Keychain).
+- Zero executable shell wrappers (`.ps1`, `.sh`, `.bat`, `.cmd`, `.vbs`, `.wsf`, `.hta`, `.scr`) shipped inside the repository.
+- Outbound network traffic is restricted to explicit user-invoked GitHub CLI (`gh`) commands, HTTPS GitHub social-preview image verification, and optional DataForSEO API requests (`--execute`).
+- All PNG and WebP assets are stripped of ancillary metadata chunks (`tEXt`, `iTXt`, `zTXt`, `eXIf`, `EXIF`, `XMP`) before commit.

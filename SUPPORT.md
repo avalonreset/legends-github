@@ -28,7 +28,7 @@ Have an idea for a new feature or improvement?
 
 ### Security Issues
 
-Found a security vulnerability? **Do not open a public issue.** Email benjamin@rankenstein.pro directly. See [SECURITY.md](SECURITY.md) for details.
+Found a security vulnerability? **Do not open a public issue.** Report it privately via [GitHub Security Advisories](https://github.com/avalonreset/legends-github/security/advisories/new). See [SECURITY.md](SECURITY.md) for details.
 
 ## Common Issues
 

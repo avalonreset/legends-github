@@ -18,8 +18,22 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import offline_mode, gh_repo_view, repo_slug_from_git, run_command
+from github_runtime import (
+    _safe_path,
+    gh_repo_view,
+    offline_mode,
+    repo_slug_from_git,
+    run_command,
+    safe_local_path,
+    valid_git_ref,
+    valid_repo_slug,
+)
 from runtime_paths import repo_output_dir
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise urllib.error.HTTPError(req.full_url, code, f"Redirects not allowed ({msg})", headers, fp)
 
 
 DISCLAIMER_BLOCK = (
@@ -394,7 +408,7 @@ def today_utc() -> str:
 
 def safe_read_text(path: Path | None) -> str:
     """Read a text file when it exists."""
-    if path is None or not path.exists():
+    if path is None or not _safe_path(path) or not path.exists():
         return ""
     return path.read_text(encoding="utf-8", errors="replace")
 
@@ -413,9 +427,10 @@ def git_latest_tag(repo_root: Path) -> str:
 
 def git_tag_date(repo_root: Path, tag: str) -> str:
     """Return the commit date for one tag."""
-    if not tag:
+    ref = valid_git_ref(tag)
+    if not ref:
         return ""
-    result = run_command(["git", "log", "-1", "--format=%cI", tag], cwd=repo_root, check=False)
+    result = run_command(["git", "log", "-1", "--format=%cI", "--end-of-options", ref], cwd=repo_root, check=False)
     if result.returncode != 0:
         return ""
     raw = result.stdout.strip()
@@ -655,10 +670,14 @@ def fetch_remote_license_template(spdx_id: str, year: str, holder: str) -> tuple
         return "", f"No bundled or remote template is available for {spdx_id}."
     url = f"https://api.github.com/licenses/{api_key}"
     request = urllib.request.Request(url, headers={"User-Agent": "legends-github-qa"})
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
     try:
-        with urllib.request.urlopen(request, timeout=20) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        with opener.open(request, timeout=15) as response:
+            raw = response.read(262_144 + 1)
+            if len(raw) > 262_144:
+                return "", f"GitHub returned an oversized template for {spdx_id}."
+            payload = json.loads(raw.decode("utf-8", errors="replace"))
+    except (OSError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         return "", f"Could not fetch the {spdx_id} template from GitHub: {exc}"
     body = str(payload.get("body") or "").strip()
     if not body:
@@ -805,7 +824,7 @@ def collect_placeholders(repo_root: Path, targets: list[str]) -> list[dict[str, 
 def build_snapshot(repo_root: Path, requested_license: str) -> dict[str, Any]:
     """Collect repo signals for legal planning."""
     cached_context = read_repo_cache(repo_root, "repo-context.json") or {}
-    repo_slug = str(cached_context.get("repo") or repo_slug_from_git(repo_root) or repo_root.name)
+    repo_slug = valid_repo_slug(cached_context.get("repo")) or repo_slug_from_git(repo_root) or repo_root.name
     metadata = gh_repo_view(repo_slug) if "/" in repo_slug else {}
     if metadata is None:
         metadata = {}
@@ -995,13 +1014,14 @@ def generated_content(snapshot: dict[str, Any], payload: dict[str, Any]) -> tupl
     return content, blocked
 
 
-def write_if_changed(path: Path, content: str) -> bool:
+def write_if_changed(path: Path, content: str, *, root: Path | None = None) -> bool:
     """Write a file when content changes."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    existing = safe_read_text(path)
+    target = safe_local_path(path, root=root)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    existing = safe_read_text(target)
     if existing == content:
         return False
-    path.write_text(content, encoding="utf-8")
+    target.write_text(content, encoding="utf-8")
     return True
 
 
@@ -1027,9 +1047,9 @@ def apply_legal_plan(repo_root: Path, payload: dict[str, Any]) -> dict[str, Any]
         body = content.get(relative)
         if body is None:
             continue
-        path = repo_root / relative
+        path = safe_local_path(repo_root / relative, root=repo_root)
         existed = path.exists()
-        changed = write_if_changed(path, body)
+        changed = write_if_changed(path, body, root=repo_root)
         if not changed:
             continue
         written_targets.append(relative)

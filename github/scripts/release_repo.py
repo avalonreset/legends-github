@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,7 +14,16 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_auth_ok, gh_release_rows, repo_slug_from_git, run_command
+from github_runtime import (
+    _safe_path,
+    gh_auth_ok,
+    gh_release_rows,
+    repo_slug_from_git,
+    run_command,
+    safe_local_path,
+    valid_git_ref,
+    valid_repo_slug,
+)
 from runtime_paths import repo_output_dir
 
 
@@ -155,8 +166,10 @@ def git_latest_tag(repo_root: Path) -> str:
 
 def git_commit_count(repo_root: Path, rev_range: str | None = None) -> int:
     """Return commit count for the full repo or a revision range."""
-    args = ["rev-list", "--count"]
-    args.append(rev_range or "HEAD")
+    ref = valid_git_ref(rev_range) if rev_range else "HEAD"
+    if rev_range and not ref:
+        return 0
+    args = ["rev-list", "--count", "--end-of-options", ref]
     value = git_output(repo_root, *args)
     try:
         return int(value)
@@ -166,9 +179,12 @@ def git_commit_count(repo_root: Path, rev_range: str | None = None) -> int:
 
 def git_commit_log(repo_root: Path, rev_range: str | None = None) -> list[dict[str, str]]:
     """Return commit summaries for the repo or a revision range."""
-    args = ["log", "--format=%H%x09%s%x09%cI"]
+    args = ["log", "--format=%H%x09%s%x09%cI", "--end-of-options"]
     if rev_range:
-        args.append(rev_range)
+        ref = valid_git_ref(rev_range)
+        if not ref:
+            return []
+        args.append(ref)
     output = git_output(repo_root, *args)
     commits: list[dict[str, str]] = []
     for line in output.splitlines():
@@ -193,7 +209,10 @@ def git_first_commit_date(repo_root: Path) -> str:
 
 def git_tag_commit_date(repo_root: Path, tag: str) -> str:
     """Return the commit date for a tag."""
-    return git_output(repo_root, "log", "-1", "--format=%cI", tag)
+    ref = valid_git_ref(tag)
+    if not ref:
+        return ""
+    return git_output(repo_root, "log", "-1", "--format=%cI", "--end-of-options", ref)
 
 
 def iso_to_date(value: str) -> str:
@@ -475,74 +494,126 @@ def build_changelog_file(repo_slug: str, existing_text: str, draft_entry: str, v
 
 
 def create_github_release(repo_slug: str, version: str, title: str, notes: str, publish: bool) -> dict[str, Any]:
-    """Create a draft or published GitHub release via gh."""
-    command = [
+    """Create a draft or published GitHub release via gh using a UTF-8 --notes-file."""
+    slug = valid_repo_slug(repo_slug)
+    tag = valid_git_ref(display_version(version))
+    if not slug or not tag:
+        raise ValueError("Invalid repository slug or release version tag")
+    fd, temp_notes = tempfile.mkstemp(prefix="legends-github-notes-", suffix=".md")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(notes)
+        command = [
+            "gh",
+            "release",
+            "create",
+            tag,
+            "--repo",
+            slug,
+            "--title",
+            f"{tag} - {title}",
+            "--notes-file",
+            temp_notes,
+        ]
+        if not publish:
+            command.append("--draft")
+        result = run_command(command, check=False)
+    finally:
+        if os.path.exists(temp_notes):
+            os.unlink(temp_notes)
+    display_cmd = [
         "gh",
         "release",
         "create",
-        display_version(version),
+        tag,
         "--repo",
-        repo_slug,
+        slug,
         "--title",
-        f"{display_version(version)} - {title}",
-        "--notes",
-        notes,
+        f"{tag} - {title}",
+        "--notes-file",
+        "<utf8-notes-file>",
     ]
     if not publish:
-        command.append("--draft")
-    result = run_command(command, check=False)
+        display_cmd.append("--draft")
     return {
         "requested": True,
         "publish": publish,
         "status": "created" if result.returncode == 0 else "failed",
-        "command": " ".join(command),
+        "command": " ".join(display_cmd),
         "stdout": result.stdout.strip(),
-        "stderr": result.stderr.strip(),
+        "stderr": "redacted" if result.stderr.strip() else "",
     }
 
 
 def update_github_release(repo_slug: str, version: str, title: str, notes: str, publish: bool) -> dict[str, Any]:
-    """Update an existing GitHub release via gh."""
-    command = [
+    """Update an existing GitHub release via gh using a UTF-8 --notes-file."""
+    slug = valid_repo_slug(repo_slug)
+    tag = valid_git_ref(display_version(version))
+    if not slug or not tag:
+        raise ValueError("Invalid repository slug or release version tag")
+    fd, temp_notes = tempfile.mkstemp(prefix="legends-github-notes-", suffix=".md")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(notes)
+        command = [
+            "gh",
+            "release",
+            "edit",
+            tag,
+            "--repo",
+            slug,
+            "--title",
+            f"{tag} - {title}",
+            "--notes-file",
+            temp_notes,
+            "--target",
+            "HEAD",
+        ]
+        command.append("--draft=false" if publish else "--draft")
+        result = run_command(command, check=False)
+    finally:
+        if os.path.exists(temp_notes):
+            os.unlink(temp_notes)
+    display_cmd = [
         "gh",
         "release",
         "edit",
-        display_version(version),
+        tag,
         "--repo",
-        repo_slug,
+        slug,
         "--title",
-        f"{display_version(version)} - {title}",
-        "--notes",
-        notes,
+        f"{tag} - {title}",
+        "--notes-file",
+        "<utf8-notes-file>",
         "--target",
         "HEAD",
+        "--draft=false" if publish else "--draft",
     ]
-    command.append("--draft=false" if publish else "--draft")
-    result = run_command(command, check=False)
     return {
         "requested": True,
         "publish": publish,
         "status": "updated" if result.returncode == 0 else "failed",
-        "command": " ".join(command),
+        "command": " ".join(display_cmd),
         "stdout": result.stdout.strip(),
-        "stderr": result.stderr.strip(),
+        "stderr": "redacted" if result.stderr.strip() else "",
     }
 
 
 def build_snapshot(repo_root: Path) -> dict[str, Any]:
     """Gather release-related repo signals."""
     repo_context = read_repo_cache(repo_root, "repo-context.json") or {}
-    repo_slug = str(repo_context.get("repo") or repo_slug_from_git(repo_root) or repo_root.name)
+    cached_slug = valid_repo_slug(str(repo_context.get("repo") or ""))
+    repo_slug = cached_slug or repo_slug_from_git(repo_root) or repo_root.name
     changelog_path = repo_root / "CHANGELOG.md"
     readme, _ = load_readme(repo_root)
-    changelog_text = changelog_path.read_text(encoding="utf-8", errors="replace") if changelog_path.exists() else ""
+    changelog_text = changelog_path.read_text(encoding="utf-8", errors="replace") if changelog_path.exists() and _safe_path(repo_root, changelog_path) else ""
     changelog_entries = changelog_versions(changelog_text)
     latest_changelog_version = changelog_entries[0]["version"] if changelog_entries else ""
-    latest_tag = git_latest_tag(repo_root)
-    releases = gh_release_rows(repo_slug, limit=10) if "/" in repo_slug else []
-    latest_release = releases[0]["tag"] if releases else ""
+    latest_tag = valid_git_ref(git_latest_tag(repo_root))
+    releases = gh_release_rows(repo_slug, limit=10) if valid_repo_slug(repo_slug) else []
+    latest_release = valid_git_ref(releases[0]["tag"]) if releases else ""
     baseline = highest_version(latest_release, latest_tag, latest_changelog_version)
-    rev_range = f"{display_version(baseline)}..HEAD" if baseline else None
+    rev_range = valid_git_ref(f"{display_version(baseline)}..HEAD") if baseline else None
     commits = git_commit_log(repo_root, rev_range=rev_range)
     workflows = list_workflows(repo_root)
     registry = detect_registry(repo_root)
@@ -824,8 +895,8 @@ def build_release_proposal(payload: dict[str, Any]) -> str:
 def apply_release_plan(repo_root: Path, payload: dict[str, Any], create_release: bool, publish: bool) -> dict[str, Any]:
     """Apply file-level release changes and optionally create the GitHub release."""
     written: list[str] = []
-    changelog_path = repo_root / "CHANGELOG.md"
-    release_yml_path = repo_root / ".github" / "release.yml"
+    changelog_path = safe_local_path(repo_root / "CHANGELOG.md", root=repo_root)
+    release_yml_path = safe_local_path(repo_root / ".github" / "release.yml", root=repo_root)
     changelog_preexisting = changelog_path.exists()
 
     existing_changelog = changelog_path.read_text(encoding="utf-8", errors="replace") if changelog_preexisting else ""

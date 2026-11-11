@@ -3,9 +3,12 @@ import json
 import math
 from pathlib import Path
 
+from github_runtime import safe_local_path
+
 
 def results(path, endpoint):
-    payload = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    target = safe_local_path(path)
+    payload = json.loads(target.read_text(encoding="utf-8-sig"))
     if payload.get("status_code") != 20000 or not payload.get("tasks"):
         raise ValueError("Research export has no successful tasks")
     output = []

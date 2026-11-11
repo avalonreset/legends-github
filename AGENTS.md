@@ -26,6 +26,13 @@ Keep executable behavior in `github/scripts/`, with `legends_github.py` as the p
 
 For measured demand and SERP research, install `requirements-dataforseo.txt` and use `research` to estimate before explicit execution. This uses the public legends-dataforseo; no MCP installation is required. Follow `docs/SEO-RESEARCH.md`, preserve locale and observation dates, and import collected exports through `seo`. Offline audits remain independent of provider credentials.
 
+| Helper Script | Flags | Purpose |
+| --- | --- | --- |
+| `github/scripts/validate_setup.py` | `--mode {portable,cli,api,both} --path PATH [--json]` | Validate Python 3.11+, Git, `gh`, and external cache readiness. |
+| `github/scripts/setup_dataforseo.py` | `--check`, `--json`, `--install` | Check or install pinned `legends-dataforseo` from `requirements-dataforseo.txt`. |
+| `github/scripts/render_banner.py` | `--title SLUG --subtitle-line LINE --font PATH --output-dir DIR` | Render 4096x1024 banner and 1024x256 preview into a fresh directory. |
+| `github/scripts/render_social_preview.py` | `--title SLUG --subtitle TEXT --font PATH --output PATH.png [--force]` | Render a 1280x640 social card (`--force` to overwrite). |
+
 ## Full SEO optimization means research and application
 
 For an authorized full optimization, keyword optimization, or DataForSEO-backed
@@ -54,7 +61,7 @@ requests remain artwork-only; never represent them as a completed SEO pass.
 
 ## EDR and Security Guardrails
 
-- Zero browser state or local desktop credential store reads (Local State, Login Data, Cookies, IndexedDB, LevelDB, DPAPI, Keychain).
-- Zero executable shell wrappers (.ps1, .sh, .bat, .cmd, .vbs, .wsf, .hta, .scr) shipped inside the repository.
-- Outbound network traffic is restricted to explicit user-invoked GitHub CLI (gh) commands, HTTPS GitHub social-preview image verification, and optional DataForSEO API requests (--execute).
-- All PNG and WebP assets are stripped of ancillary metadata chunks (tEXt, iTXt, zTXt, XIf, EXIF, XMP ) before commit.
+- Zero browser state or local desktop credential store reads (Chromium/Firefox cookie, session, or local storage databases, DPAPI, Keychain).
+- Zero executable shell wrappers (`.ps1`, `.sh`, `.bat`, `.cmd`, `.vbs`, `.wsf`, `.hta`, `.scr`) shipped inside the repository.
+- Outbound network traffic is restricted to explicit user-invoked GitHub CLI (`gh`) commands, HTTPS GitHub social-preview image verification, and optional DataForSEO API requests (`--execute`).
+- All PNG and WebP assets are stripped of ancillary metadata chunks (`tEXt`, `iTXt`, `zTXt`, `eXIf`, `EXIF`, `XMP`) before commit.

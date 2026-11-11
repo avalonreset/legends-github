@@ -7,6 +7,8 @@ from pathlib import Path
 import re
 from PIL import Image, ImageDraw, ImageFont
 
+from github_runtime import safe_local_path
+
 
 def render_banner(title: str, lines: list[str], font_path: Path, output_dir: Path) -> dict:
     """Use the Legends layout without providers, font substitution or overwrites."""
@@ -16,7 +18,7 @@ def render_banner(title: str, lines: list[str], font_path: Path, output_dir: Pat
         raise ValueError("Supply one or two nonempty lowercase subtitle lines.")
     if len(title) > 100 or any(len(line) > 140 for line in lines):
         raise ValueError("Copy is too long; edit the copy rather than shrinking the font.")
-    font_path = font_path.expanduser().resolve(strict=True)
+    font_path = safe_local_path(font_path).resolve(strict=True)
     fonts = [ImageFont.truetype(str(font_path), size, layout_engine=ImageFont.Layout.BASIC) for size in (176, 104)]
     canvas = Image.new('RGB', (4096, 1024), '#000000')
     draw = ImageDraw.Draw(canvas)
@@ -31,7 +33,7 @@ def render_banner(title: str, lines: list[str], font_path: Path, output_dir: Pat
         boxes.append(box)
     draw.line((192, 456, 3904, 456), fill='#666666', width=2)
     # Fresh directory only: originals and previous drafts are never replaced.
-    output_dir = output_dir.expanduser().resolve()
+    output_dir = safe_local_path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=False)
     canvas.save(output_dir / 'banner.png', optimize=True)
     canvas.save(output_dir / 'banner.webp', lossless=True, method=6)

@@ -16,6 +16,7 @@ EXPECTED_MODULE_ID = "legends-github"
 
 REQUIRED_FILES = [
     ".legends-module",
+    ".legends-router-pin",
     "VERSION",
     "README.md",
     "AGENTS.md",
@@ -68,6 +69,7 @@ FORBIDDEN_TEXT_PATTERNS = [
     re.compile(r"sk_(?:live|test)_[A-Za-z0-9]{16,}"),
     re.compile(r"rk_(?:live|test)_[A-Za-z0-9]{16,}"),
     re.compile(r"whsec_[A-Za-z0-9]{16,}"),
+    re.compile(r"rankenstein", re.IGNORECASE),
 ]
 
 EDR_FORBIDDEN_SUBSTRINGS = [
@@ -85,9 +87,21 @@ EDR_FORBIDDEN_SUBSTRINGS = [
     "DownloadString(",
 ]
 
+FORBIDDEN_CODE_PATTERNS = [
+    (re.compile(r"\beval\s*\("), "eval()"),
+    (re.compile(r"\bexec\s*\("), "exec()"),
+    (re.compile(r"\bpickle\.(?:load|loads)\s*\("), "pickle.load/loads()"),
+    (re.compile(r"\byaml\.load\s*\("), "yaml.load()"),
+    (re.compile(r"\bshell\s*=\s*True\b"), "shell=True"),
+    (re.compile(r"\bos\.system\s*\("), "os.system()"),
+]
+
+CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\ufffd]")
 PNG_FORBIDDEN_CHUNKS = {b"tEXt", b"iTXt", b"zTXt", b"eXIf"}
 WEBP_FORBIDDEN_CHUNKS = {b"EXIF", b"XMP "}
 MD_LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+FENCE_RE = re.compile(r"^```[\s\S]*?^```", re.MULTILINE)
+INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
 
 
 def _iter_repo_files():
@@ -129,25 +143,21 @@ def _check_webp_chunks(path: Path, issues: list[str]) -> None:
 
 
 def _check_markdown_links(path: Path, text: str, issues: list[str]) -> None:
-    in_fence = False
-    for line_no, line in enumerate(text.splitlines(), 1):
-        stripped = line.strip()
-        if stripped.startswith("```") or stripped.startswith("~~~"):
-            in_fence = not in_fence
+    stripped_text = INLINE_CODE_RE.sub("", FENCE_RE.sub("", text))
+    root_resolved = ROOT.resolve()
+    for match in MD_LINK_RE.finditer(stripped_text):
+        raw_target = match.group(1).strip()
+        if not raw_target or raw_target.startswith(("#", "http://", "https://", "mailto:", "tel:")):
             continue
-        if in_fence:
+        target_part = raw_target.split()[0].strip("<>")
+        rel_path = unquote(target_part.split("#", 1)[0].split("?", 1)[0])
+        if not rel_path:
             continue
-        for match in MD_LINK_RE.finditer(line):
-            raw_target = match.group(1).strip()
-            if not raw_target or raw_target.startswith(("#", "http://", "https://", "mailto:", "tel:")):
-                continue
-            target_part = raw_target.split()[0].strip("<>")
-            rel_path = unquote(target_part.split("#", 1)[0].split("?", 1)[0])
-            if not rel_path:
-                continue
-            resolved = (path.parent / rel_path).resolve()
-            if not resolved.exists():
-                issues.append(f"{path.relative_to(ROOT)}:{line_no}: broken relative link -> {raw_target}")
+        resolved = (path.parent / rel_path).resolve()
+        if not resolved.is_relative_to(root_resolved):
+            issues.append(f"{path.relative_to(ROOT)}: markdown link escapes repo root -> {raw_target}")
+        elif not resolved.exists():
+            issues.append(f"{path.relative_to(ROOT)}: broken relative link -> {raw_target}")
 
 
 def main() -> int:
@@ -211,16 +221,22 @@ def main() -> int:
 
         if path.suffix.lower() in {".py", ".md", ".json", ".toml", ".yml", ".yaml", ".cff", ".txt"}:
             text = path.read_text(encoding="utf-8", errors="replace")
-            for pattern in FORBIDDEN_TEXT_PATTERNS:
-                if pattern.search(text):
-                    issues.append(f"Forbidden text pattern {pattern.pattern} in {rel}")
+            if CONTROL_CHAR_RE.search(text):
+                issues.append(f"Control character or replacement character found in {rel}")
+            if "\u2014" in text or "\u2013" in text:
+                issues.append(f"Em-dash or en-dash found in {rel}")
             if rel != "scripts/check_release.py":
+                for pattern in FORBIDDEN_TEXT_PATTERNS:
+                    if pattern.search(text):
+                        issues.append(f"Forbidden text pattern {pattern.pattern} in {rel}")
                 for edr_sub in EDR_FORBIDDEN_SUBSTRINGS:
-                    if edr_sub in text and rel not in {"AGENTS.md", "docs/AGENT-RECIPE.md", "docs/GITHUB-RECIPE.md"}:
+                    if edr_sub in text:
                         issues.append(f"EDR-sensitive substring '{edr_sub}' in {rel}")
+            if path.suffix.lower() == ".py" and rel != "scripts/check_release.py" and not rel.startswith("tests/"):
+                for code_re, label in FORBIDDEN_CODE_PATTERNS:
+                    if code_re.search(text):
+                        issues.append(f"Forbidden code pattern {label} in {rel}")
             if path.suffix.lower() == ".md":
-                if "\u2014" in text or "\u2013" in text:
-                    issues.append(f"Em-dash or en-dash found in {rel}")
                 _check_markdown_links(path, text, issues)
 
     if issues:

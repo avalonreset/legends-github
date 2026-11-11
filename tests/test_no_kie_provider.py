@@ -26,7 +26,7 @@ class NoImageProviderTests(unittest.TestCase):
         self.guards = ExitStack()
         self.addCleanup(self.guards.close)
         self.guards.enter_context(patch.dict(os.environ, {"KIE_API_KEY": "unused-test-sentinel"}))
-        self.guards.enter_context(patch.object(github_runtime, "load_env_file", side_effect=AssertionError("credential file read")))
+        self.assertFalse(hasattr(github_runtime, "load_env_file"))
         self.guards.enter_context(patch("urllib.request.urlopen", side_effect=AssertionError("network request")))
         self.guards.enter_context(patch("socket.socket", side_effect=AssertionError("network socket")))
 
