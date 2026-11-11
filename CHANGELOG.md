@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.4] - 2026-11-11
+
+- Enforced strict `OWNER/REPO`, GitHub username, git tag/ref, and discussion category slug validation across `github_runtime.py`, `audit_evidence.py`, `meta_repo.py`, `empire_repo.py`, `release_repo.py`, `community_repo.py`, `legal_repo.py`, `seo_repo.py`, and `social_preview.py`, and added `--` / `--end-of-options` argument terminators before positional `gh` and `git` arguments.
+- Switched `create_github_release()` and `update_github_release()` in `release_repo.py` from inline `--notes` to UTF-8 `--notes-file` temp files and redacted raw CLI `stderr` from returned error strings.
+- Added ancestor-chain symlink/reparse-point refusal (`_safe_path` / `safe_local_path`), defaulted `repo_cache_dir()` to an external directory under `~/.legends-github/repos/<hash>`, enforced exclusive file creation (`--force` to overwrite) in `render_social_preview.py`, and bounded TypeScript file discovery in `community_repo.py`.
+- Hardened `fetch_contributor_covenant()` and `fetch_remote_license_template()` with `_NoRedirect`, `ProxyHandler({})`, and 256 KB read bounds; removed legacy `.codex` path helpers and unused `load_env_file()`; re-pinned `requirements-dataforseo.txt` with `#sha256=`; and upgraded `scripts/check_release.py` to full Gold-Standard parity.
+
 ## [0.2.3] - 2026-11-05
 
 - Removed legacy `scripts/invite-members.ps1`, `scripts/invite-members.sh`, and orphan `assets/ben.webp` to enforce zero shipped executable shell scripts and clean asset provenance.
@@ -121,7 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - GitHub Discussions enabled for community Q&A
 - Avatar pipeline simplified to JPEG-only (GitHub rejects WebP, PNGs often exceed 1MB)
 - Lossless PNG originals preserved in assets/originals/ for user reference
-- Contact email updated to benjamin@rankenstein.pro
+- Contact email updated to project maintainer address
 - All em dashes removed from skill suite (replaced with regular hyphens)
 
 ### Removed

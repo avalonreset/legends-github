@@ -68,5 +68,27 @@ class RuntimeSafetyTests(unittest.TestCase):
         self.assertEqual(p.returncode, 2)
         self.assertTrue(json.loads(p.stdout)["error"])
 
+    def test_validators_reject_option_injection_and_traversal(self):
+        self.assertEqual(github_runtime.valid_repo_slug("avalonreset/legends-github"), "avalonreset/legends-github")
+        self.assertEqual(github_runtime.valid_repo_slug("--repo=evil/target"), "")
+        self.assertEqual(github_runtime.valid_repo_slug("owner/../evil"), "")
+        self.assertEqual(github_runtime.valid_owner("avalonreset"), "avalonreset")
+        self.assertEqual(github_runtime.valid_owner("--jq=.token"), "")
+        self.assertEqual(github_runtime.valid_git_ref("v0.2.4"), "v0.2.4")
+        self.assertEqual(github_runtime.valid_git_ref("--output=/tmp/pwn"), "")
+        self.assertEqual(github_runtime.valid_discussion_slug("q-a"), "q-a")
+        self.assertEqual(github_runtime.valid_discussion_slug("../../workflows/pwn"), "")
+
+    def test_release_uses_notes_file_and_redacts_stderr(self):
+        import release_repo
+        with patch.object(release_repo, "run_command") as mock_run:
+            mock_run.return_value = subprocess.CompletedProcess(["gh"], 1, stdout="", stderr="secret-token-leak")
+            res = release_repo.create_github_release("avalonreset/legends-github", "v0.2.4", "Release", "Release notes", False)
+            self.assertEqual(res["status"], "failed")
+            self.assertNotIn("secret-token-leak", res["stderr"])
+            cmd = mock_run.call_args[0][0]
+            self.assertIn("--notes-file", cmd)
+            self.assertNotIn("--notes", cmd)
+
 if __name__ == "__main__":
     unittest.main()

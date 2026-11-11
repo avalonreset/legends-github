@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
-from github_runtime import have_command, run_command
+from github_runtime import _safe_path, have_command, run_command, valid_repo_slug
 
 SCHEMA_VERSION = "1.0.0"
 SCORING_VERSION = "legacy-checklist-v1"
@@ -64,8 +64,9 @@ def command_observation(args: list[str], collected_at: str, cwd: Path | None = N
 
 def collect_remote(repo_slug: str | None, collected_at: str) -> dict[str, dict[str, Any]]:
     """Collect GitHub metadata and releases independently, with failure reasons."""
+    slug = valid_repo_slug(repo_slug)
     reason = ""
-    if not repo_slug:
+    if not slug:
         reason = "no_github_remote"
     elif os.environ.get("LEGENDS_GITHUB_OFFLINE", "").lower() in {"1", "true", "yes"}:
         reason = "offline"
@@ -78,9 +79,9 @@ def collect_remote(repo_slug: str | None, collected_at: str) -> dict[str, dict[s
     if reason:
         return {key: observation(source, collected_at, reason=reason) for key, source in
                 (("metadata", "github:repository"), ("releases", "github:releases"))}
-    metadata = command_observation(["gh", "repo", "view", repo_slug, "--json", GITHUB_FIELDS],
+    metadata = command_observation(["gh", "repo", "view", slug, "--json", GITHUB_FIELDS],
                                    collected_at, json_result=True)
-    releases = command_observation(["gh", "release", "list", "--repo", repo_slug, "--limit", "5",
+    releases = command_observation(["gh", "release", "list", "--repo", slug, "--limit", "5",
                                    "--json", "tagName,name,isDraft,isPrerelease,publishedAt"],
                                   collected_at, json_result=True)
     if metadata["availability"] == "available" and not isinstance(metadata["value"], dict):
@@ -118,7 +119,7 @@ class LocalEvidence:
         path = self.root / relative
         source = "file:" + relative.replace("\\", "/")
         try:
-            if not path.resolve().is_relative_to(self.root):
+            if not _safe_path(self.root, path):
                 return observation(source, self.collected_at, reason="outside_repository")
             if not path.exists():
                 return observation(source, self.collected_at, "") | {"exists": False}
@@ -137,7 +138,7 @@ class LocalEvidence:
         try:
             for relative in candidates:
                 path = self.root / relative
-                if not path.resolve().is_relative_to(self.root):
+                if not _safe_path(self.root, path):
                     return observation("filesystem", self.collected_at, reason="outside_repository")
                 if path.is_file():
                     found.append(relative)

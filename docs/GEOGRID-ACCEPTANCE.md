@@ -27,7 +27,7 @@ The supplied banner-session rendering recipe and approved artwork were inspected
 
 The Legends template is a project-specific choice, not a mandatory style for arbitrary repositories. Branding and comprehension are intended benefits; retention improvement has not been measured.
 
-## v1.4.0 acceptance follow-up
+## v1.4.0 (pre-0.1.0 reset) acceptance follow-up
 
 The four remaining planner findings now have regression coverage: CI follows referenced package scripts without executing them and preserves unclassified workflows; ordinary “extends” prose no longer indicates derivation; release parsing accepts bracketed and bare versions; unavailable metadata blocks remote edits and is labeled unavailable. These checks address the observed failure shapes, not a guarantee that every heuristic is correct.
 

@@ -7,13 +7,16 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+from github_runtime import safe_local_path
+
 WIDTH, HEIGHT = 1280, 640
 MARGIN, TITLE_PX, SUBTITLE_PX = 80, 64, 36
 
 
-def render(title, subtitle, font_path, output):
+def render(title, subtitle, font_path, output, *, force: bool = False):
     if not title or title != title.lower() or any(c.isspace() for c in title):
         raise ValueError("Use the exact lowercase, hyphen-separated product name.")
+    font_path = safe_local_path(font_path).resolve(strict=True)
     fonts = [ImageFont.truetype(str(font_path), size, layout_engine=ImageFont.Layout.BASIC)
              for size in (TITLE_PX, SUBTITLE_PX)]
     canvas = Image.new("RGB", (WIDTH, HEIGHT), "black")
@@ -63,11 +66,15 @@ def render(title, subtitle, font_path, output):
             raise ValueError(f"Text exceeds safe area: {text}")
         draw.text((MARGIN, y), text, font=font, anchor="lt", fill=color)
         bounds.append(list(box))
-    output = Path(output)
+    output = safe_local_path(output)
     if output.suffix.lower() != ".png":
         raise ValueError("Output must be a PNG path.")
+    receipt_path = safe_local_path(output.with_suffix(".json"))
     output.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(output, optimize=True)
+    img_mode = "wb" if force else "xb"
+    txt_mode = "w" if force else "x"
+    with output.open(img_mode) as handle:
+        canvas.save(handle, format="PNG", optimize=True)
     if output.stat().st_size >= 1_000_000:
         output.unlink()
         raise ValueError("Output exceeds the conservative 1 MB upload limit.")
@@ -79,7 +86,8 @@ def render(title, subtitle, font_path, output):
                    font_sha256=hashlib.sha256(Path(font_path).read_bytes()).hexdigest(),
                    image_sha256=hashlib.sha256(output.read_bytes()).hexdigest(),
                    bytes=output.stat().st_size, upload_status="not_attempted")
-    output.with_suffix(".json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    with receipt_path.open(txt_mode, encoding="utf-8") as handle:
+        handle.write(json.dumps(receipt, indent=2) + "\n")
     return receipt
 
 
@@ -87,5 +95,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("title", "subtitle", "font", "output"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--force", action="store_true", help="Overwrite existing output files.")
     args = parser.parse_args()
-    print(json.dumps(render(args.title, args.subtitle, args.font, args.output), indent=2))
+    print(json.dumps(render(args.title, args.subtitle, args.font, args.output, force=args.force), indent=2))

@@ -31,10 +31,10 @@ Do not register `legends-github` as a standalone skill; the router loads [`docs/
 
 ## Start with your repository
 
-Download and extract the [v0.2.3 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.2.3), or clone this toolkit beside the repository you want to improve. Python 3.11+ and Git are required; authenticated [GitHub CLI (`gh`)](https://cli.github.com/) enables live GitHub metadata reads and `--apply` updates.
+Download and extract the [v0.2.4 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.2.4), or clone this toolkit beside the repository you want to improve. Python 3.11+ and Git are required; authenticated [GitHub CLI (`gh`)](https://cli.github.com/) enables live GitHub metadata reads and `--apply` updates.
 
 ```sh
-git clone --branch v0.2.3 https://github.com/avalonreset/legends-github.git
+git clone --branch v0.2.4 https://github.com/avalonreset/legends-github.git
 cd legends-github
 python -m pip install -r github/requirements.txt
 python legends_github.py capabilities
@@ -62,6 +62,15 @@ On systems where Python is named `python3` or `py -3`, use that executable inste
 | `cache-status` | Inspect isolated per-repository evidence and cache artifacts saved by earlier workflow runs. |
 
 Run `python legends_github.py <workflow> --help` for exact flags. Default commands are read-only planning passes; mutation flags (`--write`, `--write-files`, `--apply`, `--execute`, `--create-release`, `--publish`) run only when explicitly passed.
+
+### Helper scripts
+
+| Script | Flags | Purpose |
+| --- | --- | --- |
+| `github/scripts/validate_setup.py` | `--mode {portable,cli,api,both} --path PATH [--json]` | Validate Python 3.11+, Git, GitHub CLI (`gh`), and isolated cache readiness. |
+| `github/scripts/setup_dataforseo.py` | `--check`, `--json`, `--install` | Check or install the pinned `legends-dataforseo` research provider from `requirements-dataforseo.txt`. |
+| `github/scripts/render_banner.py` | `--title SLUG --subtitle-line LINE --font PATH --output-dir DIR` | Render 4096x1024 PNG/WebP banners and 1024x256 preview into a fresh directory. |
+| `github/scripts/render_social_preview.py` | `--title SLUG --subtitle TEXT --font PATH --output PATH.png [--force]` | Render a 1280x640 Open Graph social card with exclusive file creation (`--force` to overwrite). |
 
 ## Measured GitHub SEO & DataForSEO keyword research
 

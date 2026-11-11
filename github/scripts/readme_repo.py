@@ -16,7 +16,7 @@ from typing import Any
 
 from audit_repo import load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_repo_view
+from github_runtime import gh_repo_view, safe_local_path
 from local_assets import (
     AssetPreparationError,
     convert_to_webp,
@@ -821,7 +821,7 @@ def apply_readme_plan(repo_root: Path, payload: dict[str, Any]) -> str:
     """Write the generated README to disk."""
     if payload.get("preserved_existing"):
         return payload["current_readme_path"]
-    readme_path = repo_root / "README.md"
+    readme_path = safe_local_path(repo_root / "README.md", root=repo_root)
     readme_path.write_text(payload["generated_readme"], encoding="utf-8")
     return str(readme_path)
 

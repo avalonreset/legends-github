@@ -26,6 +26,10 @@ python legends_github.py [--offline] [--artifacts-dir PATH] <workflow> [options]
 | Social Preview | `python legends_github.py social-preview --repo OWNER/REPO --image PATH --output OUT.json` | Prepare or verify (`--verify`) the 1280x640 social preview | `--verify` |
 | Portfolio | `python legends_github.py empire --path /path/to/repo` | Plan portfolio presentation across repositories | `--generate-avatar` |
 | Cache Status | `python legends_github.py cache-status --path /path/to/repo` | Inspect saved workflow evidence and cache state | Read-only |
+| Setup Check | `python github/scripts/validate_setup.py --mode portable --path /path/to/repo --json` | Validate runtime, `git`, `gh`, and cache readiness | Read-only |
+| DataForSEO Setup | `python github/scripts/setup_dataforseo.py --check --json` | Check or `--install` pinned `legends-dataforseo` | `--install` |
+| Banner Renderer | `python github/scripts/render_banner.py --title SLUG --subtitle-line LINE --font PATH --output-dir DIR` | Render 4096x1024 banner and 1024x256 preview | Fresh dir only |
+| Social Renderer | `python github/scripts/render_social_preview.py --title SLUG --subtitle TEXT --font PATH --output PATH.png [--force]` | Render 1280x640 Open Graph card | `--force` |
 
 ## Standard Execution Sequence
 
@@ -54,13 +58,13 @@ python legends_github.py [--offline] [--artifacts-dir PATH] <workflow> [options]
 4. **Prepare and verify social preview**:
 
    ```bash
-   python scripts/render_social_preview.py --title repo-slug --subtitle "approved copy" --font "/path/to/Legends-Regular.ttf" --output assets/social-preview.png
+   python github/scripts/render_social_preview.py --title repo-slug --subtitle "approved copy" --font "/path/to/Legends-Regular.ttf" --output assets/social-preview.png
    python legends_github.py social-preview --repo OWNER/REPO --image assets/social-preview.png --verify --output /outside/repo/verified.json
    ```
 
 ## EDR and Security Guardrails
 
-- Zero browser state or local desktop credential store reads (`Local State`, `Login Data`, `Cookies`, `IndexedDB`, `LevelDB`, DPAPI, Keychain).
+- Zero browser state or local desktop credential store reads (Chromium/Firefox cookie, session, or local storage databases, DPAPI, Keychain).
 - Zero executable shell wrappers (`.ps1`, `.sh`, `.bat`, `.cmd`, `.vbs`, `.wsf`, `.hta`, `.scr`) shipped inside the repository.
 - Outbound network traffic is restricted to explicit user-invoked GitHub CLI (`gh`) commands, HTTPS GitHub social-preview image verification, and optional DataForSEO API requests (`--execute`).
 - All PNG and WebP assets are stripped of ancillary metadata chunks (`tEXt`, `iTXt`, `zTXt`, `eXIf`, `EXIF`, `XMP`) before commit.

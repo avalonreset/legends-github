@@ -3,17 +3,107 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
 import shutil
+import stat
 import subprocess
-import importlib.util
+import sys
 from pathlib import Path
 from typing import Any
 
 
-GITHUB_REMOTE_RE = re.compile(r"github\.com[:/](?P<owner>[^/]+)/(?P<repo>[^/]+?)(?:\.git)?$")
+GITHUB_REMOTE_RE = re.compile(
+    r"github\.com[:/](?P<owner>[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?)/(?P<repo>[A-Za-z0-9_.-]+?)(?:\.git)?$"
+)
+REPO_SLUG_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/[A-Za-z0-9_.-]+$")
+GITHUB_OWNER_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$")
+GIT_TAG_OR_REV_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./+~^-]{0,127}$")
+DISCUSSION_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
+_MACOS_SYSTEM_SYMLINKS = {Path("/var"), Path("/tmp"), Path("/etc")}
+
+
+def valid_repo_slug(slug: str | None) -> str:
+    """Return a validated OWNER/REPO string or an empty string."""
+    if not isinstance(slug, str):
+        return ""
+    cleaned = slug.strip()
+    if not cleaned or cleaned.startswith("-") or not REPO_SLUG_RE.fullmatch(cleaned):
+        return ""
+    owner, repo = cleaned.split("/", 1)
+    if repo in {".", ".."} or ".." in repo:
+        return ""
+    return f"{owner}/{repo}"
+
+
+def valid_owner(owner: str | None) -> str:
+    """Return a validated GitHub owner/username or an empty string."""
+    if not isinstance(owner, str):
+        return ""
+    cleaned = owner.strip()
+    if not cleaned or cleaned.startswith("-") or not GITHUB_OWNER_RE.fullmatch(cleaned):
+        return ""
+    return cleaned
+
+
+def valid_git_ref(ref: str | None) -> str:
+    """Return a validated git tag or revision range that cannot act as a CLI flag."""
+    if not isinstance(ref, str):
+        return ""
+    cleaned = ref.strip()
+    if not cleaned or cleaned.startswith("-") or not GIT_TAG_OR_REV_RE.fullmatch(cleaned):
+        return ""
+    return cleaned
+
+
+def valid_discussion_slug(slug: str | None) -> str:
+    """Return a validated lowercase discussion category slug or an empty string."""
+    if not isinstance(slug, str):
+        return ""
+    cleaned = slug.strip().lower()
+    if not cleaned or not DISCUSSION_SLUG_RE.fullmatch(cleaned):
+        return ""
+    return cleaned
+
+
+def _safe_path(first: Path, second: Path | None = None, *, root: Path | None = None) -> bool:
+    """Reject symlinks, Windows reparse points, and paths outside root."""
+    if second is not None:
+        root_path: Path | None = first
+        target_path = second
+    else:
+        root_path = root
+        target_path = first
+    try:
+        safe_local_path(target_path, root=root_path)
+        return True
+    except (OSError, ValueError, RuntimeError):
+        return False
+
+
+def safe_local_path(value: str | Path, *, root: Path | None = None) -> Path:
+    """Validate that a path and its ancestors contain no symlinks or Windows junctions."""
+    p = Path(value).expanduser().absolute()
+    for idx, part in enumerate((p, *p.parents)):
+        if idx > 0 and sys.platform == "darwin" and part in _MACOS_SYSTEM_SYMLINKS:
+            continue
+        if part.is_symlink() or getattr(part, "is_junction", lambda: False)():
+            raise ValueError(f"Refusing to access symlink or junction path: {value}")
+        try:
+            st = part.lstat()
+            if getattr(st, "st_reparse_tag", 0) == 0xA0000003 or (
+                getattr(st, "st_file_attributes", 0) & 0x400
+            ):
+                raise ValueError(f"Refusing to access Windows reparse point: {value}")
+        except OSError:
+            continue
+    if root is not None:
+        resolved_root = root.resolve()
+        if not p.resolve().is_relative_to(resolved_root):
+            raise ValueError(f"Path escapes repository root: {value}")
+    return p
 
 
 def have_command(name: str) -> bool:
@@ -80,7 +170,8 @@ def parse_remote_slug(remote_url: str) -> str | None:
     match = GITHUB_REMOTE_RE.search(remote_url.strip())
     if not match:
         return None
-    return f"{match.group('owner')}/{match.group('repo')}"
+    slug = valid_repo_slug(f"{match.group('owner')}/{match.group('repo')}")
+    return slug or None
 
 
 def repo_slug_from_git(repo_root: Path) -> str | None:
@@ -95,30 +186,17 @@ def repo_slug_from_git(repo_root: Path) -> str | None:
 
 def resolve_repo_root(path_arg: str | None = None) -> Path:
     """Resolve a local repo root from an explicit path or the current working directory."""
-    candidate = Path(path_arg).expanduser().resolve() if path_arg else Path.cwd().resolve()
-    repo_root = find_git_root(candidate)
+    candidate = safe_local_path(path_arg) if path_arg else safe_local_path(Path.cwd())
+    repo_root = find_git_root(candidate.resolve())
     if repo_root is None:
         raise ValueError(f"Could not find a git repo from {candidate}")
     return repo_root
 
 
-def load_env_file(path: Path) -> dict[str, str]:
-    """Load one dotenv-style file."""
-    values: dict[str, str] = {}
-    if not path.exists():
-        return values
-    for line in path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        key, value = stripped.split("=", 1)
-        values[key.strip()] = value.strip().strip('"').strip("'")
-    return values
-
-
 def gh_repo_view(repo_slug: str) -> dict[str, Any] | None:
     """Fetch repository metadata through gh if available."""
-    if not gh_auth_ok():
+    slug = valid_repo_slug(repo_slug)
+    if not slug or not gh_auth_ok():
         return None
     fields = [
         "name",
@@ -145,7 +223,7 @@ def gh_repo_view(repo_slug: str) -> dict[str, Any] | None:
         "isSecurityPolicyEnabled",
         "usesCustomOpenGraphImage",
     ]
-    result = run_command(["gh", "repo", "view", repo_slug, "--json", ",".join(fields)], check=False)
+    result = run_command(["gh", "repo", "view", slug, "--json", ",".join(fields)], check=False)
     if result.returncode != 0:
         return None
     try:
@@ -156,7 +234,8 @@ def gh_repo_view(repo_slug: str) -> dict[str, Any] | None:
 
 def gh_release_rows(repo_slug: str, limit: int = 5) -> list[dict[str, str]]:
     """Fetch a short release listing via gh."""
-    if not gh_auth_ok():
+    slug = valid_repo_slug(repo_slug)
+    if not slug or not gh_auth_ok():
         return []
     result = run_command(
         [
@@ -164,9 +243,9 @@ def gh_release_rows(repo_slug: str, limit: int = 5) -> list[dict[str, str]]:
             "release",
             "list",
             "--repo",
-            repo_slug,
+            slug,
             "--limit",
-            str(limit),
+            str(int(limit)),
             "--json",
             "tagName,name,isDraft,isPrerelease,publishedAt",
         ],
@@ -207,4 +286,4 @@ def git_tags(repo_root: Path) -> list[str]:
     result = run_command(["git", "tag", "--list"], cwd=repo_root, check=False)
     if result.returncode != 0:
         return []
-    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    return [line.strip() for line in result.stdout.splitlines() if valid_git_ref(line.strip())]

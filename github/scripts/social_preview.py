@@ -13,9 +13,9 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
-from github_runtime import offline_mode
+from github_runtime import offline_mode, safe_local_path, valid_repo_slug
 
 MAX_IMAGE_BYTES = 10_000_000
 QUERY = """query($owner:String!,$name:String!){
@@ -67,7 +67,7 @@ def fetch_image(url: str) -> bytes:
         raise ValueError("Served-image URL is outside supported GitHub image hosts.")
     request = Request(url, headers={"User-Agent": "legends-github-social-preview",
                                     "Cache-Control": "no-cache"})
-    with build_opener(ImageRedirects()).open(request, timeout=30) as response:
+    with build_opener(ProxyHandler({}), ImageRedirects()).open(request, timeout=30) as response:
         data = response.read(MAX_IMAGE_BYTES + 1)
     if len(data) > MAX_IMAGE_BYTES:
         raise ValueError("Served image exceeds the download limit.")
@@ -94,9 +94,11 @@ def github_image(repo: str) -> dict:
 
 def social_preview(repo: str, image: Path, *, verify: bool = False,
                    output: Path | None = None) -> dict:
-    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+", repo):
+    slug = valid_repo_slug(repo)
+    if not slug:
         raise ValueError("Use an explicit github.com OWNER/REPO.")
-    image = image.expanduser().resolve(strict=True)
+    repo = slug
+    image = safe_local_path(image).resolve(strict=True)
     if not image.is_file() or image.stat().st_size >= 1_000_000:
         raise ValueError("Use a static PNG, JPG or GIF file under 1,000,000 bytes.")
     expected = image_details(image.read_bytes())
@@ -104,7 +106,7 @@ def social_preview(repo: str, image: Path, *, verify: bool = False,
         raise ValueError("Use a PNG, JPG or GIF image.")
     if expected["width"] < 640 or expected["height"] < 320:
         raise ValueError("Social preview must be at least 640 by 320 pixels.")
-    if output and output.expanduser().resolve() == image:
+    if output and safe_local_path(output) == image:
         raise ValueError("Receipt output must not overwrite the image.")
     receipt = {
         "schema_version": "1.0", "operation": "social-preview", "status": "prepared",
@@ -163,7 +165,7 @@ def social_preview(repo: str, image: Path, *, verify: bool = False,
                                reason=f"Live image verification failed ({type(exc).__name__}); "
                                "check gh access, network and supported image format.")
     if output:
-        output = output.expanduser().resolve()
+        output = safe_local_path(output)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     return receipt

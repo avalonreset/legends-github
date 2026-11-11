@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
+import tempfile
 from pathlib import Path
 
 
@@ -14,34 +16,17 @@ def _env_path(name: str, default: Path) -> Path:
 
 def home_dir() -> Path:
     """Return the current user home directory."""
-    return Path.home()
-
-
-def codex_home() -> Path:
-    """Return the active Codex home directory."""
-    return _env_path("CODEX_HOME", home_dir() / ".codex")
-
-
-def codex_config_path() -> Path:
-    """Return the active Codex config path."""
-    return codex_home() / "config.toml"
-
-
-def codex_skill_dir() -> Path:
-    """Return the installed GitHub skill directory."""
-    return codex_home() / "skills" / "github"
-
-
-def codex_agents_dir() -> Path:
-    """Return the installed agents directory."""
-    return codex_home() / "agents"
+    try:
+        return Path.home()
+    except RuntimeError:
+        return Path(tempfile.gettempdir())
 
 
 def github_home() -> Path:
     """Return the global legends-github runtime directory."""
     return _env_path(
         "LEGENDS_GITHUB_HOME",
-        _env_path("CODEX_GITHUB_HOME", home_dir() / ".legends-github"),
+        home_dir() / ".legends-github",
     )
 
 
@@ -56,11 +41,12 @@ def github_setup_cache() -> Path:
 
 
 def repo_cache_dir(repo_root: Path) -> Path:
-    """Return the per-repo cache directory."""
+    """Return the per-repo cache directory outside the target repository by default."""
     override = os.environ.get("GITHUB_AUDIT_DIR", "").strip()
     if override:
         return Path(override).expanduser()
-    return repo_root / ".github-audit"
+    identity = hashlib.sha256(os.path.normcase(str(repo_root.resolve())).encode()).hexdigest()[:16]
+    return github_home() / "repos" / identity
 
 
 def repo_output_dir(repo_root: Path) -> Path:
@@ -72,10 +58,6 @@ def runtime_paths_payload(repo_root: Path) -> dict[str, str]:
     """Return a JSON-safe runtime path payload."""
     return {
         "home": str(home_dir()),
-        "codex_home": str(codex_home()),
-        "codex_config": str(codex_config_path()),
-        "codex_skill_dir": str(codex_skill_dir()),
-        "codex_agents_dir": str(codex_agents_dir()),
         "github_home": str(github_home()),
         "github_runs_cache": str(github_runs_cache()),
         "github_setup_cache": str(github_setup_cache()),

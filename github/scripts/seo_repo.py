@@ -16,7 +16,7 @@ from typing import Any
 
 from audit_repo import detect_repo_type, load_readme, slugify
 from cache_state import read_repo_cache, write_repo_cache
-from github_runtime import gh_repo_view, repo_slug_from_git
+from github_runtime import gh_repo_view, repo_slug_from_git, valid_repo_slug
 from runtime_paths import repo_output_dir
 from seo_research import import_research
 
@@ -493,7 +493,7 @@ class SeoBundle:
 def build_repo_snapshot(repo_root: Path) -> dict[str, Any]:
     """Gather the repo signals used for deterministic SEO fallback analysis."""
     cached_context = read_repo_cache(repo_root, "repo-context.json") or {}
-    repo_slug = cached_context.get("repo") or repo_slug_from_git(repo_root) or repo_root.name
+    repo_slug = valid_repo_slug(cached_context.get("repo")) or repo_slug_from_git(repo_root) or repo_root.name
     metadata_raw = gh_repo_view(repo_slug) if "/" in repo_slug else None
     readme, _readme_path = load_readme(repo_root)
     headings = extract_heading_lines(readme)
