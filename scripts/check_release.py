@@ -194,8 +194,6 @@ def main() -> int:
     readme_text = (ROOT / "README.md").read_text(encoding="utf-8")
     if "Agent setup (via `cto-legends`)" not in readme_text:
         issues.append("README.md missing 'Agent setup (via `cto-legends`)' heading")
-    if f"v{version}" not in readme_text:
-        issues.append(f"README.md missing v{version} reference")
 
     manifest_path = ROOT / "assets" / "manifest.json"
     if manifest_path.is_file():

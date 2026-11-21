@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.5] - 2026-11-21
+
+- Added the `r1` outlined Legends Font SVG design card suite (`assets/cards/r1/*.svg`) and `scripts/render_cards.py` generator with strict geometric collision assertions and 192 DPI preview rendering.
+- Refreshed `README.md` with evergreen documentation for the 13 repository workflows, four-state clean-tree external evidence audits, DataForSEO 20-topic commercial intent synthesis, non-destructive README preservation mode, and 1280x640 Open Graph GraphQL pixel-parity verification.
+- Re-pinned `requirements-dataforseo.txt` to `legends-dataforseo` `v0.1.13` (`8c1b7fd7637e834e70bea71c57b6d4581cbc1816`) with SHA-256 verification and removed the hardcoded version string check from `scripts/check_release.py` to keep `README.md` evergreen.
+
 ## [0.2.4] - 2026-11-11
 
 - Enforced strict `OWNER/REPO`, GitHub username, git tag/ref, and discussion category slug validation across `github_runtime.py`, `audit_evidence.py`, `meta_repo.py`, `empire_repo.py`, `release_repo.py`, `community_repo.py`, `legal_repo.py`, `seo_repo.py`, and `social_preview.py`, and added `--` / `--end-of-options` argument terminators before positional `gh` and `git` arguments.

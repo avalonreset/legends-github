@@ -1,186 +1,150 @@
-<a name="banner"></a>
-<a name="legends-github"></a>
-
 # ![legends-github](assets/banner.webp)
 
 [![release](https://img.shields.io/github/v/release/avalonreset/legends-github?label=release&sort=date&style=flat-square&labelColor=000000&color=ff0000)](https://github.com/avalonreset/legends-github/releases/latest)
 [![checks](https://img.shields.io/github/actions/workflow/status/avalonreset/legends-github/ci.yml?branch=main&label=checks&style=flat-square&labelColor=000000)](https://github.com/avalonreset/legends-github/actions/workflows/ci.yml)
+[![python](https://img.shields.io/badge/python-3.11%2B-000000?style=flat-square&labelColor=000000&color=ff0000)](github/requirements.txt)
+[![workflows](https://img.shields.io/badge/workflows-13%20repo%20%2B%20seo%20%2B%20release-000000?style=flat-square&labelColor=000000&color=ff0000)](legends_github.py)
 [![license](https://img.shields.io/github/license/avalonreset/legends-github?label=license&style=flat-square&labelColor=000000&color=666666)](LICENSE)
 
-`legends-github` is an open source GitHub SEO, repository audit, and discoverability toolkit for AI coding agents and developers. It helps you audit repository health, research real Google and GitHub search demand via `legends-dataforseo`, optimize GitHub repository descriptions and up to 20 GitHub topics, improve README structure without clobbering custom layouts, verify 1280x640 social preview cards, and ship clean releases.
+**GitHub repository audit, release readiness, DataForSEO 20-topic SEO discovery, non-destructive README scoring, and 1280x640 Open Graph social preview pixel-parity CLI (`legends_github.py`) for coding agents.**
 
-Use it through your coding agent via the [`cto-legends`](https://github.com/avalonreset/cto-legends) router or run its deterministic Python CLI commands directly. No model vendor lock-in, no MCP server setup, and no paid image API keys are required.
+![Agent Handoff](assets/cards/r1/slot-1-agent-handoff.svg)
 
-**Quick links:** [Releases](https://github.com/avalonreset/legends-github/releases) · [Agent entry point](AGENTS.md) · [Module recipe](docs/GITHUB-RECIPE.md) · [DataForSEO research guide](docs/SEO-RESEARCH.md) · [Discovery guide](docs/DISCOVERY.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
-
-## Agent setup (via `cto-legends`)
-
-Part of the [`cto-legends`](https://github.com/avalonreset/cto-legends) ecosystem. `cto-legends` is the single registered router skill; this repository vendors a pinned copy at [`skills/cto-legends/SKILL.md`](skills/cto-legends/SKILL.md).
-
-Install with `cto-legends install legends-github`, then ask your agent to audit, SEO-optimize, or prepare a release for any local or remote GitHub repository:
-
-```sh
-cto-legends install legends-github
+```text
+Install or update legends-github via cto-legends (https://github.com/avalonreset/cto-legends): run `cto-legends install legends-github --apply`, then `cto-legends handoff legends-github` and follow the returned JSON recipe to verify `legends_github.py`.
 ```
 
- Once installed, give your coding agent a natural prompt:
+![Three Pillars: 13 clean-tree workflows, 20-topic & SERP discovery, Preservation & pixel parity](assets/cards/r1/slot-2-three-pillars.svg)
 
-> *"Use legends-github to audit my repository, run live DataForSEO keyword research for our category, optimize our GitHub description and 20 repository topics, and upgrade our README for search discoverability."*
+## Why `legends-github` exists
 
-Do not register `legends-github` as a standalone skill; the router loads [`docs/GITHUB-RECIPE.md`](docs/GITHUB-RECIPE.md) on demand.
+Ask an unguided coding agent or generic repo linter to "clean up our GitHub repository and optimize it for discovery" and three failure modes show up immediately:
 
-## Start with your repository
+1. **Guessed topics and build-tool noise:** Most GitHub SEO scripts scrape `package.json` or `pyproject.toml` and stuff your 20 GitHub topic slots with build dependencies like `vite`, `webpack`, `eslint`, or `typescript` instead of the commercial and technical queries developers actually search on Google and GitHub.
+2. **Clobbered READMEs and dirty working trees:** Template-driven README generators overwrite custom hero banners, SVG architecture cards, and video embeds with generic boilerplate, while audit scripts dump untracked `.github-audit` folders and `.gitignore` edits straight into your repository root.
+3. **False offline audit failures and unverified social cards:** Naive checklists treat offline mode or unauthenticated `gh` sessions as missing repository files, and assume a browser file-picker click updated your Open Graph social card without verifying whether GitHub's CDN is still serving a stale cache or default avatar.
 
-Download and extract the [v0.2.4 installable ZIP](https://github.com/avalonreset/legends-github/releases/tag/v0.2.4), or clone this toolkit beside the repository you want to improve. Python 3.11+ and Git are required; authenticated [GitHub CLI (`gh`)](https://cli.github.com/) enables live GitHub metadata reads and `--apply` updates.
+`legends-github` replaces guesswork with 13 evidence-backed workflows (`audit`, `research`, `seo`, `meta`, `readme`, `discover`, `social-preview`, `release`, `community`, `legal`, `empire`, `verify`, and `cache-status`). Every diagnostic report and cache file is isolated outside your repository working tree (`~/.legends-github/repos/<hash>` or `--artifacts-dir`), existing README layouts are evaluated in non-destructive preservation mode, and live Open Graph cards are verified pixel-for-pixel via GitHub GraphQL.
+
+## Ask in plain english
+
+Once [`cto-legends`](https://github.com/avalonreset/cto-legends) is installed, you ask your coding agent in plain english. It routes all reports and caches outside your git checkout, previews metadata and release plans before mutating remote state, and verifies live social cards:
+
+![Say the job in plain words](assets/cards/r1/slot-3-plain-english-chains.svg)
+
+## Architecture: clean-tree evidence audits and live discovery
+
+![How clean-tree evidence audits and live discovery work](assets/cards/r1/slot-4-repo-intelligence.svg)
+
+### 1. Four-state clean-tree audits and non-destructive README preservation (`audit`, `readme`)
+
+- **Four-state evidence accounting (`FINDINGS.json`):** Every audit check records its source, collection timestamp, confidence, and applicability (`observed`, `missing`, `unavailable`, or `not_applicable`). Running with `--offline` or without `gh` authentication marks remote checks `unavailable` rather than falsely penalizing your project for missing files.
+- **External artifact isolation:** By default, `repo_cache_dir()` routes all audit scorecards, keyword caches, and verification receipts to `~/.legends-github/repos/<hash>` (or your explicit `--artifacts-dir`), never creating untracked files or editing `.gitignore` inside your target repository.
+- **Preservation-mode README scoring (`preserve-existing`):** When a repository already has a `README.md`, `readme_repo.py` preserves existing prose, HTML embeds, badges, and section order verbatim while recognizing both agent-first onboarding (`Agent setup`, `Ask in plain english`, `Architecture`, `Quick start`, `Reference`) and traditional `Installation` and `Usage` sections.
+
+### 2. Measured 20-topic GitHub SEO and organic discovery (`research`, `seo`, `meta`, `discover`)
+
+Instead of guessing keywords from filenames, `legends-github` pairs local repository evidence with optional bounded search research powered by [`legends-dataforseo`](https://github.com/avalonreset/legends-dataforseo):
+
+- **Bounded demand & SERP collection (`research`):** Estimate or execute Google keyword overview and organic SERP batches (up to 100 keywords and 10 SERPs per batch) under an explicit `--confirm-cost-usd` ceiling, writing an exact `receipt.json` cost ledger.
+- **20-slot commercial topic synthesis (`seo`, `meta`):** Ranks secondary keywords by verified monthly search volume and commercial CPC (`cpc`, `competition_level`), checks whether `github.com` repositories already rank in Google's top 10 (`github_in_serp`, `github_serp_position`), strips low-value build filler (`vite`, `webpack`, `eslint`, `prospecting`), and prevents vendored router pins (`skills/cto-legends/SKILL.md`) from misclassifying CLIs or applications as skills.
+- **Organic discovery & 14-day traffic baseline (`discover`):** Builds an evidence-backed discovery plan covering reproducible first results, workload cost transparency, dated competitor comparison matrices, and 14-day `gh api` views, clones, referrers, and release download baselines.
+
+### 3. The 13 repository workflows (`legends_github.py`)
+
+| Surface | Workflows | What It Does |
+| :--- | :--- | :--- |
+| **Health & Readiness** | `verify`, `audit`, `cache-status` | Validate Python 3.11+, `git`, `gh`, and cache readiness (`verify`), collect 4-state repository findings (`audit`), and inspect isolated external cache artifacts (`cache-status`). |
+| **Search Demand & Metadata** | `research`, `seo`, `meta`, `discover` | Collect bounded DataForSEO keyword and SERP demand (`research`), synthesize 20 clean GitHub topics and About descriptions (`seo`), apply via `gh repo edit` (`meta --apply`), and plan organic discovery (`discover`). |
+| **README & Social Preview** | `readme`, `social-preview` | Score or scaffold READMEs in non-destructive preservation mode (`readme`) and validate 1280x640 Open Graph cards with post-upload GitHub GraphQL pixel-parity verification (`social-preview --verify`). |
+| **Governance, Releases & Portfolio** | `legal`, `community`, `release`, `empire` | Inventory `LICENSE`, `SECURITY.md`, `CITATION.cff`, and third-party notices without inventing legal claims (`legal`), scaffold contributor health files (`community`), gate semver tags and changelogs (`release`), and align multi-repo portfolios (`empire`). |
+
+## Ad-hoc repo scripts vs `legends-github`
+
+![Comparison: Ad-hoc repo scripts & LLM guesses vs Evidence-backed repo engine // legends-github](assets/cards/r1/slot-5-generic-vs-github.svg)
+
+## Quick start
 
 ```sh
-git clone --branch v0.2.4 https://github.com/avalonreset/legends-github.git
-cd legends-github
-python -m pip install -r github/requirements.txt
+# 1. Inspect the machine-readable 13-workflow capability contract and check local readiness
 python legends_github.py capabilities
 python legends_github.py --offline --artifacts-dir ./review-output verify --path /path/to/your/repo
+
+# 2. Run a clean-tree repository audit and non-destructive README evaluation
 python legends_github.py --offline --artifacts-dir ./review-output audit --path /path/to/your/repo
+python legends_github.py --offline --artifacts-dir ./review-output readme --path /path/to/your/repo
+
+# 3. Collect bounded DataForSEO keyword & SERP evidence and apply 20 GitHub topics
+python legends_github.py research --path /path/to/your/repo --keyword "github seo" --keyword "open source seo tools" --serp "github seo" --execute --confirm-cost-usd 0.05
+python legends_github.py seo --path /path/to/your/repo --keyword-data ./review-output/research-latest/demand.json --primary-keyword "github seo" --serp-data ./review-output/research-latest/serp-1.json
+python legends_github.py meta --path /path/to/your/repo --apply
+
+# 4. Prepare and verify a live 1280x640 Open Graph social preview card via GitHub GraphQL
+python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --output ./review-output/prepared.json
+python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --verify --output ./review-output/verified.json
 ```
 
-On systems where Python is named `python3` or `py -3`, use that executable instead. Audit and planning commands write local reports and cache files outside the target repository when `--artifacts-dir` is supplied, and never edit the target's `.gitignore`. Omit `--offline` when you want live GitHub metadata and release checks.
+## Reference
 
-## What you can do: GitHub SEO, README, topics & release workflows
-
-| Workflow | Primary outcome |
-| --- | --- |
-| `audit` | Collect versioned repository findings (`FINDINGS.json`), distinguish missing from unavailable evidence, and prioritize fixes across README, metadata, legal, community, release, and SEO. |
-| `research` | Estimate or execute bounded Google keyword overview and organic SERP research (up to 100 keywords and 10 SERPs per batch) through `legends-dataforseo`. |
-| `seo` | Synthesize repository keyword candidates or import verified DataForSEO demand (`--keyword-data`, `--serp-data`) to rank secondary keywords by search volume and CPC, build up to 20 GitHub topics, and draft an SEO-forward GitHub repository description. |
-| `meta` | Plan and optionally `--apply` GitHub repository description, up to 20 repository topics (automatically stripping low-value build filler), homepage URL validation, and feature toggles via `gh repo edit`. |
-| `readme` | Preserve existing custom README layouts verbatim for targeted agent review, or scaffold a missing README with verified setup, usage, and FAQ requirements. |
-| `discover` | Build an evidence-backed organic discovery plan: target audience, reproducible example brief, workload cost transparency, competitor comparison matrix, and 14-day GitHub traffic baseline protocol. |
-| `social-preview` | Validate a 1280x640 social preview card, guide agent upload, and `--verify` the live Open Graph image served by GitHub GraphQL pixel-for-pixel. |
-| `release` | Audit changelog formatting (`CHANGELOG.md`), semver tags, CI workflows, and prepare draft or published GitHub releases. |
-| `community` | Plan or scaffold `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORT.md`, `CODEOWNERS`, issue forms, and pull request templates. |
-| `legal` | Inventory `LICENSE`, `SECURITY.md`, `CITATION.cff`, and upstream attribution notices without inventing legal claims. |
-| `empire` | Audit a multi-repository GitHub portfolio and align profile presentation across related projects. |
-| `cache-status` | Inspect isolated per-repository evidence and cache artifacts saved by earlier workflow runs. |
-
-Run `python legends_github.py <workflow> --help` for exact flags. Default commands are read-only planning passes; mutation flags (`--write`, `--write-files`, `--apply`, `--execute`, `--create-release`, `--publish`) run only when explicitly passed.
-
-### Helper scripts
+<details>
+<summary><strong>Helper scripts, banner rendering, and organic discovery guides</strong></summary>
 
 | Script | Flags | Purpose |
-| --- | --- | --- |
-| `github/scripts/validate_setup.py` | `--mode {portable,cli,api,both} --path PATH [--json]` | Validate Python 3.11+, Git, GitHub CLI (`gh`), and isolated cache readiness. |
+| :--- | :--- | :--- |
+| `github/scripts/validate_setup.py` | `--mode {portable,cli,api,both} --path PATH [--json]` | Validate Python 3.11+, Git, GitHub CLI (`gh`), and isolated external cache readiness. |
 | `github/scripts/setup_dataforseo.py` | `--check`, `--json`, `--install` | Check or install the pinned `legends-dataforseo` research provider from `requirements-dataforseo.txt`. |
 | `github/scripts/render_banner.py` | `--title SLUG --subtitle-line LINE --font PATH --output-dir DIR` | Render 4096x1024 PNG/WebP banners and 1024x256 preview into a fresh directory. |
 | `github/scripts/render_social_preview.py` | `--title SLUG --subtitle TEXT --font PATH --output PATH.png [--force]` | Render a 1280x640 Open Graph social card with exclusive file creation (`--force` to overwrite). |
 
-## Measured GitHub SEO & DataForSEO keyword research
+See the [module recipe](docs/GITHUB-RECIPE.md), [agent recipe](docs/AGENT-RECIPE.md), [DataForSEO research guide](docs/SEO-RESEARCH.md), [discovery guide](docs/DISCOVERY.md), [social preview SOP](github/references/social-preview-sop.md), [README style guide](github/references/legends-readme-style.md), and [banner generation guide](github/references/banner-generation.md).
 
-Most "GitHub SEO" tools guess keywords from local filenames or stuff irrelevant tags into your repository. `legends-github` separates unverified local hypotheses from measured search evidence:
+</details>
+
+<details>
+<summary><strong>Agent setup (via <code>cto-legends</code>) and standalone installation</strong></summary>
+
+### Agent setup (via `cto-legends`)
+
+Part of [cto-legends](https://github.com/avalonreset/cto-legends). The central router skill is vendored at [skills/cto-legends/SKILL.md](skills/cto-legends/SKILL.md); this module is not a separate registered skill and requires no MCP server setup or paid image API keys.
+
+Run `cto-legends handoff legends-github` and read the returned installed recipe and task-readiness checks. If the module is missing, preview setup with `cto-legends install legends-github`, perform the authorized setup, then repeat the handoff. Use `cto-legends check-updates` to compare your installed version with the catalog and published release. See [docs/AGENT-RECIPE.md](docs/AGENT-RECIPE.md) and [AGENTS.md](AGENTS.md) for the standalone recipe.
 
 ```sh
+python -m pip install -r github/requirements.txt
 python -m pip install -r requirements-dataforseo.txt
-python legends_github.py research --path /path/to/your/repo --keyword "github seo" --keyword "open source seo tools" --serp "github seo" --execute --confirm-cost-usd 0.05
-python legends_github.py seo --path /path/to/your/repo --keyword-data ./review-output/research-.../demand.json --primary-keyword "github seo" --serp-data ./review-output/research-.../serp-1.json
-python legends_github.py meta --path /path/to/your/repo --apply
+python legends_github.py capabilities
 ```
 
-When you import live DataForSEO keyword and SERP exports into `seo`:
+</details>
 
-- **Volume and CPC prioritization:** Secondary keywords are sorted by verified monthly search volume and commercial CPC (`cpc`, `competition_level`, `keyword_difficulty`).
-- **20-slot GitHub topic synthesis:** `seo` and `meta` generate up to 20 clean, hyphenated GitHub repository topics from your verified keyword clusters while filtering out build-tool noise (`vite`, `webpack`, `eslint`, `prospecting`) and preventing router pins (`skills/cto-legends/SKILL.md`) from misclassifying applications or CLIs as skills.
-- **SERP rank detection:** Organic SERP exports are scanned to check whether `github.com` repositories already rank in Google's top 10 for your target queries (`github_in_serp`, `github_serp_position`).
-- **Explicit cost receipts:** Every `research` run writes a `receipt.json` with exact task costs (`reported_cost_usd`). See [`docs/SEO-RESEARCH.md`](docs/SEO-RESEARCH.md) and [`docs/GEOGRID-SEARCH-STRATEGY.md`](docs/GEOGRID-SEARCH-STRATEGY.md).
+<details>
+<summary><strong>Repository layout, verification, and disclaimer</strong></summary>
 
-## Organic discovery & why repositories earn GitHub stars
-
-Ranking in GitHub search, Google, and AI coding assistants requires more than metadata tags. Use `discover` to plan high-conversion repository improvements around real developer tasks:
+- [`legends_github.py`](legends_github.py): Portable CLI entrypoint and 13-workflow capability registry.
+- [`github/scripts/`](github/scripts): Deterministic Python workflows (`audit_repo.py`, `audit_evidence.py`, `seo_repo.py`, `seo_research.py`, `research_dataforseo.py`, `meta_repo.py`, `readme_repo.py`, `discovery_repo.py`, `release_repo.py`, `community_repo.py`, `legal_repo.py`, `empire_repo.py`, `social_preview.py`).
+- [`github/references/`](github/references): Rubrics, evidence contracts, banner and social-preview SOPs, and SEO guides.
+- [`skills/cto-legends/SKILL.md`](skills/cto-legends/SKILL.md): Pinned copy of the central [`cto-legends`](https://github.com/avalonreset/cto-legends) router skill.
 
 ```sh
-python legends_github.py --offline --artifacts-dir ./review-output discover --path /path/to/your/repo --audience "intended developers" --category "problem category" --competitor "Alternative A" --competitor "Alternative B"
+python -m pytest tests -v
+python scripts/check_release.py
 ```
 
-The discovery planner inspects bounded repository evidence and builds a structured plan covering:
+**Disclaimer:** This tool provides automated recommendations for GitHub repository optimization, including license inventory and compliance guidance. **It is not legal, financial, or professional advice.** All recommendations should be reviewed with your own due diligence before applying. For complex licensing or compliance situations, consult a qualified attorney.
 
-1. **Reproducible first result:** Make one high-value example or zero-credit demo effortless to run.
-2. **Workload cost transparency:** If a tool calls metered APIs, document exact unit prices, cached operations, and spend guards.
-3. **Evidence-backed alternatives matrix:** Compare your repository against named commercial or open source alternatives using dated, verifiable dimensions instead of hype.
-4. **14-day GitHub traffic & release measurement:** Capture `gh api` views, clones, referrers, popular paths, and release asset download deltas before and after each discovery change. See [`docs/DISCOVERY.md`](docs/DISCOVERY.md) and [`docs/GEOGRID-VALIDATION.md`](docs/GEOGRID-VALIDATION.md).
+</details>
 
-## GitHub social preview & optional banner artwork
+## Contributing, security, and license
 
-A strong repository does not require a mascot, paid image API, or decorative bloat. Keep an existing banner if it helps, supply your own local artwork, or use [`github/scripts/render_banner.py`](github/scripts/render_banner.py) and [`github/scripts/render_social_preview.py`](github/scripts/render_social_preview.py) with a supplied font. See the [social preview SOP](github/references/social-preview-sop.md), [README style guide](github/references/legends-readme-style.md), and [artwork guide](github/references/banner-generation.md).
+Scaffolded with [skill-forge](https://github.com/AgriciDaniel/skill-forge), with SEO methodology adapted from [claude-seo](https://github.com/AgriciDaniel/claude-seo). See [CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md), and [SECURITY.md](SECURITY.md).
 
-```sh
-python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --output ./review-output/prepared.json
-# Agent uploads via Settings > Social preview > Edit > Upload photo
-python legends_github.py social-preview --repo OWNER/REPO --image /absolute/path/social-preview.png --verify --output ./review-output/verified.json
-```
+MIT License. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Copyright (c) 2026 Avalon Reset.
 
-Verification queries GitHub GraphQL and compares the served Open Graph image's dimensions (`1280x640`) and decoded pixels against your local file so a stale cache or default avatar never passes silently.
+[![Message Avalon Reset](assets/cards/r1/slot-7-message-avalon-reset.svg)](https://github.com/avalonreset/cto-legends/issues/new?title=Message%20for%20Avalon%20Reset&labels=message)
 
-## Use your AI coding agent
-
-The portable boundary is files, CLI flags, and structured JSON output. That makes `legends-github` work cleanly across Claude Code, OpenAI Codex, Google Gemini CLI, Antigravity, Cursor, Windsurf, and Grok without per-host installer scripts.
-
-| Integration surface | How it works |
-| --- | --- |
-| `cto-legends` router | Install once via `cto-legends install legends-github`; the router loads `docs/GITHUB-RECIPE.md` when you ask for GitHub or repository SEO work. |
-| Direct agent entry point | Point any file-and-shell agent at [`AGENTS.md`](AGENTS.md) and name your target repository path. |
-| Standalone Python CLI | Run `python legends_github.py <workflow>` in local terminals or CI pipelines (`ubuntu`, `windows`, `macos`). |
-| Optional DataForSEO research | Powered by [`legends-dataforseo`](https://github.com/avalonreset/legends-dataforseo) via `requirements-dataforseo.txt`; no MCP server configuration required. |
-
-## How to use the findings
-
-Every `audit` run produces both versioned evidence findings (`FINDINGS.json`) and a compatibility scorecard (`SUMMARY.json`, `GITHUB-AUDIT-REPORT.md`).
-
-- **Evidence first:** Each finding records its source, collection timestamp, confidence, applicability (`observed`, `missing`, `unavailable`, `not_applicable`), and verification method. Offline or unauthenticated GitHub checks are marked `unavailable`, never falsely penalized as missing repository files.
-- **Agent-first README awareness:** The README evaluator recognizes modern agent-first onboarding sections (`Agent setup`, `Start here`, `Talk to your agent`, `What you can do`, `Visual tour`, `Why switch`, `Data-cost economics`) as well as traditional `Installation` and `Usage` headings.
-- **Prioritize real utility:** Fix broken setup instructions, missing licenses, inaccurate descriptions, and weak search positioning before adding decorative badges.
-
-## Frequently asked questions
-
-### How does `legends-github` improve GitHub SEO and repository discoverability?
-
-It combines technical repository hygiene (clear H1/H2 hierarchy, descriptive opening definition, valid local links, 1280x640 Open Graph social preview) with live Google and GitHub keyword demand from `legends-dataforseo`. Your GitHub About description, 20 repository topics, and README headings are aligned with the exact terms developers search for.
-
-### Will `legends-github readme` overwrite my custom README layout or video embeds?
-
-No. When a repository already has a `README.md`, `readme_repo.py` preserves existing content, HTML embeds, badges, and section order verbatim (`preserve-existing` mode) and outputs diagnostic scoring so your agent can make surgical edits without clobbering your work.
-
-### Do I need DataForSEO credits to run an audit or metadata check?
-
-No. All 13 workflows run locally and offline for free (`--offline`). Live DataForSEO keyword and SERP collection (`research --execute`) is strictly opt-in, costs roughly `$0.014` to `$0.03` per batch, and enforces explicit cost ceilings (`--confirm-cost-usd`).
-
-### Why does `legends-github` use `cto-legends` instead of `.claude` or `.codex` installer scripts?
-
-Per-host shell installers clutter your home directory and break across agent updates. By routing through `cto-legends` and exposing a deterministic Python CLI (`legends_github.py`), the exact same workflows run identically across every AI coding agent and operating system.
-
-## Project layout
-
-- [`legends_github.py`](legends_github.py): portable CLI entry point and workflow capability registry.
-- [`github/scripts/`](github/scripts): deterministic Python workflows (`audit_repo.py`, `audit_evidence.py`, `seo_repo.py`, `seo_research.py`, `research_dataforseo.py`, `meta_repo.py`, `readme_repo.py`, `discovery_repo.py`, `release_repo.py`, `community_repo.py`, `legal_repo.py`, `empire_repo.py`, `social_preview.py`).
-- [`github/references/`](github/references): rubrics, evidence contracts, banner/social-preview SOPs, and SEO guides.
-- [`skills/cto-legends/SKILL.md`](skills/cto-legends/SKILL.md): pinned copy of the `cto-legends` router skill.
-- [`docs/GITHUB-RECIPE.md`](docs/GITHUB-RECIPE.md): router-loaded module recipe.
-- [`tests/`](tests): unit and regression test suite (`114+` tests across Windows, macOS, and Linux).
-
-## Provenance & contributing
-
-Scaffolded with [skill-forge](https://github.com/AgriciDaniel/skill-forge), with SEO methodology adapted from [claude-seo](https://github.com/AgriciDaniel/claude-seo). Contributions and bug reports are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md), and [SECURITY.md](SECURITY.md).
-
-## Disclaimer
-
-This tool provides automated recommendations for GitHub repository optimization, including license selection and compliance guidance. **It is not legal, financial, or professional advice.** All recommendations should be reviewed with your own due diligence before applying. For complex licensing or compliance situations, consult a qualified attorney. See [LICENSE](LICENSE) for full terms.
-
-## License
-
-Released under the [MIT License](LICENSE). Free and open source.
-
----
-
-<p align="center"><a href="https://github.com/stars/avalonreset/lists/cto-legends"><img src="assets/collection-star-shrine.svg" width="100%" alt="GitHub Star List: The complete cto-legends collection on one page. Bookmark or star the router and every module from a single GitHub list."></a></p>
+<p align="center"><a href="https://github.com/stars/avalonreset/lists/cto-legends"><img src="assets/cards/r1/slot-collection-star-shrine.svg" width="100%" alt="GitHub Star List: The complete cto-legends collection on one page. Bookmark or star the router and every module from a single GitHub list."></a></p>
 
 **Specification & benchmarks on cto-legends.com:**
-
 - **Module specification & architecture matrix:** [cto-legends.com/modules/legends-github](https://cto-legends.com/modules/legends-github)
 - **Related engineering dispatches:** [Codex vs Claude Code: CLI and Cursor Agent Benchmarks](https://cto-legends.com/blog?post=codex-vs-claude-code-benchmarks) · [Fractional CTO Advisory: Technical Due Diligence Guide](https://cto-legends.com/blog?post=fractional-cto-technical-due-diligence-guide) · [How to Build AI Agents: Production CLI & MCP Routing](https://cto-legends.com/blog?post=how-to-build-ai-agents-cli-mcp-routing)
 - **Ecosystem hub:** [cto-legends.com/home](https://cto-legends.com/home)
