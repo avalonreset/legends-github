@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.6] - 2026-11-22
+
+- Sync vendored `cto-legends` router skill pin (`69ddc4f68faa`), enforce LF line endings via `.gitattributes`, and standardize release artifact checksums.
+
 ## [0.2.5] - 2026-11-21
 
 - Added the `r1` outlined Legends Font SVG design card suite (`assets/cards/r1/*.svg`) and `scripts/render_cards.py` generator with strict geometric collision assertions and 192 DPI preview rendering.

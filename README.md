@@ -151,6 +151,7 @@ Running a company and not a terminal? Founders and operators who want this way o
 <p align="center"><a href="https://github.com/stars/avalonreset/lists/cto-legends"><img src="assets/cards/r1/slot-collection-star-shrine.svg" width="100%" alt="GitHub Star List: The complete cto-legends collection on one page. Bookmark or star the router and every module from a single GitHub list."></a></p>
 
 **Specification & benchmarks on cto-legends.com:**
+
 - **Module specification & architecture matrix:** [cto-legends.com/modules/legends-github](https://cto-legends.com/modules/legends-github)
 - **Related engineering dispatches:** [Routing Cursor vs Claude Code by Blast Radius and Cost](https://cto-legends.com/blog?post=cursor-vs-claude-code) · [How to Vet an AI Implementation Consultant in 15 Minutes](https://cto-legends.com/blog?post=ai-implementation-consultant) · [How to Choose MCP vs CLI Tools Without Context Bloat](https://cto-legends.com/blog?post=mcp-vs-cli)
 - **Ecosystem hub:** [cto-legends.com/home](https://cto-legends.com/home)
